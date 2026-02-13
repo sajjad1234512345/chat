@@ -122,7 +122,8 @@ const CreateTab: React.FC<CreateTabProps> = ({ onCancel }) => {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const files = Array.from(e.target.files);
+      // Cast the result of Array.from(e.target.files) to File[] to ensure the type system recognizes file.type and file as a Blob.
+      const files = Array.from(e.target.files) as File[];
       setSelectedGalleryFiles([...selectedGalleryFiles, ...files]);
       const newMedia = files.map(file => ({
         url: URL.createObjectURL(file),

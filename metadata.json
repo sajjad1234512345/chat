@@ -1,6 +1,6 @@
 {
   "name": "InstaMarket Pro",
-  "description": "A high-end social commerce platform combining Instagram-style social networking with advanced marketplace features, AR virtual try-ons, business analytics, and local discovery.",
+  "description": "A high-end social commerce platform combining dashboard-style marketplace features with AR virtual try-ons.",
   "requestFramePermissions": [
     "camera",
     "microphone",
