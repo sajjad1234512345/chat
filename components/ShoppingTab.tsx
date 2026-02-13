@@ -1,6 +1,10 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Camera, Search, Filter, ShoppingCart, Star, ChevronRight, X, RotateCw, Heart, Plus, Store, Package } from 'lucide-react';
+import { 
+  Camera, Search, Filter, ShoppingCart, Star, ChevronRight, X, 
+  RotateCw, Heart, Plus, Store, Package, TrendingUp, BarChart3, 
+  Eye, ShoppingBag, ArrowLeft, MoreHorizontal, Settings
+} from 'lucide-react';
 import { Product } from '../types';
 
 const INITIAL_MOCK_PRODUCTS: Product[] = [
@@ -8,8 +12,8 @@ const INITIAL_MOCK_PRODUCTS: Product[] = [
     id: 'pr1',
     name: 'Basic White T-Shirt',
     price: 105,
-    image: 'https://picsum.photos/seed/shirt1/400/500',
-    category: 'Tops',
+    image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&q=80&w=800',
+    category: 'Fashion',
     rating: 4.8,
     reviews: 124,
     seller: 'MinimalStore',
@@ -19,8 +23,8 @@ const INITIAL_MOCK_PRODUCTS: Product[] = [
     id: 'pr2',
     name: 'Rice Moisturizing Cream',
     price: 19,
-    image: 'https://picsum.photos/seed/cream1/400/500',
-    category: 'Skincare',
+    image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=800',
+    category: 'Beauty',
     rating: 4.9,
     reviews: 840,
     seller: 'SkinBio',
@@ -30,18 +34,29 @@ const INITIAL_MOCK_PRODUCTS: Product[] = [
     id: 'pr3',
     name: 'Streetwear Cargo Pants',
     price: 145,
-    image: 'https://picsum.photos/seed/pants1/400/500',
-    category: 'Pants',
+    image: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&q=80&w=800',
+    category: 'Fashion',
     rating: 4.5,
     reviews: 56,
     seller: 'UrbanEdge',
     description: 'Durable nylon cargo pants with multiple pockets.'
+  },
+  {
+    id: 'pr4',
+    name: 'Canvas Wall Art',
+    price: 85,
+    image: 'https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&q=80&w=800',
+    category: 'Art',
+    rating: 4.7,
+    reviews: 210,
+    seller: 'ArtDecor',
+    description: 'Modern minimalist wall art for your home office.'
   }
 ];
 
 const ShoppingTab: React.FC = () => {
-  const [view, setView] = useState<'browse' | 'ar' | 'detail'>('browse');
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [view, setView] = useState<'browse' | 'ar' | 'my-store'>('browse');
+  const [activeCategory, setActiveCategory] = useState('All');
   const [allProducts] = useState<Product[]>(INITIAL_MOCK_PRODUCTS);
   
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -99,58 +114,200 @@ const ShoppingTab: React.FC = () => {
     );
   }
 
-  return (
-    <div className="p-4 space-y-6 animate-in fade-in duration-500">
-      {/* Header Info */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2 bg-white px-4 py-2 rounded-2xl border border-gray-100 shadow-sm flex-grow mr-3">
-          <Search className="w-5 h-5 text-gray-400" />
-          <input type="text" placeholder="Search products..." className="bg-transparent border-none outline-none w-full text-sm font-medium" />
-        </div>
-        <button className="p-3 bg-white rounded-2xl border border-gray-100 shadow-sm">
-          <Filter className="w-5 h-5 text-gray-700" />
-        </button>
-      </div>
+  if (view === 'my-store') {
+    return (
+      <div className="fixed inset-0 z-[100] bg-[#FAFAFA] flex flex-col animate-in slide-in-from-right duration-500 overflow-y-auto pb-32">
+        <header className="px-6 pt-8 pb-4 flex justify-between items-center bg-white border-b border-gray-100">
+          <div className="flex items-center space-x-4">
+            <button onClick={() => setView('browse')} className="p-2 bg-gray-50 rounded-full">
+              <ArrowLeft className="w-6 h-6 text-gray-900" />
+            </button>
+            <div>
+              <h2 className="text-xl font-black text-gray-900 tracking-tight">My Market</h2>
+              <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Merchant Center</p>
+            </div>
+          </div>
+          <button className="p-2 bg-gray-50 rounded-full text-gray-400">
+            <Settings className="w-6 h-6" />
+          </button>
+        </header>
 
-      {/* AR Call-to-action */}
-      <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-6 text-white relative overflow-hidden group shadow-lg shadow-blue-500/20">
-        <Camera className="absolute -bottom-4 -right-4 w-32 h-32 opacity-10 transform group-hover:rotate-12 transition-transform duration-500" />
-        <h3 className="text-xl font-black mb-1">Try Before You Buy</h3>
-        <p className="text-blue-100 text-xs mb-6 font-medium">Use VirtualFit™ to see how items look in real-time.</p>
+        <div className="p-6 space-y-8">
+          {/* Quick Stats Grid */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-white p-6 rounded-[2.5rem] border border-gray-100 shadow-sm">
+              <div className="flex justify-between items-center mb-4">
+                <div className="p-2 bg-green-50 rounded-xl text-green-500">
+                  <TrendingUp className="w-4 h-4" />
+                </div>
+                <span className="text-[10px] font-black text-green-600 tracking-widest">+12%</span>
+              </div>
+              <p className="text-2xl font-black text-gray-900">$2,450</p>
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Earnings</p>
+            </div>
+            <div className="bg-white p-6 rounded-[2.5rem] border border-gray-100 shadow-sm">
+              <div className="flex justify-between items-center mb-4">
+                <div className="p-2 bg-blue-50 rounded-xl text-blue-500">
+                  <Eye className="w-4 h-4" />
+                </div>
+                <span className="text-[10px] font-black text-blue-600 tracking-widest">+4.2k</span>
+              </div>
+              <p className="text-2xl font-black text-gray-900">12.8k</p>
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Visitors</p>
+            </div>
+          </div>
+
+          {/* Quick Actions */}
+          <section>
+            <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-4 ml-2">Quick Actions</h3>
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                { label: 'Add Item', icon: Plus, color: 'bg-pink-500' },
+                { label: 'Orders', icon: Package, color: 'bg-indigo-500' },
+                { label: 'Analytics', icon: BarChart3, color: 'bg-orange-500' },
+              ].map((action) => (
+                <button key={action.label} className="bg-white p-4 rounded-[2rem] border border-gray-100 shadow-sm flex flex-col items-center justify-center space-y-2 active:scale-95 transition-all">
+                  <div className={`p-3 ${action.color} text-white rounded-2xl`}>
+                    <action.icon className="w-5 h-5" />
+                  </div>
+                  <span className="text-[10px] font-black uppercase text-gray-700">{action.label}</span>
+                </button>
+              ))}
+            </div>
+          </section>
+
+          {/* Active Listings */}
+          <section>
+            <div className="flex justify-between items-center mb-4 ml-2">
+              <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em]">Live Listings</h3>
+              <button className="text-[10px] font-black text-pink-500 uppercase">Manage All</button>
+            </div>
+            <div className="space-y-4">
+              {INITIAL_MOCK_PRODUCTS.slice(0, 3).map((product) => (
+                <div key={product.id} className="bg-white p-4 rounded-[2.5rem] border border-gray-100 flex items-center justify-between group shadow-sm">
+                  <div className="flex items-center space-x-4">
+                    <img src={product.image} className="w-16 h-16 rounded-3xl object-cover" alt="" />
+                    <div>
+                      <h4 className="text-sm font-black text-gray-900 truncate max-w-[120px]">{product.name}</h4>
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">${product.price}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="px-3 py-1 bg-green-50 text-green-600 text-[8px] font-black uppercase rounded-lg">Active</span>
+                    <button className="p-2 text-gray-300 hover:text-gray-900">
+                      <MoreHorizontal className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Boost Store Banner */}
+          <div className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-[3rem] p-8 text-white relative overflow-hidden shadow-2xl shadow-indigo-100">
+            <div className="relative z-10">
+              <h3 className="text-2xl font-black mb-2 tracking-tight">Boost Your Reach</h3>
+              <p className="text-white/70 text-sm mb-6 font-medium">Get 5x more visibility on your new collection with SmartMarket™ Ads.</p>
+              <button className="w-full bg-white text-indigo-700 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-all">
+                START PROMOTION
+              </button>
+            </div>
+            <div className="absolute top-0 right-0 p-4 opacity-10 transform translate-x-4 -translate-y-4">
+              <ShoppingBag className="w-32 h-32" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-[#FAFAFA] min-h-screen pb-24 animate-in fade-in duration-500">
+      {/* Header Search matching Image */}
+      <header className="px-4 pt-6 pb-6 flex items-center space-x-3">
+        <div className="flex-grow relative">
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+            <Search className="w-5 h-5" />
+          </div>
+          <input 
+            type="text" 
+            placeholder="Search marketplace..." 
+            className="w-full bg-white border border-gray-100 rounded-2xl py-3.5 pl-12 pr-4 text-sm font-medium shadow-sm focus:ring-2 focus:ring-pink-100 transition-all outline-none"
+          />
+        </div>
+        <button 
+          onClick={() => setView('my-store')}
+          className="w-12 h-12 bg-white border border-gray-100 rounded-2xl flex items-center justify-center text-gray-700 shadow-sm active:scale-95 transition-all"
+        >
+          <Store className="w-6 h-6" />
+        </button>
         <button 
           onClick={() => setView('ar')}
-          className="bg-white text-blue-600 px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest shadow-xl active:scale-95 transition-all"
+          className="w-12 h-12 bg-pink-50 text-pink-500 rounded-2xl flex items-center justify-center shadow-sm active:scale-95 transition-all"
         >
-          Open AR Camera
+          <Camera className="w-6 h-6" />
         </button>
-      </div>
+      </header>
 
-      {/* Categories */}
-      <div className="flex space-x-3 overflow-x-auto scrollbar-hide py-1">
-        {['All', 'Tops', 'Pants', 'Shoes', 'Accessories', 'Beauty'].map(cat => (
-          <button key={cat} className={`flex-shrink-0 px-5 py-2 rounded-xl text-xs font-bold border transition-all ${cat === 'All' ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-500 border-gray-100'}`}>
-            {cat}
+      {/* Summer Collection Hero Banner */}
+      <section className="px-4 mb-8">
+        <div className="relative h-72 rounded-[2.5rem] overflow-hidden group shadow-2xl shadow-gray-200">
+          <img 
+            src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1200" 
+            className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-105" 
+            alt="Summer Collection" 
+          />
+          <div className="absolute inset-0 bg-black/40 flex flex-col justify-center p-8">
+            <h2 className="text-white text-4xl font-black mb-2 tracking-tight">Summer Collection</h2>
+            <p className="text-white/80 text-sm font-medium mb-8">Up to 40% OFF on all activewear</p>
+            <button className="w-fit bg-white text-black px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-all">
+              SHOP NOW
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Categories matching Image */}
+      <nav className="px-4 mb-8 overflow-x-auto flex items-center space-x-8 scrollbar-hide">
+        {['All', 'Fashion', 'Beauty', 'Tech', 'Home', 'Art'].map(cat => (
+          <button 
+            key={cat} 
+            onClick={() => setActiveCategory(cat)}
+            className="flex-shrink-0 relative group py-2"
+          >
+            <span className={`text-base font-bold transition-colors ${activeCategory === cat ? 'text-gray-900' : 'text-gray-400 group-hover:text-gray-600'}`}>
+              {cat}
+            </span>
+            {activeCategory === cat && (
+              <div className="absolute -bottom-1 left-0 right-0 h-[3px] bg-pink-500 rounded-full animate-in slide-in-from-left duration-300" />
+            )}
           </button>
         ))}
-      </div>
+      </nav>
 
-      {/* Product Grid */}
-      <div className="grid grid-cols-2 gap-4">
+      {/* Product Grid matching Image */}
+      <div className="px-4 grid grid-cols-2 gap-4">
         {allProducts.map(product => (
-          <div key={product.id} className="bg-white rounded-3xl overflow-hidden border border-gray-100 group transition-all hover:shadow-lg">
-            <div className="relative aspect-[4/5] bg-gray-50">
-              <img src={product.image} className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-700" alt={product.name} />
-              <button className="absolute top-3 right-3 p-2 bg-white/80 backdrop-blur-md rounded-full shadow-sm text-gray-700">
+          <div key={product.id} className="bg-white rounded-[2.5rem] overflow-hidden border border-gray-100 shadow-sm group active:scale-[0.98] transition-all cursor-pointer">
+            <div className="relative aspect-[4/5] overflow-hidden">
+              <img 
+                src={product.image} 
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                alt={product.name} 
+              />
+              <button className="absolute top-4 right-4 w-9 h-9 bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center text-white border border-white/20 hover:bg-white hover:text-pink-500 transition-all">
                 <Heart className="w-4 h-4" />
               </button>
             </div>
-            <div className="p-4">
-              <h4 className="text-sm font-bold text-gray-900 truncate mb-1">{product.name}</h4>
+            <div className="p-5">
+              <h4 className="text-sm font-black text-gray-900 truncate mb-0.5">{product.name}</h4>
+              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">{product.seller}</p>
+              
               <div className="flex items-center justify-between">
-                <span className="font-black text-blue-600">${product.price}</span>
-                <div className="flex items-center space-x-1 text-[10px] font-bold text-gray-400">
+                <span className="text-lg font-black text-gray-900">${product.price}</span>
+                <div className="flex items-center space-x-1.5 bg-gray-50 px-2 py-1 rounded-lg">
                   <Star className="w-3 h-3 text-yellow-400 fill-current" />
-                  <span>{product.rating}</span>
+                  <span className="text-[10px] font-black text-gray-600">{product.rating}</span>
                 </div>
               </div>
             </div>

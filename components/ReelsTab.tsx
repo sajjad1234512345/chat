@@ -40,7 +40,7 @@ const ReelsTab: React.FC = () => {
 
   const handleScroll = () => {
     if (scrollRef.current) {
-      const index = Math.round(scrollRef.current.scrollTop / window.innerHeight);
+      const index = Math.round(scrollRef.current.scrollTop / scrollRef.current.clientHeight);
       if (index !== activeReelIndex) {
         setActiveReelIndex(index);
       }
@@ -48,15 +48,15 @@ const ReelsTab: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black flex flex-col h-screen overflow-hidden">
-      {/* Top Controls */}
-      <div className="absolute top-0 left-0 right-0 z-50 p-6 flex justify-between items-center bg-gradient-to-b from-black/60 to-transparent">
-        <h2 className="text-2xl font-black text-white">Reels</h2>
-        <div className="flex items-center space-x-6">
-          <button onClick={() => setIsMuted(!isMuted)} className="text-white">
-            {isMuted ? <VolumeX className="w-6 h-6" /> : <Volume2 className="w-6 h-6" />}
+    <div className="relative bg-black flex flex-col h-[calc(100vh-112px)] overflow-hidden animate-in fade-in duration-500">
+      {/* Internal Controls */}
+      <div className="absolute top-0 left-0 right-0 z-40 p-4 flex justify-between items-center bg-gradient-to-b from-black/40 to-transparent">
+        <h2 className="text-xl font-black text-white ml-2">Reels</h2>
+        <div className="flex items-center space-x-4">
+          <button onClick={() => setIsMuted(!isMuted)} className="text-white p-2">
+            {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
           </button>
-          <Camera className="w-7 h-7 text-white" />
+          <Camera className="w-6 h-6 text-white mr-2" />
         </div>
       </div>
 
@@ -65,10 +65,9 @@ const ReelsTab: React.FC = () => {
         ref={scrollRef}
         onScroll={handleScroll}
         className="flex-grow overflow-y-scroll snap-y snap-mandatory scrollbar-hide"
-        style={{ height: '100vh' }}
       >
         {MOCK_REELS.map((reel, index) => (
-          <div key={reel.id} className="relative h-screen w-full snap-start bg-zinc-900">
+          <div key={reel.id} className="relative h-[calc(100vh-112px)] w-full snap-start bg-zinc-900">
             {/* Mock Video Placeholder */}
             <div className="absolute inset-0 flex items-center justify-center">
               <img 
@@ -76,44 +75,44 @@ const ReelsTab: React.FC = () => {
                 className="w-full h-full object-cover opacity-80" 
                 alt="Reel content" 
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
             </div>
 
             {/* Right Side Social Actions */}
-            <div className="absolute bottom-32 right-4 flex flex-col items-center space-y-6 z-20">
+            <div className="absolute bottom-20 right-4 flex flex-col items-center space-y-6 z-20">
               <div className="flex flex-col items-center group cursor-pointer">
                 <div className="p-2 transition-transform active:scale-90">
-                  <Heart className="w-8 h-8 text-white group-hover:fill-red-500 group-hover:text-red-500 transition-colors" />
+                  <Heart className="w-7 h-7 text-white group-hover:fill-red-500 group-hover:text-red-500 transition-colors" />
                 </div>
                 <span className="text-[10px] text-white font-bold">{reel.likes}</span>
               </div>
               
               <div className="flex flex-col items-center group cursor-pointer">
                 <div className="p-2 transition-transform active:scale-90">
-                  <MessageCircle className="w-8 h-8 text-white" />
+                  <MessageCircle className="w-7 h-7 text-white" />
                 </div>
                 <span className="text-[10px] text-white font-bold">{reel.comments}</span>
               </div>
 
               <div className="flex flex-col items-center group cursor-pointer">
                 <div className="p-2 transition-transform active:scale-90">
-                  <Send className="w-8 h-8 text-white" />
+                  <Send className="w-7 h-7 text-white" />
                 </div>
               </div>
 
               <div className="flex flex-col items-center group cursor-pointer pt-2">
-                <MoreVertical className="w-6 h-6 text-white" />
+                <MoreVertical className="w-5 h-5 text-white" />
               </div>
 
-              <div className="w-8 h-8 rounded-lg border-2 border-white overflow-hidden p-[2px] mt-4 animate-spin-slow">
+              <div className="w-7 h-7 rounded-lg border-2 border-white overflow-hidden p-[2px] mt-2 animate-spin-slow">
                  <div className="w-full h-full bg-zinc-700 rounded-sm flex items-center justify-center overflow-hidden">
                     <img src={reel.user.avatar} className="w-full h-full object-cover" />
                  </div>
               </div>
             </div>
 
-            {/* Bottom Content Overlay - Vertically Stacked & Smaller */}
-            <div className="absolute bottom-24 left-4 right-16 p-2 z-20 flex flex-col space-y-2">
+            {/* Bottom Content Overlay */}
+            <div className="absolute bottom-10 left-4 right-16 p-2 z-20 flex flex-col space-y-2">
                {/* User Info Stack */}
                <div className="flex flex-col items-start space-y-1.5">
                  <div className="flex items-center space-x-2">

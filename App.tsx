@@ -38,12 +38,14 @@ const App: React.FC = () => {
     }
   };
 
-  const isFullPage = (['create', 'messages', 'reels', 'nearby'] as TabType[]).includes(activeTab);
+  const isFullPage = (['create', 'messages'] as TabType[]).includes(activeTab);
+  const hideHeader = isFullPage || activeTab === 'profile';
+  const isReels = activeTab === 'reels';
 
   return (
     <div className="flex flex-col min-h-screen bg-[#FAFAFA] text-gray-900 font-sans antialiased">
       {/* Refined Header matching Screenshot */}
-      {!isFullPage && (
+      {!hideHeader && (
         <header className="sticky top-0 bg-white border-b border-gray-100 px-4 h-14 flex items-center justify-between z-50">
           <h1 className="text-xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-orange-500">
             InstaMarket
@@ -70,13 +72,13 @@ const App: React.FC = () => {
       )}
 
       {/* Main Content Area */}
-      <main className={`flex-grow ${!isFullPage ? 'pb-20' : ''}`}>
+      <main className={`flex-grow ${isFullPage ? '' : isReels ? 'pb-14' : 'pb-16'}`}>
         {renderContent()}
       </main>
 
       {/* 7-Item Bottom Navigation matching Screenshot */}
-      {!(['reels', 'create', 'messages'] as TabType[]).includes(activeTab) && (
-        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 h-18 flex items-center justify-around z-50 px-2">
+      {!isFullPage && (
+        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 h-14 flex items-center justify-around z-50 px-2 pb-safe">
           <NavItem 
             icon={Home} 
             active={activeTab === 'home'} 
@@ -93,13 +95,13 @@ const App: React.FC = () => {
             onClick={() => setActiveTab('wallet')} 
           />
           
-          {/* Centered Large Plus Button */}
-          <div className="relative -top-3">
+          {/* Centered Large Plus Button - Reduced Size */}
+          <div className="relative -top-2">
             <button 
               onClick={() => setActiveTab('create')}
-              className="w-14 h-14 bg-gradient-to-tr from-pink-600 via-red-500 to-orange-500 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-pink-200 active:scale-90 transition-all"
+              className="w-12 h-12 bg-gradient-to-tr from-pink-600 via-red-500 to-orange-500 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-pink-200 active:scale-90 transition-all"
             >
-              <Plus className="w-8 h-8 stroke-[3]" />
+              <Plus className="w-7 h-7 stroke-[3]" />
             </button>
           </div>
 
@@ -133,7 +135,7 @@ const HeaderIcon = ({ icon: Icon, onClick, active }: any) => (
 const NavItem = ({ icon: Icon, active, onClick }: { icon: any, active: boolean, onClick: () => void }) => (
   <button 
     onClick={onClick}
-    className={`p-3 transition-all ${active ? 'text-pink-600' : 'text-gray-400 hover:text-gray-600'}`}
+    className={`p-2 transition-all ${active ? 'text-pink-600' : 'text-gray-400 hover:text-gray-600'}`}
   >
     <Icon className={`w-6 h-6 ${active ? 'stroke-[2.5]' : 'stroke-[2]'}`} />
   </button>
