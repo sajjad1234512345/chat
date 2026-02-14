@@ -25,17 +25,6 @@ const MOCK_JOBS: Job[] = [
     type: 'Full-time',
     description: 'Join our award-winning design team to craft beautiful user experiences.',
     postedAt: '1d ago'
-  },
-  {
-    id: 'j3',
-    title: 'Marketing Specialist',
-    company: 'EcoBrand Solutions',
-    logo: 'https://picsum.photos/seed/eco/100/100',
-    location: 'Austin, TX',
-    salary: '$50k - $75k',
-    type: 'Contract',
-    description: 'Help us promote sustainable brands through innovative social media campaigns.',
-    postedAt: '3d ago'
   }
 ];
 
@@ -86,98 +75,30 @@ const JobsTab: React.FC = () => {
 
   if (view === 'create') {
     return (
-      <div className="bg-white min-h-screen p-6 pb-24 animate-in slide-in-from-right duration-300">
+      <div className="bg-[#121212] min-h-screen p-6 pb-24 animate-in slide-in-from-right duration-300">
         <header className="flex items-center space-x-4 mb-8">
-          <button onClick={() => setView('browse')} className="p-2 bg-gray-50 rounded-full">
-            <X className="w-6 h-6 text-gray-400" />
+          <button onClick={() => setView('browse')} className="p-2 bg-white/10 rounded-full">
+            <X className="w-6 h-6 text-white/40" />
           </button>
-          <h2 className="text-2xl font-black">Post a Job</h2>
+          <h2 className="text-2xl font-black text-white">Post a Job</h2>
         </header>
 
         <form onSubmit={handleCreateJob} className="space-y-6">
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-gray-400 uppercase mb-2">Job Title</label>
-              <input 
-                required
-                type="text" 
-                placeholder="e.g. Lead Developer"
-                className="w-full bg-gray-50 border-none rounded-2xl p-4 outline-none focus:ring-2 focus:ring-blue-200 text-sm font-medium"
-                value={newJob.title}
-                onChange={e => setNewJob({...newJob, title: e.target.value})}
-              />
+              <label className="block text-xs font-bold text-white/40 uppercase mb-2">Job Title</label>
+              <input required type="text" placeholder="e.g. Lead Developer" className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 outline-none focus:ring-2 focus:ring-blue-500/20 text-sm font-medium text-white" value={newJob.title} onChange={e => setNewJob({...newJob, title: e.target.value})} />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-gray-400 uppercase mb-2">Company Name</label>
-              <input 
-                required
-                type="text" 
-                placeholder="e.g. InstaMarket Inc."
-                className="w-full bg-gray-50 border-none rounded-2xl p-4 outline-none focus:ring-2 focus:ring-blue-200 text-sm font-medium"
-                value={newJob.company}
-                onChange={e => setNewJob({...newJob, company: e.target.value})}
-              />
+              <label className="block text-xs font-bold text-white/40 uppercase mb-2">Company Name</label>
+              <input required type="text" placeholder="e.g. InstaMarket Inc." className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 outline-none focus:ring-2 focus:ring-blue-500/20 text-sm font-medium text-white" value={newJob.company} onChange={e => setNewJob({...newJob, company: e.target.value})} />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold text-gray-400 uppercase mb-2">Location</label>
-                <input 
-                  required
-                  type="text" 
-                  placeholder="e.g. Remote"
-                  className="w-full bg-gray-50 border-none rounded-2xl p-4 outline-none focus:ring-2 focus:ring-blue-200 text-sm font-medium"
-                  value={newJob.location}
-                  onChange={e => setNewJob({...newJob, location: e.target.value})}
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-gray-400 uppercase mb-2">Job Type</label>
-                <select 
-                  className="w-full bg-gray-50 border-none rounded-2xl p-4 outline-none focus:ring-2 focus:ring-blue-200 text-sm font-medium appearance-none"
-                  value={newJob.type}
-                  onChange={e => setNewJob({...newJob, type: e.target.value as any})}
-                >
-                  <option>Full-time</option>
-                  <option>Part-time</option>
-                  <option>Remote</option>
-                  <option>Contract</option>
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-gray-400 uppercase mb-2">Salary Range</label>
-              <input 
-                required
-                type="text" 
-                placeholder="e.g. $80k - $120k"
-                className="w-full bg-gray-50 border-none rounded-2xl p-4 outline-none focus:ring-2 focus:ring-blue-200 text-sm font-medium"
-                value={newJob.salary}
-                onChange={e => setNewJob({...newJob, salary: e.target.value})}
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-gray-400 uppercase mb-2">Job Description</label>
-              <textarea 
-                required
-                rows={4}
-                placeholder="What are the responsibilities?"
-                className="w-full bg-gray-50 border-none rounded-2xl p-4 outline-none focus:ring-2 focus:ring-blue-200 text-sm resize-none"
-                value={newJob.description}
-                onChange={e => setNewJob({...newJob, description: e.target.value})}
-              />
-            </div>
+            <button type="submit" className="w-full bg-blue-600 text-white py-4 rounded-2xl font-black text-lg shadow-xl active:scale-95 transition-transform">
+              POST OPPORTUNITY
+            </button>
           </div>
-
-          <button 
-            type="submit"
-            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-2xl font-black text-lg shadow-xl shadow-blue-100"
-          >
-            POST OPPORTUNITY
-          </button>
         </form>
       </div>
     );
@@ -185,148 +106,99 @@ const JobsTab: React.FC = () => {
 
   if (view === 'detail' && selectedJob) {
     return (
-      <div className="bg-white min-h-screen p-6 pb-24 animate-in slide-in-from-bottom duration-300">
+      <div className="bg-[#121212] min-h-screen p-6 pb-24 animate-in slide-in-from-bottom duration-300">
         <header className="flex items-center justify-between mb-8">
-          <button onClick={() => setView('browse')} className="p-2 bg-gray-50 rounded-full">
-             <ChevronRight className="w-6 h-6 rotate-180" />
+          <button onClick={() => setView('browse')} className="p-2 bg-white/10 rounded-full">
+             <ChevronRight className="w-6 h-6 rotate-180 text-white" />
           </button>
-          <button className="p-2 bg-gray-50 rounded-full">
+          <button className="p-2 bg-white/10 rounded-full">
             <CheckCircle2 className="w-6 h-6 text-blue-500" />
           </button>
         </header>
 
         <div className="flex flex-col items-center text-center mb-8">
-           <div className="w-24 h-24 bg-gray-50 rounded-[2.5rem] mb-4 flex items-center justify-center border border-gray-100 shadow-sm overflow-hidden">
+           <div className="w-24 h-24 bg-white/5 rounded-[2.5rem] mb-4 flex items-center justify-center border border-white/10 shadow-sm overflow-hidden">
              <img src={selectedJob.logo} className="w-full h-full object-cover" alt="" />
            </div>
-           <h3 className="text-2xl font-black text-gray-900">{selectedJob.title}</h3>
-           <p className="text-blue-600 font-bold">{selectedJob.company}</p>
+           <h3 className="text-2xl font-black text-white tracking-tight">{selectedJob.title}</h3>
+           <p className="text-blue-500 font-black uppercase tracking-widest text-[10px] mt-1">{selectedJob.company}</p>
         </div>
 
         <div className="grid grid-cols-2 gap-4 mb-8">
-           <div className="bg-blue-50/50 p-4 rounded-3xl flex items-center space-x-3">
+           <div className="bg-white/5 backdrop-blur-md p-4 rounded-3xl flex items-center space-x-3 border border-white/5">
              <MapPin className="w-5 h-5 text-blue-500" />
              <div className="text-left">
-               <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Location</p>
-               <p className="text-xs font-bold">{selectedJob.location}</p>
+               <p className="text-[10px] text-white/30 font-black uppercase tracking-widest">Location</p>
+               <p className="text-xs font-bold text-white">{selectedJob.location}</p>
              </div>
            </div>
-           <div className="bg-indigo-50/50 p-4 rounded-3xl flex items-center space-x-3">
+           <div className="bg-white/5 backdrop-blur-md p-4 rounded-3xl flex items-center space-x-3 border border-white/5">
              <Clock className="w-5 h-5 text-indigo-500" />
              <div className="text-left">
-               <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Type</p>
-               <p className="text-xs font-bold">{selectedJob.type}</p>
+               <p className="text-[10px] text-white/30 font-black uppercase tracking-widest">Type</p>
+               <p className="text-xs font-bold text-white">{selectedJob.type}</p>
              </div>
            </div>
         </div>
 
-        <div className="bg-gray-50 p-6 rounded-[2.5rem] mb-8">
-          <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-4">About the role</h4>
-          <p className="text-sm text-gray-600 leading-relaxed font-medium">
+        <div className="bg-white/5 backdrop-blur-xl p-6 rounded-[2.5rem] mb-8 border border-white/10">
+          <h4 className="text-xs font-black text-white/40 uppercase tracking-[0.2em] mb-4">About the role</h4>
+          <p className="text-sm text-white/80 leading-relaxed font-medium">
             {selectedJob.description}
             <br /><br />
             We offer competitive benefits, flexible working hours, and a vibrant community of innovators.
           </p>
         </div>
 
-        <div className="fixed bottom-0 left-0 right-0 p-6 bg-white/80 backdrop-blur-xl border-t border-gray-100">
-           {showApplySuccess ? (
-             <div className="w-full bg-green-500 text-white py-4 rounded-3xl font-black text-center animate-in zoom-in-95">
-               APPLICATION SENT!
-             </div>
-           ) : (
-             <button 
-               onClick={handleApply}
-               className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-3xl font-black text-lg shadow-xl shadow-blue-200"
-             >
-               APPLY FOR THIS ROLE
-             </button>
-           )}
+        <div className="fixed bottom-0 left-0 right-0 p-6 bg-black/40 backdrop-blur-xl border-t border-white/10">
+           <button onClick={handleApply} className="w-full bg-blue-600 text-white py-4 rounded-3xl font-black text-lg shadow-xl active:scale-95 transition-all">
+             {showApplySuccess ? 'APPLICATION SENT!' : 'APPLY FOR THIS ROLE'}
+           </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="p-4 max-w-lg mx-auto bg-[#fafafa] min-h-screen pb-24">
+    <div className="p-4 max-w-lg mx-auto bg-transparent min-h-screen pb-24">
       <header className="flex justify-between items-center mb-6 px-2">
         <div>
-          <h2 className="text-2xl font-black text-gray-900">Opportunities</h2>
-          <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mt-0.5">Find your next big move</p>
+          <h2 className="text-2xl font-black text-white">Opportunities</h2>
+          <p className="text-[10px] text-white/40 font-black uppercase tracking-widest mt-0.5">Find your next big move</p>
         </div>
-        <button 
-          onClick={() => setView('create')}
-          className="p-3 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-2xl text-white shadow-lg shadow-blue-100 hover:scale-105 transition-transform"
-        >
+        <button onClick={() => setView('create')} className="p-3 bg-white/10 border border-white/10 rounded-2xl text-white shadow-lg active:scale-95 transition-transform">
           <Plus className="w-6 h-6" />
         </button>
       </header>
 
-      {/* Search & Filter */}
       <div className="px-2 space-y-4 mb-8">
-        <div className="bg-white border border-gray-100 rounded-2xl px-4 py-3 flex items-center space-x-3 shadow-sm">
-          <Search className="w-5 h-5 text-gray-300" />
-          <input 
-            type="text" 
-            placeholder="Search roles or companies..." 
-            className="bg-transparent border-none outline-none w-full text-sm font-medium"
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-          />
-        </div>
-        <div className="flex space-x-3 overflow-x-auto scrollbar-hide py-1">
-          {['All', 'Full-time', 'Part-time', 'Remote', 'Contract'].map(filter => (
-            <button 
-              key={filter}
-              onClick={() => setActiveFilter(filter)}
-              className={`flex-shrink-0 px-5 py-2 rounded-2xl text-xs font-black transition-all ${activeFilter === filter ? 'bg-blue-600 text-white shadow-lg shadow-blue-100' : 'bg-white text-gray-400 border border-gray-100'}`}
-            >
-              {filter}
-            </button>
-          ))}
+        <div className="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 flex items-center space-x-3 backdrop-blur-md">
+          <Search className="w-5 h-5 text-white/20" />
+          <input type="text" placeholder="Search roles or companies..." className="bg-transparent border-none outline-none w-full text-sm font-medium text-white placeholder-white/20" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
         </div>
       </div>
 
-      {/* Job List */}
       <div className="space-y-4 px-2">
-        {filteredJobs.length === 0 ? (
-          <div className="text-center py-20">
-             <Briefcase className="w-12 h-12 text-gray-200 mx-auto mb-4" />
-             <p className="text-gray-400 font-bold">No opportunities found</p>
-          </div>
-        ) : (
-          filteredJobs.map(job => (
-            <div 
-              key={job.id} 
-              onClick={() => { setSelectedJob(job); setView('detail'); }}
-              className="bg-white p-5 rounded-[2.5rem] shadow-sm border border-gray-100 flex items-start space-x-4 group cursor-pointer transition-all hover:shadow-md hover:-translate-y-1"
-            >
-              <div className="w-14 h-14 bg-gray-50 rounded-2xl flex-shrink-0 flex items-center justify-center border border-gray-100 overflow-hidden">
-                 <img src={job.logo} className="w-full h-full object-cover" alt="" />
+        {filteredJobs.map(job => (
+          <div key={job.id} onClick={() => { setSelectedJob(job); setView('detail'); }} className="bg-white/5 backdrop-blur-md p-5 rounded-[2.5rem] shadow-sm border border-white/10 flex items-start space-x-4 group cursor-pointer transition-all hover:bg-white/10">
+            <div className="w-14 h-14 bg-zinc-800 rounded-2xl flex-shrink-0 flex items-center justify-center border border-white/10 overflow-hidden">
+               <img src={job.logo} className="w-full h-full object-cover" alt="" />
+            </div>
+            <div className="flex-grow min-w-0">
+              <div className="flex justify-between items-start mb-1">
+                 <h4 className="font-black text-sm text-white group-hover:text-blue-500 transition-colors">{job.title}</h4>
+                 <span className="text-[9px] font-black text-white/30 uppercase tracking-widest">{job.postedAt}</span>
               </div>
-              <div className="flex-grow min-w-0">
-                <div className="flex justify-between items-start mb-1">
-                   <h4 className="font-black text-sm text-gray-900 group-hover:text-blue-600 transition-colors">{job.title}</h4>
-                   <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">{job.postedAt}</span>
-                </div>
-                <div className="flex items-center space-x-2 text-blue-500 font-bold text-xs mb-3">
-                   <Building className="w-3.5 h-3.5" />
-                   <span>{job.company}</span>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center space-x-1.5 text-gray-400">
-                    <MapPin className="w-3 h-3" />
-                    <span className="text-[10px] font-bold">{job.location}</span>
-                  </div>
-                  <div className="flex items-center space-x-1.5 text-gray-400">
-                    <DollarSign className="w-3 h-3" />
-                    <span className="text-[10px] font-bold">{job.salary}</span>
-                  </div>
+              <p className="text-blue-500 font-bold text-xs mb-3 uppercase tracking-widest">{job.company}</p>
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-1.5 text-white/40">
+                  <MapPin className="w-3 h-3" />
+                  <span className="text-[10px] font-bold">{job.location}</span>
                 </div>
               </div>
             </div>
-          ))
-        )}
+          </div>
+        ))}
       </div>
     </div>
   );

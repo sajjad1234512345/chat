@@ -1,5 +1,10 @@
 
-export type TabType = 'home' | 'shopping' | 'wallet' | 'nearby' | 'giving' | 'business' | 'create' | 'profile' | 'messages' | 'reels' | 'events' | 'jobs' | 'ads';
+export type TabType = 'home' | 'search' | 'shopping' | 'wallet' | 'nearby' | 'giving' | 'business' | 'create' | 'profile' | 'messages' | 'reels' | 'events' | 'jobs' | 'ads';
+
+export interface PostMedia {
+  type: 'image' | 'video';
+  url: string;
+}
 
 export interface Post {
   id: string;
@@ -8,7 +13,7 @@ export interface Post {
     avatar: string;
     isStory?: boolean;
   };
-  image: string;
+  media: PostMedia[];
   likes: number;
   caption: string;
   comments: number;

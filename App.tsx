@@ -1,8 +1,9 @@
 
 import React, { useState } from 'react';
-import { Home, ShoppingBag, Wallet, MapPin, Building2, MessageCircle, Plus, User, Clapperboard, Trophy, Briefcase, Megaphone, HandHeart, Search, Bell, Heart } from 'lucide-react';
+import { Home, ShoppingBag, Wallet, MapPin, Building2, MessageCircle, Plus, User, Clapperboard, Trophy, Briefcase, Megaphone, HandHeart, Search, Bell, Heart, MoreVertical } from 'lucide-react';
 import { TabType } from './types';
 import HomeTab from './components/HomeTab';
+import SearchTab from './components/SearchTab';
 import ShoppingTab from './components/ShoppingTab';
 import WalletTab from './components/WalletTab';
 import NearbyTab from './components/NearbyTab';
@@ -22,6 +23,7 @@ const App: React.FC = () => {
   const renderContent = () => {
     switch (activeTab) {
       case 'home': return <HomeTab />;
+      case 'search': return <SearchTab />;
       case 'shopping': return <ShoppingTab />;
       case 'wallet': return <WalletTab />;
       case 'nearby': return <NearbyTab />;
@@ -40,86 +42,59 @@ const App: React.FC = () => {
 
   const isFullPage = (['create', 'messages'] as TabType[]).includes(activeTab);
   const hideHeader = isFullPage || activeTab === 'profile';
-  const isReels = activeTab === 'reels';
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#FAFAFA] text-gray-900 font-sans antialiased">
-      {/* Refined Header matching Screenshot */}
+    <div className="flex flex-col min-h-screen bg-[#0c0c0c] text-white font-sans antialiased">
+      {/* Header - Fixed Top (Up Bar) */}
       {!hideHeader && (
-        <header className="sticky top-0 bg-white border-b border-gray-100 px-4 h-14 flex items-center justify-between z-50">
-          <h1 className="text-xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-orange-500">
+        <header className="sticky top-0 bg-[#0c0c0c] border-b border-white/5 px-4 h-14 flex items-center justify-between z-50">
+          <h1 className="text-xl font-black italic brand-text">
             InstaMarket
           </h1>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-5">
             <HeaderIcon icon={Megaphone} onClick={() => setActiveTab('ads')} active={activeTab === 'ads'} />
             <HeaderIcon icon={Trophy} onClick={() => setActiveTab('events')} active={activeTab === 'events'} />
-            <HeaderIcon icon={Briefcase} onClick={() => setActiveTab('jobs')} active={activeTab === 'jobs'} />
+            {/* Search moved to the Up Bar */}
+            <HeaderIcon icon={Search} onClick={() => setActiveTab('search')} active={activeTab === 'search'} />
             <HeaderIcon icon={Clapperboard} onClick={() => setActiveTab('reels')} active={activeTab === 'reels'} />
             <div className="relative cursor-pointer" onClick={() => setActiveTab('messages')}>
-              <MessageCircle className="w-6 h-6 text-gray-700" />
-              <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center border-2 border-white">
-                <span className="text-[8px] text-white font-black">3</span>
+              <MessageCircle className="w-5 h-5 text-white/70" />
+              <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-[#e1306c] rounded-full flex items-center justify-center border border-black shadow-lg">
+                <span className="text-[7px] text-white font-black">3</span>
               </div>
             </div>
-            <button 
-              onClick={() => setActiveTab('profile')}
-              className={`w-7 h-7 rounded-full overflow-hidden border-2 transition-all ${activeTab === 'profile' ? 'border-gray-900' : 'border-transparent'}`}
-            >
-              <img src="https://picsum.photos/seed/me/100/100" className="w-full h-full object-cover" alt="Profile" />
-            </button>
+            <div className="w-6 h-6 rounded-full overflow-hidden border border-white/20 bg-zinc-800 cursor-pointer hover:scale-105 transition-transform" onClick={() => setActiveTab('profile')}>
+               <img src="https://picsum.photos/seed/me/100/100" className="w-full h-full object-cover" alt="" />
+            </div>
           </div>
         </header>
       )}
 
-      {/* Main Content Area */}
-      <main className={`flex-grow ${isFullPage ? '' : isReels ? 'pb-14' : 'pb-16'}`}>
-        {renderContent()}
+      {/* Main Content Area - Increased to max-w-md for a "greater" container */}
+      <main className={`relative z-10 flex-grow ${isFullPage ? '' : 'pb-14'}`}>
+        <div className="max-w-md mx-auto">
+          {renderContent()}
+        </div>
       </main>
 
-      {/* 7-Item Bottom Navigation matching Screenshot */}
+      {/* Bottom Nav - Consistent with Header Style */}
       {!isFullPage && (
-        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 h-14 flex items-center justify-around z-50 px-2 pb-safe">
-          <NavItem 
-            icon={Home} 
-            active={activeTab === 'home'} 
-            onClick={() => setActiveTab('home')} 
-          />
-          <NavItem 
-            icon={ShoppingBag} 
-            active={activeTab === 'shopping'} 
-            onClick={() => setActiveTab('shopping')} 
-          />
-          <NavItem 
-            icon={Wallet} 
-            active={activeTab === 'wallet'} 
-            onClick={() => setActiveTab('wallet')} 
-          />
+        <nav className="fixed bottom-0 left-0 right-0 bg-[#0c0c0c] border-t border-white/5 h-14 flex items-center justify-around z-50 px-4 shadow-[0_-5px_30px_rgba(0,0,0,0.4)]">
+          <NavItem icon={Home} active={activeTab === 'home'} onClick={() => setActiveTab('home')} />
+          {/* Market (ShoppingBag) moved back to the bottom bar in place of search */}
+          <NavItem icon={ShoppingBag} active={activeTab === 'shopping'} onClick={() => setActiveTab('shopping')} /> 
+          <NavItem icon={Wallet} active={activeTab === 'wallet'} onClick={() => setActiveTab('wallet')} />
           
-          {/* Centered Large Plus Button - Reduced Size */}
-          <div className="relative -top-2">
-            <button 
-              onClick={() => setActiveTab('create')}
-              className="w-12 h-12 bg-gradient-to-tr from-pink-600 via-red-500 to-orange-500 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-pink-200 active:scale-90 transition-all"
-            >
-              <Plus className="w-7 h-7 stroke-[3]" />
-            </button>
-          </div>
+          <button 
+            onClick={() => setActiveTab('create')}
+            className="w-10 h-10 bg-gradient-to-tr from-[#ff416c] to-[#ff4b2b] text-white rounded-xl flex items-center justify-center shadow-[0_0_15px_rgba(255,75,43,0.4)] active:scale-90 transition-all transform -translate-y-1"
+          >
+            <Plus className="w-6 h-6 stroke-[3]" />
+          </button>
 
-          <NavItem 
-            icon={HandHeart} 
-            active={activeTab === 'giving'} 
-            onClick={() => setActiveTab('giving')} 
-          />
-          <NavItem 
-            icon={MapPin} 
-            active={activeTab === 'nearby'} 
-            onClick={() => setActiveTab('nearby')} 
-          />
-          <NavItem 
-            icon={Building2} 
-            active={activeTab === 'business'} 
-            onClick={() => setActiveTab('business')} 
-          />
+          <NavItem icon={HandHeart} active={activeTab === 'giving'} onClick={() => setActiveTab('giving'} />
+          <NavItem icon={MapPin} active={activeTab === 'nearby'} onClick={() => setActiveTab('nearby')} />
+          <NavItem icon={Building2} active={activeTab === 'business'} onClick={() => setActiveTab('business')} />
         </nav>
       )}
     </div>
@@ -127,17 +102,20 @@ const App: React.FC = () => {
 };
 
 const HeaderIcon = ({ icon: Icon, onClick, active }: any) => (
-  <button onClick={onClick} className={`transition-colors ${active ? 'text-pink-600' : 'text-gray-600 hover:text-gray-900'}`}>
-    <Icon className="w-6 h-6" />
+  <button onClick={onClick} className={`transition-all ${active ? 'text-white' : 'text-white/40 hover:text-white'}`}>
+    <Icon className="w-5 h-5" />
   </button>
 );
 
 const NavItem = ({ icon: Icon, active, onClick }: { icon: any, active: boolean, onClick: () => void }) => (
   <button 
     onClick={onClick}
-    className={`p-2 transition-all ${active ? 'text-pink-600' : 'text-gray-400 hover:text-gray-600'}`}
+    className={`p-2 transition-all flex flex-col items-center justify-center relative group ${active ? 'text-white' : 'text-white/40 hover:text-white/60'}`}
   >
-    <Icon className={`w-6 h-6 ${active ? 'stroke-[2.5]' : 'stroke-[2]'}`} />
+    <Icon className={`w-[22px] h-[22px] transition-transform ${active ? 'stroke-[2.5] scale-105' : 'stroke-[2] group-hover:scale-110'}`} />
+    {active && (
+      <div className="absolute -bottom-1 w-1 h-1 bg-white rounded-full shadow-[0_0_8px_white]" />
+    )}
   </button>
 );
 
