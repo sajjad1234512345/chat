@@ -1,5 +1,5 @@
 
-export type TabType = 'home' | 'search' | 'shopping' | 'wallet' | 'nearby' | 'giving' | 'business' | 'create' | 'profile' | 'messages' | 'reels' | 'events' | 'jobs' | 'ads';
+export type TabType = 'home' | 'search' | 'shopping' | 'wallet' | 'nearby' | 'giving' | 'business' | 'create' | 'profile' | 'messages' | 'reels' | 'events' | 'jobs' | 'ads' | 'notifications';
 
 export interface PostMedia {
   type: 'image' | 'video';
@@ -20,11 +20,24 @@ export interface Post {
   time: string;
 }
 
+export interface StoryViewerInfo {
+  id: string;
+  name: string;
+  avatar: string;
+  hasLiked?: boolean;
+  comment?: string;
+  commentLikedByMe?: boolean;
+  replies?: string[];
+  time: string;
+}
+
 export interface Story {
   id: string;
   user: string;
   avatar: string;
   viewed: boolean;
+  media?: string[];
+  viewers?: StoryViewerInfo[];
 }
 
 export interface Product {

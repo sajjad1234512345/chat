@@ -1,209 +1,247 @@
 
 import React, { useState } from 'react';
 import { 
-  LayoutGrid, Users, Box, MessageSquare, BarChart3, Settings, 
-  Share2, Zap, Clock, TrendingUp, MoreVertical, 
-  Mail, Shield, ChevronDown, Package, 
-  ArrowUpRight, Target
+  LayoutGrid, Users, UserX, ShieldCheck, FileWarning, Search, Bell, 
+  ChevronRight, MoreHorizontal, Check, X, Filter, BarChart3,
+  Settings as SettingsIcon, LogOut, Download, CreditCard, Box,
+  FileText, Megaphone, Tags, Ticket, Navigation, BookOpen, 
+  Palette, Sparkles, Columns, Cpu, Plus, TrendingUp, ArrowUpRight, ArrowDownRight,
+  Eye, Wallet, Activity, ChevronLeft, Layers, PieChart, Shield,
+  Briefcase, Trophy, MessageCircle, Star, Menu
 } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Cell } from 'recharts';
-import { BusinessMetric, Employee } from '../types';
+import { AreaChart, Area, ResponsiveContainer, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 
-const METRICS: BusinessMetric[] = [
-  { label: 'FOLLOWERS', value: '112K', change: '++12%', isPositive: true },
-  { label: 'AVG REACH', value: '45.8K', change: '++8%', isPositive: true },
-  { label: 'GROSS SALES', value: '$8,402', change: '++24%', isPositive: true },
-  { label: 'ENGAGEMENT', value: '4.8%', change: '-2%', isPositive: false },
+type BusinessSubTab = 'Dashboard' | 'Users' | 'Settings';
+
+const MOCK_USERS = [
+  { id: '#768', name: 'Ava Jones', email: 'lline@yandex.ru', username: '@glamgrove', status: 'Active', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200' },
+  { id: '#854', name: 'Samuel Young', email: 'ahana@mail.ru', username: '@eliteechoes', status: 'Active', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200' },
+  { id: '#992', name: 'Lincoln Rogers', email: 'seannand@mail.ru', username: '@radiantrealm', status: 'Active', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200' },
+  { id: '#523', name: 'Claire Peterson', email: 'irnabela@gmail.com', username: '@urbanutopia', status: 'Active', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200' },
 ];
 
-const SALES_DATA = [
-  { name: 'Jan', sales: 4000 },
-  { name: 'Feb', sales: 3000 },
-  { name: 'Mar', sales: 5000 },
-  { name: 'Apr', sales: 4500 },
-  { name: 'May', sales: 6000 },
-  { name: 'Jun', sales: 5500 },
+const PERFORMANCE_DATA = [
+  { name: 'Mon', value: 2400 },
+  { name: 'Tue', value: 3500 },
+  { name: 'Wed', value: 2800 },
+  { name: 'Thu', value: 4200 },
+  { name: 'Fri', value: 3900 },
+  { name: 'Sat', value: 5100 },
+  { name: 'Sun', value: 4800 },
 ];
-
-const INITIAL_EMPLOYEES: Employee[] = [
-  { id: '1', name: 'Hira R.', email: 'hira@company.com', role: 'Admin', avatar: 'https://picsum.photos/seed/hira/100/100', status: 'Active' },
-  { id: '2', name: 'Alex Thompson', email: 'alex@company.com', role: 'Manager', avatar: 'https://picsum.photos/seed/alex/100/100', status: 'Active' },
-  { id: '3', name: 'Sarah Chen', email: 'sarah@company.com', role: 'Editor', avatar: 'https://picsum.photos/seed/sarah/100/100', status: 'Away' },
-];
-
-type BusinessSubTab = 'dashboard' | 'employees' | 'inventory' | 'inquiries' | 'insights' | 'settings';
 
 const BusinessTab: React.FC = () => {
-  const [activeSubTab, setActiveSubTab] = useState<BusinessSubTab>('dashboard');
-  const [hoveredTab, setHoveredTab] = useState<string | null>(null);
-
-  const navItems = [
-    { id: 'inventory', icon: Box, angle: -90, label: 'Inventory' },
-    { id: 'settings', icon: Settings, angle: -30, label: 'Settings' },
-    { id: 'insights', icon: BarChart3, angle: 30, label: 'Insights' },
-    { id: 'employees', icon: Users, angle: 90, label: 'Employees' },
-    { id: 'inquiries', icon: MessageSquare, angle: 150, label: 'Inquiries' },
-    { id: 'dashboard', icon: LayoutGrid, angle: 210, label: 'Dashboard' },
-  ];
-
-  const currentAngle = navItems.find(n => n.id === activeSubTab)?.angle || 0;
+  const [activeTab, setActiveTab] = useState<string>('Dashboard');
+  const [isCurtainOpen, setIsCurtainOpen] = useState(false);
 
   const renderDashboard = () => (
-    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-700">
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-        {METRICS.map((metric, idx) => (
-          <div key={idx} className="glass p-8 rounded-[3rem] flex flex-col justify-between h-44 border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] hover:scale-105 transition-transform">
-            <div className="flex justify-between items-start">
-              <span className="text-[11px] text-white/40 font-black uppercase tracking-[0.2em]">{metric.label}</span>
-              <div className={`text-[11px] font-black px-2 py-1 rounded-lg ${metric.isPositive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
-                {metric.change}
-              </div>
-            </div>
-            <h4 className="text-4xl font-black text-white leading-none tracking-tighter drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">{metric.value}</h4>
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-700">
+      {/* Performance Summary Chart */}
+      <section className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-8 shadow-2xl overflow-hidden relative group">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-pink-500/10 blur-[120px] rounded-full -mr-20 -mt-20 group-hover:bg-pink-500/20 transition-all duration-700" />
+        
+        <div className="flex justify-between items-start mb-10 relative z-10">
+          <div>
+            <h3 className="text-2xl font-black text-white tracking-tighter uppercase italic">Earnings Overview</h3>
+            <p className="text-[10px] text-white/40 font-black uppercase tracking-[0.4em] mt-1">Net revenue performance (7d)</p>
           </div>
-        ))}
-      </div>
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-        <div className="lg:col-span-12 glass p-12 rounded-[4rem] border border-white/10 shadow-2xl">
-          <div className="flex justify-between items-center mb-12">
-            <h3 className="font-black text-2xl text-white tracking-tight">Organization Analytics</h3>
-            <div className="bg-pink-600/20 px-5 py-2 rounded-2xl text-[11px] font-black uppercase tracking-[0.3em] text-pink-500 border border-pink-500/30 animate-pulse">
-              Live Stream Active
+          <div className="flex flex-col items-end">
+            <span className="text-3xl font-black text-white tracking-tighter">$12,450.00</span>
+            <div className="flex items-center space-x-1.5 text-green-400 mt-1">
+              <TrendingUp className="w-3.5 h-3.5" />
+              <span className="text-[10px] font-black tracking-widest">+18.5%</span>
             </div>
-          </div>
-          <div className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={SALES_DATA}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fontSize: 11, fontWeight: 800, fill: 'rgba(255,255,255,0.4)'}} dy={15} />
-                <Bar dataKey="sales" radius={[12, 12, 12, 12]} barSize={45}>
-                  {SALES_DATA.map((_, i) => <Cell key={i} fill={i === 4 ? '#ec4899' : 'rgba(255,255,255,0.15)'} className="drop-shadow-[0_0_10px_rgba(236,72,153,0.3)]" />)}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
           </div>
         </div>
+
+        <div className="h-64 w-full relative z-10">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={PERFORMANCE_DATA}>
+              <defs>
+                <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#ec4899" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#ec4899" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="5 5" stroke="rgba(255,255,255,0.05)" vertical={false} />
+              <XAxis 
+                dataKey="name" 
+                axisLine={false} 
+                tickLine={false} 
+                tick={{fill: 'rgba(255,255,255,0.3)', fontSize: 10, fontWeight: 900}} 
+                dy={10}
+              />
+              <Tooltip 
+                contentStyle={{backgroundColor: '#1c1c1c', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '1rem'}}
+                itemStyle={{color: '#ec4899', fontSize: '12px', fontWeight: 'bold'}}
+              />
+              <Area 
+                type="monotone" 
+                dataKey="value" 
+                stroke="#ec4899" 
+                strokeWidth={4} 
+                fillOpacity={1} 
+                fill="url(#colorValue)" 
+                animationDuration={1500}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </section>
+
+      {/* Grid of smaller stats cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <DashboardStatSmall 
+          label="Conversion" 
+          value="4.8%" 
+          change="+0.2%" 
+          isPositive={true} 
+          icon={Activity} 
+          color="text-pink-500" 
+        />
+        <DashboardStatSmall 
+          label="Total Reach" 
+          value="854k" 
+          change="+12k" 
+          isPositive={true} 
+          icon={Users} 
+          color="text-blue-500" 
+        />
+        <DashboardStatSmall 
+          label="Net Loss" 
+          value="$0.00" 
+          change="0%" 
+          isPositive={true} 
+          icon={ArrowDownRight} 
+          color="text-emerald-500" 
+        />
+        <DashboardStatSmall 
+          label="Impressions" 
+          value="1.2M" 
+          change="-2.1%" 
+          isPositive={false} 
+          icon={Eye} 
+          color="text-purple-500" 
+        />
       </div>
     </div>
   );
 
   return (
-    <div className="flex min-h-screen text-white overflow-hidden relative">
+    <div className="min-h-screen bg-[#0c0c0c] text-white font-sans pb-32 animate-in fade-in duration-500 relative overflow-hidden">
       
-      {/* RADIAL NAVIGATOR - Elevated with High Luminosity */}
-      <aside className="hidden xl:flex w-[550px] items-center justify-center sticky top-0 h-screen p-12 z-20">
-        <div className="relative w-[450px] h-[450px] flex items-center justify-center">
+      {/* Side Curtain (Drawer) Overlay */}
+      {isCurtainOpen && (
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] animate-in fade-in duration-300"
+          onClick={() => setIsCurtainOpen(false)}
+        />
+      )}
+
+      {/* Side Curtain (Drawer) Menu - Constrained between Up and Bottom bars */}
+      <div 
+        className={`fixed top-[92px] bottom-[56px] left-0 w-[82%] max-w-[300px] bg-[#0c0c0c]/95 backdrop-blur-3xl border-r border-y border-white/10 z-[110] transform transition-transform duration-500 ease-out shadow-[40px_0_100px_rgba(0,0,0,0.9)] rounded-r-[3rem] ${isCurtainOpen ? 'translate-x-0' : '-translate-x-full'}`}
+      >
+        <div className="p-6 h-full flex flex-col">
+          {/* Header removed based on visual feedback */}
           
-          {/* Main Dark Shell with Glow */}
-          <div className="absolute inset-0 rounded-full bg-zinc-900/40 border border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.8)] backdrop-blur-[60px] overflow-hidden">
-            {/* Divider lines exactly as in image */}
-            {[0, 60, 120, 180, 240, 300].map(deg => (
-              <div key={deg} className="absolute top-1/2 left-1/2 w-full h-[1px] bg-white/[0.08] origin-left" style={{ transform: `rotate(${deg}deg)` }} />
-            ))}
+          <nav className="flex-grow space-y-2 overflow-y-auto scrollbar-hide pr-1 pt-4">
+            <DrawerItem icon={LayoutGrid} label="Dashboard" active={activeTab === 'Dashboard'} onClick={() => { setActiveTab('Dashboard'); setIsCurtainOpen(false); }} />
+            <DrawerItem icon={Briefcase} label="Team" active={activeTab === 'Team'} onClick={() => setActiveTab('Team')} />
+            <DrawerItem icon={Box} label="Products" active={activeTab === 'Products'} onClick={() => setActiveTab('Products')} />
+            <DrawerItem icon={FileText} label="Reports" active={activeTab === 'Reports'} onClick={() => setActiveTab('Reports')} />
+            <DrawerItem icon={CreditCard} label="Billing" active={activeTab === 'Billing'} onClick={() => setActiveTab('Billing')} />
+            <DrawerItem icon={Trophy} label="Events" active={activeTab === 'Events'} onClick={() => setActiveTab('Events')} />
+            <DrawerItem icon={MessageCircle} label="Favor Chats" active={activeTab === 'Favor Chats'} onClick={() => setActiveTab('Favor Chats')} />
+            <DrawerItem icon={SettingsIcon} label="System Config" active={activeTab === 'System Config'} onClick={() => setActiveTab('System Config')} />
+          </nav>
+
+          <div className="pt-6 border-t border-white/5 mt-auto">
+             <button className="w-full flex items-center justify-center space-x-3 p-5 bg-white/5 text-white/40 rounded-[2rem] font-black text-[11px] uppercase tracking-[0.3em] border border-white/5 hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/10 transition-all active:scale-95">
+                <LogOut className="w-5 h-5" />
+                <span>Sign Out</span>
+             </button>
           </div>
-
-          {/* Central Hub (The Core) - Darker, deeper black */}
-          <div className="z-30 w-56 h-56 bg-[#050505] rounded-full shadow-[0_0_80px_rgba(0,0,0,1)] border border-white/20 flex flex-col items-center justify-center text-center relative ring-1 ring-white/10">
-             {/* Glowing White Pointer */}
-             <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-b-[10px] border-b-white luminous-glow" />
-             
-             <h3 className="text-[16px] font-black text-white uppercase tracking-[0.5em] mb-2 ml-1 drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">NAVIGATOR</h3>
-             <span className="text-[11px] text-white/40 font-black uppercase tracking-[0.3em] italic">
-                {hoveredTab ? hoveredTab : 'Select Modality'}
-             </span>
-          </div>
-
-          {/* Nav Item Buttons positioned around the hub */}
-          {navItems.map((item) => (
-            <button
-              key={item.id}
-              onClick={() => setActiveSubTab(item.id as BusinessSubTab)}
-              onMouseEnter={() => setHoveredTab(item.label)}
-              onMouseLeave={() => setHoveredTab(null)}
-              className={`absolute z-40 w-28 h-28 rounded-full flex items-center justify-center transition-all duration-300 group ${activeSubTab === item.id ? 'scale-110' : 'hover:scale-105'}`}
-              style={{
-                transform: `rotate(${item.angle}deg) translate(165px) rotate(-${item.angle}deg)`,
-              }}
-            >
-              {/* Vibrant segment bloom on hover */}
-              {(hoveredTab === item.label || activeSubTab === item.id) && (
-                <div className="absolute inset-0 bg-white/10 rounded-full blur-[30px] animate-pulse" />
-              )}
-              
-              <item.icon 
-                className={`w-9 h-9 transition-all duration-300 ${activeSubTab === item.id ? 'text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.9)] scale-110 stroke-[2]' : 'text-white/30 group-hover:text-white/60 stroke-[1.5]'}`} 
-              />
-            </button>
-          ))}
-
-          {/* Bright Glowing Arc Indicator */}
-          <svg className="absolute inset-0 w-full h-full -rotate-90 transition-transform duration-700 pointer-events-none" style={{ transform: `rotate(${currentAngle}deg)` }}>
-            <circle
-              cx="225"
-              cy="225"
-              r="200"
-              fill="none"
-              stroke="white"
-              strokeWidth="5"
-              strokeDasharray="160 1400"
-              strokeLinecap="round"
-              className="drop-shadow-[0_0_20px_rgba(255,255,255,0.8)]"
-            />
-          </svg>
         </div>
-      </aside>
+      </div>
 
-      {/* CONTENT AREA */}
-      <main className="flex-grow p-12 lg:p-28 h-screen overflow-y-auto z-10 scrollbar-hide">
-        <header className="flex flex-col md:flex-row md:items-center justify-between mb-24 animate-in fade-in slide-in-from-top-6 duration-700">
-          <div>
-            <h2 className="text-7xl font-black text-white tracking-tighter uppercase italic leading-none drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]">Business</h2>
-            <div className="flex items-center mt-6 space-x-4">
-              <Target className="w-6 h-6 text-pink-500 animate-pulse" />
-              <span className="text-white/50 text-[12px] font-black uppercase tracking-[0.4em]">Sub-Module: {activeSubTab}</span>
+      {/* Top Controls */}
+      <div className="px-6 pt-8 pb-4 flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <button 
+            onClick={() => setIsCurtainOpen(true)}
+            className="p-3.5 bg-white/5 backdrop-blur-3xl border border-white/10 rounded-2xl text-white/40 hover:text-white active:scale-95 transition-all shadow-xl hover:bg-pink-500/10 hover:border-pink-500/20"
+            aria-label="Open Menu"
+          >
+            <Menu className="w-6 h-6" />
+          </button>
+          <div className="animate-in fade-in slide-in-from-left-4 duration-500">
+            <h2 className="text-[9px] font-black text-white/30 uppercase tracking-[0.4em] mb-0.5">Company</h2>
+            <p className="text-sm font-black text-white tracking-tighter uppercase italic">Hira Rahman</p>
+          </div>
+        </div>
+      </div>
+
+      <main className="px-6">
+        {activeTab === 'Dashboard' && renderDashboard()}
+        {activeTab !== 'Dashboard' && (
+          <div className="h-64 flex flex-col items-center justify-center text-center space-y-4 animate-in fade-in zoom-in duration-500">
+            <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center border border-white/10">
+               <Activity className="w-8 h-8 text-white/20 animate-pulse" />
+            </div>
+            <div>
+              <h3 className="text-lg font-black uppercase tracking-widest text-white/80">{activeTab}</h3>
+              <p className="text-[10px] text-white/30 font-black uppercase tracking-[0.3em] mt-2">Section is currently in development</p>
             </div>
           </div>
-          <div className="flex items-center space-x-6 mt-12 md:mt-0">
-             <button className="flex items-center space-x-4 glass px-10 py-5 rounded-[2.5rem] text-white/60 hover:text-white transition-all font-black text-[12px] uppercase tracking-[0.2em] border-white/20">
-                <Share2 className="w-5 h-5" />
-                <span>Sync Node</span>
-             </button>
-             <button className="flex items-center space-x-4 bg-white text-black px-14 py-5 rounded-[2.5rem] font-black text-[12px] uppercase tracking-[0.3em] shadow-[0_0_30px_rgba(255,255,255,0.4)] hover:bg-zinc-200 transition-all active:scale-95 group">
-               <Zap className="w-5 h-5 fill-black group-hover:scale-125 transition-transform" />
-               <span>Switch Entity</span>
-             </button>
-          </div>
-        </header>
-
-        <section className="pb-40">
-          {activeSubTab === 'dashboard' && renderDashboard()}
-          
-          {activeSubTab !== 'dashboard' && (
-            <div className="glass p-40 rounded-[6rem] flex flex-col items-center justify-center text-center animate-in zoom-in-95 duration-700 shadow-2xl border-white/15">
-               <div className="w-40 h-40 bg-white/5 rounded-full flex items-center justify-center mb-16 border border-white/20 relative">
-                  <div className="absolute inset-0 rounded-full border border-pink-500/20 animate-ping" />
-                  <Settings className="w-20 h-20 text-white/20 animate-spin-slow drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]" />
-               </div>
-               <h3 className="text-5xl font-black text-white mb-8 tracking-tighter uppercase drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">{activeSubTab}</h3>
-               <p className="text-white/40 font-black uppercase tracking-[0.4em] text-[11px] max-w-sm leading-[2.5] italic">
-                  Advanced cryptographic handshake in progress. Access privileges authenticating.
-               </p>
-            </div>
-          )}
-        </section>
+        )}
       </main>
 
+      {/* Fixed Action Area */}
+      <div className="fixed bottom-24 right-6 z-40">
+        <button className="w-16 h-16 bg-gradient-to-tr from-pink-600 to-rose-500 text-white rounded-[2rem] flex items-center justify-center shadow-[0_15px_40px_rgba(236,72,153,0.3)] active:scale-90 transition-all border border-white/20">
+          <Plus className="w-9 h-9 stroke-[3]" />
+        </button>
+      </div>
+
       <style>{`
-        @keyframes spin-slow {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
+        .recharts-cartesian-grid-horizontal line {
+          stroke: rgba(255,255,255,0.05);
         }
-        .animate-spin-slow {
-          animation: spin-slow 22s linear infinite;
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
         }
       `}</style>
     </div>
   );
 };
+
+const DrawerItem = ({ icon: Icon, label, active, onClick }: any) => (
+  <button 
+    onClick={onClick}
+    className={`w-full flex items-center justify-between p-4.5 rounded-[1.8rem] transition-all duration-300 group ${active ? 'bg-pink-500 text-white shadow-[0_15px_30px_rgba(236,72,153,0.25)] scale-[1.02]' : 'text-white/40 hover:text-white hover:bg-white/5'}`}
+  >
+    <div className="flex items-center space-x-4">
+      <Icon className={`w-5.5 h-5.5 ${active ? 'text-white' : 'text-white/20 group-hover:text-white/60'}`} />
+      <span className="text-[11px] font-black uppercase tracking-[0.2em] italic">{label}</span>
+    </div>
+    <ChevronRight className={`w-4 h-4 transition-all duration-300 ${active ? 'text-white/50 translate-x-1 opacity-100' : 'opacity-0 group-hover:opacity-20 group-hover:translate-x-1'}`} />
+  </button>
+);
+
+const DashboardStatSmall = ({ label, value, change, isPositive, icon: Icon, color }: any) => (
+  <div className="bg-white/5 backdrop-blur-xl p-6 rounded-[2.5rem] border border-white/10 shadow-2xl group hover:border-pink-500/30 transition-all">
+    <div className="flex justify-between items-start mb-6">
+      <div className={`p-3 bg-white/5 rounded-2xl ${color} shadow-inner`}>
+        <Icon className="w-5 h-5" />
+      </div>
+      <div className={`px-2 py-0.5 rounded-lg text-[8px] font-black uppercase tracking-widest ${isPositive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+        {change}
+      </div>
+    </div>
+    <p className="text-[9px] font-black text-white/30 uppercase tracking-[0.3em] mb-1">{label}</p>
+    <h4 className="text-2xl font-black text-white tracking-tighter">{value}</h4>
+  </div>
+);
 
 export default BusinessTab;

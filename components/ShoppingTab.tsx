@@ -1,9 +1,11 @@
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
-  Camera, Search, Filter, ShoppingCart, Star, ChevronRight, X, 
-  RotateCw, Heart, Plus, Store, Package, TrendingUp, BarChart3, 
-  Eye, ShoppingBag, ArrowLeft, MoreHorizontal, Settings
+  Camera, Search, ShoppingCart, Star, Heart, 
+  X, Sparkles, Store, ArrowLeft, TrendingUp, Eye, 
+  Plus, Package, BarChart3, MoreHorizontal, Settings,
+  ChevronRight, Info, LayoutGrid, List, User as UserIcon,
+  CreditCard, CheckCircle2, ChevronDown
 } from 'lucide-react';
 import { Product } from '../types';
 
@@ -54,61 +56,172 @@ const INITIAL_MOCK_PRODUCTS: Product[] = [
   }
 ];
 
+const ProductStudio: React.FC<{ onBack: () => void }> = ({ onBack }) => {
+  const [activeCategory, setActiveCategory] = useState('Top Body');
+  const categories = ['Full body', 'Top Body', 'Head', 'Pants', 'Foot'];
+
+  return (
+    <div className="fixed inset-0 z-[100] bg-[#050505] animate-in fade-in duration-700 overflow-hidden">
+      {/* Immersive Interior Background */}
+      <div className="absolute inset-0">
+        <img 
+          src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=2000" 
+          className="w-full h-full object-cover brightness-[0.3] saturate-[0.7]" 
+          alt="Modern Studio Interior" 
+        />
+        <div className="absolute inset-0 bg-gradient-to-tr from-black/90 via-transparent to-black/40" />
+      </div>
+
+      <div className="relative h-full flex flex-col items-center">
+        
+        {/* Top Header - Category Selectors */}
+        <div className="w-full max-w-lg flex justify-center pt-8 pb-4 z-20">
+          <div className="bg-white/5 backdrop-blur-[30px] border border-white/10 rounded-full p-1 flex items-center space-x-1 shadow-2xl">
+            {categories.map(cat => (
+              <button 
+                key={cat}
+                onClick={() => setActiveCategory(cat)}
+                className={`px-3 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest transition-all ${activeCategory === cat ? 'bg-white/10 text-white' : 'text-white/20 hover:text-white/50'}`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Central Workspace */}
+        <div className="relative w-full max-w-2xl flex-grow flex items-center justify-center animate-in zoom-in-95 duration-1000">
+          
+          {/* COMPACT TOP CONTROLS */}
+          <div className="absolute top-4 left-6 right-6 flex justify-between items-center z-30">
+            <div className="flex items-center space-x-2">
+              <button 
+                onClick={onBack}
+                className="bg-black/60 backdrop-blur-2xl border border-white/10 text-white px-3 py-1.5 rounded-full font-black text-[8px] uppercase tracking-widest shadow-xl active:scale-95 transition-all flex items-center space-x-1.5 hover:bg-white/5"
+              >
+                <X className="w-3 h-3" />
+                <span>Exit Studio</span>
+              </button>
+
+              <div className="bg-black/60 backdrop-blur-2xl border border-white/10 rounded-full pl-2.5 pr-3.5 py-1.5 flex items-center space-x-2 text-white shadow-xl">
+                <div className="w-1.5 h-1.5 bg-pink-500 rounded-full animate-pulse shadow-[0_0_8px_#ec4899]" />
+                <span className="text-[8px] font-black uppercase tracking-widest">VirtualFit</span>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-1.5">
+               <button className="p-2.5 bg-black/60 backdrop-blur-2xl border border-white/10 rounded-full text-white/40 hover:text-white transition-all active:scale-90 shadow-xl">
+                  <LayoutGrid className="w-3.5 h-3.5" />
+               </button>
+               <button onClick={onBack} className="p-2.5 bg-black/60 backdrop-blur-2xl border border-white/10 rounded-full text-white/40 hover:text-white transition-all shadow-xl active:rotate-90">
+                  <Settings className="w-3.5 h-3.5" />
+               </button>
+            </div>
+          </div>
+
+          {/* SIDE TOOLS STRIP - Decreased size */}
+          <div className="absolute left-6 top-1/2 -translate-y-1/2 z-30">
+            <div className="bg-black/40 backdrop-blur-3xl border border-white/10 rounded-full p-1.5 flex flex-col items-center space-y-3 shadow-2xl">
+              <button className="p-2.5 bg-white/10 rounded-full text-white shadow-lg hover:bg-white/20 transition-all"><Plus className="w-4 h-4" /></button>
+              <button className="p-2.5 text-white/20 hover:text-white transition-all"><ShoppingCart className="w-4 h-4" /></button>
+              <button className="p-2.5 text-white/20 hover:text-white transition-all"><List className="w-4 h-4" /></button>
+              <button className="p-2.5 text-white/20 hover:text-white transition-all"><UserIcon className="w-4 h-4" /></button>
+            </div>
+          </div>
+
+          {/* MAIN STAGE: Model */}
+          <div className="relative w-full h-full flex flex-col items-center justify-center pt-12 pb-24 px-8">
+             <div className="relative group">
+               <img 
+                 src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=1200" 
+                 className="h-[45vh] sm:h-[60vh] object-contain drop-shadow-[0_40px_80px_rgba(0,0,0,0.6)] contrast-[1.05] relative z-10 rounded-[2rem]"
+                 alt="Model"
+               />
+               
+               {/* Selection HUD on the model */}
+               <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-4 h-4 border-2 border-white/50 rounded-full z-20 animate-ping" />
+             </div>
+
+             {/* PRODUCT CARD - More compact, white/glass style as per screenshot */}
+             <div className="absolute bottom-6 w-full max-w-[280px] bg-white/95 backdrop-blur-[60px] border border-white/20 rounded-[2rem] p-5 shadow-[0_30px_60px_rgba(0,0,0,0.6)] z-20 animate-in slide-in-from-bottom-8 duration-700 delay-500">
+               <div className="flex items-start justify-between">
+                 <div className="flex flex-col">
+                   <h4 className="text-[14px] font-black text-zinc-900 tracking-tighter uppercase italic leading-none">Basic t-shirt</h4>
+                   <p className="text-[18px] font-black text-zinc-900 tracking-tighter mt-1">$105</p>
+                   
+                   <div className="flex items-center space-x-4 mt-3">
+                     <div className="flex flex-col">
+                       <span className="text-[7px] font-black text-zinc-400 uppercase tracking-widest mb-0.5">Size</span>
+                       <span className="text-[9px] font-black text-zinc-800 uppercase">Medium</span>
+                     </div>
+                     <div className="h-6 w-px bg-zinc-200" />
+                     <div className="flex flex-col">
+                       <span className="text-[7px] font-black text-zinc-400 uppercase tracking-widest mb-0.5">Color Way</span>
+                       <div className="flex items-center space-x-1">
+                         <div className="w-2 h-2 rounded-full bg-zinc-200 shadow-sm border border-zinc-300" />
+                         <span className="text-[9px] font-black text-zinc-800 uppercase">Cloud</span>
+                       </div>
+                     </div>
+                   </div>
+                 </div>
+                 <button className="bg-zinc-900 px-4 py-2 rounded-xl text-[8px] font-black uppercase tracking-widest text-white hover:bg-zinc-800 transition-all active:scale-95 shadow-lg shrink-0">
+                    Edit Item
+                 </button>
+               </div>
+             </div>
+          </div>
+        </div>
+
+        {/* Decorative Status Bar */}
+        <div className="w-full max-w-sm mb-12 flex justify-center items-center z-20">
+           <div className="flex items-center space-x-6">
+              <div className="flex items-center space-x-2">
+                 <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                 <p className="text-[7px] font-black text-white/30 uppercase tracking-[0.3em]">Hardware: V.Pro</p>
+              </div>
+              <div className="h-0.5 w-12 bg-white/5 rounded-full overflow-hidden">
+                <div className="h-full w-2/3 bg-pink-500/30 rounded-full" />
+              </div>
+              <p className="text-[7px] font-black text-white/30 uppercase tracking-[0.3em]">Latency: 12ms</p>
+           </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Main ShoppingTab Component
 const ShoppingTab: React.FC = () => {
-  const [view, setView] = useState<'browse' | 'ar' | 'my-store'>('browse');
+  const [view, setView] = useState<'browse' | 'ar' | 'my-store' | 'studio'>('browse');
   const [activeCategory, setActiveCategory] = useState('All');
-  const [allProducts] = useState<Product[]>(INITIAL_MOCK_PRODUCTS);
-  
-  const videoRef = useRef<HTMLVideoElement>(null);
 
-  const startCamera = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-      if (videoRef.current) videoRef.current.srcObject = stream;
-    } catch (err) { console.error("Error accessing camera:", err); }
-  };
-
-  const stopCamera = () => {
-    if (videoRef.current?.srcObject) {
-      const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
-      tracks.forEach(track => track.stop());
-    }
-  };
-
-  useEffect(() => {
-    if (view === 'ar') startCamera();
-    else stopCamera();
-    return () => stopCamera();
-  }, [view]);
+  if (view === 'studio') {
+    return <ProductStudio onBack={() => setView('my-store')} />;
+  }
 
   if (view === 'ar') {
     return (
-      <div className="fixed inset-0 z-[100] bg-black flex flex-col animate-in fade-in duration-300">
-        <header className="absolute top-0 left-0 right-0 p-6 flex justify-between items-center z-10 bg-gradient-to-b from-black/50 to-transparent">
-          <button onClick={() => setView('browse')} className="p-3 bg-white/10 backdrop-blur-md rounded-full text-white">
-            <X className="w-6 h-6" />
-          </button>
-          <div className="flex space-x-2">
-            <div className="px-4 py-2 bg-white/10 backdrop-blur-md rounded-full text-white text-xs font-bold uppercase tracking-widest">VirtualFit™ Active</div>
-          </div>
-          <div className="p-3 bg-white/10 backdrop-blur-md rounded-full text-white">
-            <RotateCw className="w-6 h-6" />
-          </div>
-        </header>
-
-        <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover scale-x-[-1]" />
-        
-        <div className="absolute bottom-10 left-0 right-0 px-6 flex flex-col items-center space-y-6">
-          <div className="w-full max-sm flex space-x-4 overflow-x-auto scrollbar-hide py-2">
-            {allProducts.map(p => (
-              <div key={p.id} className="min-w-[80px] h-20 rounded-2xl overflow-hidden border-2 border-white/20 shadow-xl flex-shrink-0 cursor-pointer hover:border-white transition-all">
-                <img src={p.image} className="w-full h-full object-cover" alt="" />
-              </div>
-            ))}
-          </div>
-          <button className="bg-white text-black px-12 py-4 rounded-full font-black tracking-widest shadow-2xl active:scale-95 transition-all">
-            TAKE SNAPSHOT
-          </button>
+      <div className="fixed inset-0 z-[100] bg-black animate-in fade-in duration-700 overflow-hidden flex items-center justify-center">
+        {/* Simple AR Try-on (Reusing background but for quick browse try-on) */}
+        <div className="absolute inset-0">
+          <img 
+            src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=2000&auto=format&fit=crop" 
+            className="w-full h-full object-cover brightness-[0.45] saturate-[0.7]" 
+            alt="Studio Background" 
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-transparent to-black/60" />
+        </div>
+        <div className="relative w-full h-full flex flex-col items-center p-4 sm:p-8">
+           <div className="absolute top-10 right-10 flex items-center space-x-4 z-50">
+             <button onClick={() => setView('browse')} className="bg-white/10 backdrop-blur-[40px] border border-white/10 rounded-full p-3 text-white active:scale-95 transition-all shadow-2xl hover:bg-white/20">
+                <X className="w-6 h-6" />
+             </button>
+           </div>
+           <img 
+              src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1200&auto=format&fit=crop" 
+              className="h-[80%] sm:h-[85%] object-contain drop-shadow-[0_40px_80px_rgba(0,0,0,0.6)] contrast-[1.05]"
+              alt="Model"
+            />
         </div>
       </div>
     );
@@ -116,83 +229,115 @@ const ShoppingTab: React.FC = () => {
 
   if (view === 'my-store') {
     return (
-      <div className="fixed top-14 inset-x-0 bottom-0 z-[40] bg-[#1c1c1c] flex flex-col animate-in slide-in-from-right duration-500 overflow-y-auto pb-32">
-        <header className="sticky top-0 z-50 px-6 py-1 flex justify-between items-center bg-[#1c1c1c]/80 backdrop-blur-xl border-b border-white/10">
-          <div className="flex items-center space-x-4">
-            <button onClick={() => setView('browse')} className="p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors">
-              <ArrowLeft className="w-5 h-5 text-white" />
-            </button>
-            <div className="flex flex-col">
-              <h2 className="text-lg font-black text-white tracking-tight leading-none">My Market</h2>
-              <p className="text-[9px] text-white/40 font-black uppercase tracking-widest mt-0.5">Merchant Center</p>
-            </div>
-          </div>
-          <button className="p-2 bg-white/10 rounded-full text-white/40 hover:text-white transition-colors">
-            <Settings className="w-5 h-5" />
-          </button>
-        </header>
+      <div className="relative min-h-screen flex flex-col animate-in slide-in-from-right duration-500 pb-32 overflow-hidden">
+        {/* Background Atmosphere - Match the reference image style */}
+        <div className="absolute inset-0 pointer-events-none">
+          <img 
+            src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=2000&auto=format&fit=crop" 
+            className="w-full h-full object-cover brightness-[0.25] grayscale-[0.2]" 
+            alt="Dashboard Atmosphere" 
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/20 to-black/80" />
+        </div>
 
-        <div className="p-6 space-y-8 relative z-10">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white/5 backdrop-blur-md p-6 rounded-[2.5rem] border border-white/10">
-              <div className="flex justify-between items-center mb-4">
-                <div className="p-2 bg-green-500/20 rounded-xl text-green-400">
-                  <TrendingUp className="w-4 h-4" />
-                </div>
-                <span className="text-[10px] font-black text-green-400 tracking-widest">+12%</span>
-              </div>
-              <p className="text-2xl font-black text-white">$2,450</p>
-              <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mt-1">Earnings</p>
-            </div>
-            <div className="bg-white/5 backdrop-blur-md p-6 rounded-[2.5rem] border border-white/10">
-              <div className="flex justify-between items-center mb-4">
-                <div className="p-2 bg-blue-500/20 rounded-xl text-blue-400">
-                  <Eye className="w-4 h-4" />
-                </div>
-                <span className="text-[10px] font-black text-blue-400 tracking-widest">+4.2k</span>
-              </div>
-              <p className="text-2xl font-black text-white">12.8k</p>
-              <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mt-1">Visitors</p>
-            </div>
+        {/* Main Dashboard Layout */}
+        <div className="relative z-10 px-6 pt-10 pb-20 space-y-10 max-w-lg mx-auto w-full">
+          
+          {/* Header Action Row */}
+          <div className="flex justify-between items-center mb-4">
+             <button onClick={() => setView('browse')} className="p-4 bg-white/10 backdrop-blur-3xl border border-white/10 rounded-2xl text-white shadow-2xl active:scale-90 transition-all">
+                <ArrowLeft className="w-6 h-6" />
+             </button>
+             <div className="text-center">
+                <h2 className="text-3xl font-black text-white tracking-tighter uppercase italic leading-none">My Market</h2>
+                <p className="text-[10px] text-white/30 font-black uppercase tracking-[0.4em] mt-2">Visionary Dashboard</p>
+             </div>
+             <button className="p-4 bg-white/10 backdrop-blur-3xl border border-white/10 rounded-2xl text-white/40 shadow-2xl active:rotate-90 transition-all">
+                <Settings className="w-6 h-6" />
+             </button>
           </div>
 
+          {/* Stats Section */}
+          <div className="grid grid-cols-2 gap-6">
+            <div className="bg-white/5 backdrop-blur-[60px] p-8 rounded-[3.5rem] border border-white/20 shadow-[0_40px_80px_rgba(0,0,0,0.5)]">
+              <div className="flex justify-between items-center mb-6">
+                <div className="p-3 bg-green-500/10 rounded-2xl text-green-400">
+                  <TrendingUp className="w-5 h-5" />
+                </div>
+                <span className="text-[11px] font-black text-green-400 tracking-widest">+12%</span>
+              </div>
+              <p className="text-4xl font-black text-white tracking-tighter">$2,450</p>
+              <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.3em] mt-2">Total Earnings</p>
+            </div>
+            <div className="bg-white/5 backdrop-blur-[60px] p-8 rounded-[3.5rem] border border-white/20 shadow-[0_40px_80px_rgba(0,0,0,0.5)]">
+              <div className="flex justify-between items-center mb-6">
+                <div className="p-3 bg-blue-500/10 rounded-2xl text-blue-400">
+                  <Eye className="w-5 h-5" />
+                </div>
+                <span className="text-[11px] font-black text-blue-400 tracking-widest">+4.2k</span>
+              </div>
+              <p className="text-4xl font-black text-white tracking-tighter">12.8k</p>
+              <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.3em] mt-2">Store Visits</p>
+            </div>
+          </div>
+
+          {/* Quick Actions */}
           <section>
-            <h3 className="text-xs font-black text-white/40 uppercase tracking-[0.2em] mb-4 ml-2">Quick Actions</h3>
-            <div className="grid grid-cols-3 gap-3">
-              {[
-                { label: 'Add Item', icon: Plus, color: 'bg-pink-600' },
-                { label: 'Orders', icon: Package, color: 'bg-indigo-600' },
-                { label: 'Analytics', icon: BarChart3, color: 'bg-orange-600' },
-              ].map((action) => (
-                <button key={action.label} className="bg-white/5 p-4 rounded-[2rem] border border-white/10 flex flex-col items-center justify-center space-y-2 active:scale-95 transition-all">
-                  <div className={`p-3 ${action.color} text-white rounded-2xl shadow-lg`}>
-                    <action.icon className="w-5 h-5" />
+            <h3 className="text-[10px] font-black text-white/30 uppercase tracking-[0.5em] mb-6 ml-4">Quick Actions</h3>
+            <div className="bg-black/40 backdrop-blur-[60px] border border-white/10 rounded-[4rem] p-6 shadow-2xl">
+              <div className="grid grid-cols-3 gap-6">
+                <button 
+                  onClick={() => setView('studio')}
+                  className="flex flex-col items-center justify-center space-y-4 group active:scale-95 transition-all"
+                >
+                  <div className="p-5 bg-pink-600 text-white rounded-[1.8rem] shadow-pink-600/30 group-hover:scale-110 transition-transform shadow-xl">
+                    <Plus className="w-7 h-7" />
                   </div>
-                  <span className="text-[10px] font-black uppercase text-white/70">{action.label}</span>
+                  <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/60">Add Item</span>
                 </button>
-              ))}
+                <button className="flex flex-col items-center justify-center space-y-4 group active:scale-95 transition-all">
+                  <div className="p-5 bg-indigo-600 text-white rounded-[1.8rem] shadow-indigo-600/30 group-hover:scale-110 transition-transform shadow-xl">
+                    <Package className="w-7 h-7" />
+                  </div>
+                  <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/60">Orders</span>
+                </button>
+                <button className="flex flex-col items-center justify-center space-y-4 group active:scale-95 transition-all">
+                  <div className="p-5 bg-orange-600 text-white rounded-[1.8rem] shadow-orange-600/30 group-hover:scale-110 transition-transform shadow-xl">
+                    <BarChart3 className="w-7 h-7" />
+                  </div>
+                  <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/60">Analytics</span>
+                </button>
+              </div>
             </div>
           </section>
 
+          {/* Live Listings */}
           <section>
-            <div className="flex justify-between items-center mb-4 ml-2">
-              <h3 className="text-xs font-black text-white/40 uppercase tracking-[0.2em]">Live Listings</h3>
-              <button className="text-[10px] font-black text-pink-500 uppercase tracking-widest">Manage All</button>
+            <div className="flex justify-between items-center mb-6 ml-4">
+              <h3 className="text-[10px] font-black text-white/30 uppercase tracking-[0.5em]">Live Listings</h3>
+              <button className="text-[10px] font-black text-white uppercase tracking-widest bg-white/10 px-4 py-2 rounded-full border border-white/10 hover:bg-white/20 transition-all">See All</button>
             </div>
+            
             <div className="space-y-4">
-              {INITIAL_MOCK_PRODUCTS.slice(0, 3).map((product) => (
-                <div key={product.id} className="bg-white/5 p-4 rounded-[2.5rem] border border-white/10 flex items-center justify-between group">
-                  <div className="flex items-center space-x-4">
-                    <img src={product.image} className="w-16 h-16 rounded-3xl object-cover" alt="" />
+              {INITIAL_MOCK_PRODUCTS.slice(0, 2).map((product) => (
+                <div key={product.id} className="bg-white/5 backdrop-blur-[60px] p-6 rounded-[3rem] border border-white/20 flex items-center justify-between group active:scale-[0.98] transition-all shadow-xl">
+                  <div className="flex items-center space-x-6">
+                    <div className="relative">
+                      <img src={product.image} className="w-20 h-20 rounded-[1.5rem] object-cover border border-white/20 shadow-2xl" alt="" />
+                      <div className="absolute -top-2 -right-2 bg-green-500 w-4 h-4 rounded-full border-2 border-zinc-900 animate-pulse" />
+                    </div>
                     <div>
-                      <h4 className="text-sm font-black text-white truncate max-w-[120px]">{product.name}</h4>
-                      <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mt-0.5">${product.price}</p>
+                      <h4 className="text-[16px] font-black text-white tracking-tight">{product.name}</h4>
+                      <p className="text-[12px] font-black text-white/40 uppercase tracking-widest mt-1">${product.price}</p>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <span className="px-3 py-1 bg-green-500/20 text-green-400 text-[8px] font-black uppercase rounded-lg">Active</span>
-                    <button className="p-2 text-white/20 hover:text-white">
-                      <MoreHorizontal className="w-5 h-5" />
+                  <div className="flex items-center space-x-4">
+                    <div className="hidden sm:flex flex-col items-end mr-2">
+                       <span className="text-[10px] font-black text-green-400 uppercase tracking-widest">Active</span>
+                       <span className="text-[8px] font-bold text-white/20 uppercase">Listed 2d ago</span>
+                    </div>
+                    <button className="p-3 bg-white/5 rounded-2xl text-white/30 hover:text-white transition-colors border border-white/5">
+                      <MoreHorizontal className="w-6 h-6" />
                     </button>
                   </div>
                 </div>
@@ -200,14 +345,19 @@ const ShoppingTab: React.FC = () => {
             </div>
           </section>
 
-          <div className="bg-gradient-to-br from-indigo-600/80 to-purple-700/80 backdrop-blur-xl rounded-[3rem] p-8 text-white relative overflow-hidden shadow-2xl">
-            <div className="relative z-10">
-              <h3 className="text-2xl font-black mb-2 tracking-tight">Boost Your Reach</h3>
-              <p className="text-white/70 text-sm mb-6 font-medium">Get 5x more visibility on your new collection with SmartMarket™ Ads.</p>
-              <button className="w-full bg-white text-indigo-700 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-all">
-                START PROMOTION
-              </button>
-            </div>
+          {/* Visionary Promotion HUD */}
+          <div className="bg-black/50 backdrop-blur-[80px] border border-white/20 rounded-[3.5rem] p-10 shadow-[0_50px_120px_rgba(0,0,0,0.9)] animate-in slide-in-from-bottom duration-1000 relative overflow-hidden">
+             <div className="relative z-10 flex flex-col items-center text-center">
+                <div className="p-4 bg-white/10 rounded-[2rem] text-white mb-6">
+                   <Sparkles className="w-8 h-8 text-pink-500 animate-pulse" />
+                </div>
+                <h3 className="text-2xl font-black text-white tracking-tight uppercase italic mb-4">Boost Marketplace Reach</h3>
+                <p className="text-white/50 text-xs font-medium leading-relaxed mb-8 max-w-[240px]">Use our advanced AR rendering tools to increase engagement by up to 300%.</p>
+                <button className="w-full bg-white text-black py-5 rounded-[2rem] font-black text-[11px] uppercase tracking-[0.4em] shadow-2xl active:scale-95 transition-all">
+                  Upgrade Store
+                </button>
+             </div>
+             <div className="absolute -top-10 -right-10 w-40 h-40 bg-pink-500/10 rounded-full blur-[60px]" />
           </div>
         </div>
       </div>
@@ -216,92 +366,86 @@ const ShoppingTab: React.FC = () => {
 
   return (
     <div className="min-h-screen pb-24 animate-in fade-in duration-500">
-      {/* Header Search matching Image Style */}
-      <header className="px-4 pt-6 pb-6 flex items-center space-x-3 sticky top-0 z-40 bg-[#121212]/50 backdrop-blur-md">
-        <div className="flex-grow relative">
-          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40">
+      {/* Search Header */}
+      <div className="p-4 bg-[#0c0c0c] sticky top-0 z-20 flex items-center space-x-3">
+        <div className="relative group flex-grow">
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 group-focus-within:text-pink-500 transition-colors">
             <Search className="w-5 h-5" />
           </div>
           <input 
             type="text" 
-            placeholder="Search marketplace..." 
-            className="w-full bg-white/5 border border-white/10 rounded-2xl py-3.5 pl-12 pr-4 text-sm font-medium text-white shadow-sm focus:ring-2 focus:ring-pink-500/20 transition-all outline-none"
+            placeholder="Search products..." 
+            className="w-full bg-white/5 border border-white/5 rounded-2xl py-3.5 pl-12 pr-4 text-sm font-medium text-white shadow-sm focus:ring-1 focus:ring-pink-500/20 transition-all outline-none"
           />
         </div>
         <button 
           onClick={() => setView('my-store')}
-          className="w-12 h-12 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-white/70 shadow-sm active:scale-95 transition-all hover:bg-white/10"
+          className="w-12 h-12 bg-white/5 border border-white/5 rounded-2xl flex items-center justify-center text-white/50 active:scale-95 transition-all hover:bg-white/10 hover:text-white"
+          aria-label="My Market"
         >
           <Store className="w-6 h-6" />
         </button>
-        <button 
-          onClick={() => setView('ar')}
-          className="w-12 h-12 bg-pink-600/20 text-pink-500 border border-pink-500/20 rounded-2xl flex items-center justify-center shadow-sm active:scale-95 transition-all hover:bg-pink-600/30"
-        >
-          <Camera className="w-6 h-6" />
-        </button>
-      </header>
+      </div>
 
-      {/* Hero Banner */}
-      <section className="px-4 mb-8">
-        <div className="relative h-72 rounded-[2.5rem] overflow-hidden group shadow-2xl border border-white/5">
+      {/* Banner / AR Try-on CTA */}
+      <div className="px-4 mb-8">
+        <div className="relative h-48 rounded-[2.5rem] overflow-hidden group cursor-pointer border border-white/10" onClick={() => setView('ar')}>
           <img 
-            src="https://images.unsplash.com/photo-1497366216548-375260702097c?auto=format&fit=crop&q=80&w=1200" 
-            className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-105" 
-            alt="Summer Collection" 
+            src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2000&auto=format&fit=crop" 
+            className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-700 brightness-[0.7]" 
+            alt="AR Try-on" 
           />
-          <div className="absolute inset-0 bg-black/50 flex flex-col justify-center p-8">
-            <h2 className="text-white text-4xl font-black mb-2 tracking-tight">Summer Collection</h2>
-            <p className="text-white/70 text-sm font-medium mb-8">Up to 40% OFF on all activewear</p>
-            <button className="w-fit bg-white text-black px-8 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-all">
-              SHOP NOW
-            </button>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6">
+            <div className="flex items-center space-x-2 bg-pink-500 w-fit px-3 py-1 rounded-full text-[10px] font-black text-white uppercase tracking-widest mb-2">
+              <Sparkles className="w-3 h-3" />
+              <span>Visionary Try-on</span>
+            </div>
+            <h3 className="text-xl font-black text-white mb-1">VirtualFit Studio</h3>
+            <p className="text-xs text-white/60 font-medium">Experience commerce in high fidelity.</p>
           </div>
         </div>
-      </section>
+      </div>
 
       {/* Categories */}
-      <nav className="px-4 mb-8 overflow-x-auto flex items-center space-x-8 scrollbar-hide">
-        {['All', 'Fashion', 'Beauty', 'Tech', 'Home', 'Art'].map(cat => (
+      <div className="flex space-x-3 overflow-x-auto scrollbar-hide px-4 mb-8">
+        {['All', 'Fashion', 'Beauty', 'Art'].map(cat => (
           <button 
-            key={cat} 
+            key={cat}
             onClick={() => setActiveCategory(cat)}
-            className="flex-shrink-0 relative group py-2"
+            className={`flex-shrink-0 px-6 py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all ${activeCategory === cat ? 'bg-white text-black shadow-lg' : 'bg-white/5 text-white/40 border border-white/10'}`}
           >
-            <span className={`text-base font-black transition-colors ${activeCategory === cat ? 'text-white' : 'text-white/30 group-hover:text-white/50'}`}>
-              {cat}
-            </span>
-            {activeCategory === cat && (
-              <div className="absolute -bottom-1 left-0 right-0 h-[3px] bg-pink-500 rounded-full animate-in slide-in-from-left duration-300" />
-            )}
+            {cat}
           </button>
         ))}
-      </nav>
+      </div>
 
       {/* Product Grid */}
-      <div className="px-4 grid grid-cols-2 gap-4">
-        {allProducts.map(product => (
-          <div key={product.id} className="bg-white/5 backdrop-blur-md rounded-[2.5rem] overflow-hidden border border-white/10 group active:scale-[0.98] transition-all cursor-pointer">
-            <div className="relative aspect-[4/5] overflow-hidden">
-              <img 
-                src={product.image} 
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-                alt={product.name} 
-              />
-              <button className="absolute top-4 right-4 w-9 h-9 bg-black/20 backdrop-blur-md rounded-full flex items-center justify-center text-white border border-white/10 hover:bg-pink-600 transition-all">
+      <div className="grid grid-cols-2 gap-4 px-4">
+        {INITIAL_MOCK_PRODUCTS.filter(p => activeCategory === 'All' || p.category === activeCategory).map(product => (
+          <div key={product.id} className="flex flex-col group animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="relative aspect-[3/4] rounded-[2rem] overflow-hidden mb-3 border border-white/5 shadow-xl bg-zinc-900">
+              <img src={product.image} className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-700" alt={product.name} />
+              <button className="absolute top-4 right-4 p-2 bg-black/40 backdrop-blur-md rounded-xl text-white opacity-0 group-hover:opacity-100 transition-opacity">
                 <Heart className="w-4 h-4" />
               </button>
+              <div className="absolute bottom-4 left-4 right-4">
+                <button 
+                  onClick={() => setView('ar')}
+                  className="w-full bg-white/90 backdrop-blur-md text-black py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl transform translate-y-12 group-hover:translate-y-0 transition-transform duration-500 flex items-center justify-center space-x-2"
+                >
+                  <Camera className="w-3.5 h-3.5" />
+                  <span>Try-on</span>
+                </button>
+              </div>
             </div>
-            <div className="p-5">
-              <h4 className="text-sm font-black text-white truncate mb-0.5">{product.name}</h4>
-              <p className="text-[10px] font-black text-white/30 uppercase tracking-widest mb-4">{product.seller}</p>
-              
-              <div className="flex items-center justify-between">
-                <span className="text-lg font-black text-white">${product.price}</span>
-                <div className="flex items-center space-x-1.5 bg-white/5 px-2 py-1 rounded-lg">
-                  <Star className="w-3 h-3 text-yellow-400 fill-current" />
-                  <span className="text-[10px] font-black text-white/70">{product.rating}</span>
-                </div>
+            <div className="px-1">
+              <div className="flex justify-between items-start mb-1">
+                <h4 className="text-[13px] font-bold text-white/90 truncate pr-2">{product.name}</h4>
+                <span className="text-[13px] font-black text-white">${product.price}</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+                <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">{product.rating} • {product.reviews} reviews</span>
               </div>
             </div>
           </div>
