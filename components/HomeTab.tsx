@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Heart, MessageCircle, Send, Bookmark, MoreHorizontal, Plus, Play, Pause, RotateCcw, RotateCw, Subtitles, Volume2, VolumeX, Maximize, X, ChevronLeft, ChevronRight, Smile, Eye, MessageSquare, ChevronUp } from 'lucide-react';
+import { Heart, MessageCircle, Send, Bookmark, MoreHorizontal, Plus, Play, Pause, RotateCcw, RotateCw, Subtitles, Volume2, VolumeX, Maximize, X, ChevronLeft, ChevronRight, Smile, Eye, MessageSquare, ChevronUp, Layers, Music, Gift } from 'lucide-react';
+import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import { Post, Story, StoryViewerInfo } from '../types';
 
 const MOCK_VIEWERS: StoryViewerInfo[] = [
@@ -164,7 +165,7 @@ const ActivityPanel: React.FC<{ viewers: StoryViewerInfo[], onClose: () => void 
                   )}
                 </div>
                 <div className="flex flex-col">
-                  <p className="text-[13px] font-black tracking-tight leading-none text-white">{v.name}</p>
+                  <p className="text-[13px] font-black tracking-tight text-white leading-none">{v.name}</p>
                   {v.comment ? (
                     <p className="text-[11px] text-white/70 font-medium italic mt-1 line-clamp-1 leading-tight">"{v.comment}"</p>
                   ) : (
@@ -240,13 +241,21 @@ const StoryViewer: React.FC<{ stories: Story[], initialIndex: number, onClose: (
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
   const [progress, setProgress] = useState(0);
   const [showActivity, setShowActivity] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   
+  const dragY = useMotionValue(0);
+  const scale = useTransform(dragY, [0, 300], [1, 0.8]);
+  const bgOpacity = useTransform(dragY, [0, 300], [0.8, 0]);
+  const blurValue = useTransform(dragY, [0, 300], [20, 0]);
+  const borderRadius = useTransform(dragY, [0, 300], [0, 40]);
+
   const currentStory = stories[currentStoryIndex];
   const storyMedia = currentStory.media || [];
   const isMyStory = currentStory.user === 'Your Story';
 
   useEffect(() => {
-    if (showActivity) return;
+    if (showActivity || isPaused) return;
     setProgress(0);
     const interval = setInterval(() => {
       setProgress(prev => {
@@ -258,7 +267,7 @@ const StoryViewer: React.FC<{ stories: Story[], initialIndex: number, onClose: (
       });
     }, 50);
     return () => clearInterval(interval);
-  }, [currentStoryIndex, currentMediaIndex, showActivity]);
+  }, [currentStoryIndex, currentMediaIndex, showActivity, isPaused]);
 
   const handleNext = () => {
     if (currentMediaIndex < storyMedia.length - 1) {
@@ -282,73 +291,129 @@ const StoryViewer: React.FC<{ stories: Story[], initialIndex: number, onClose: (
   };
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black animate-in fade-in duration-300">
-      <div className="absolute top-4 left-4 right-4 z-50 flex space-x-1">
-        {currentStory.media?.map((_, idx) => (
-          <div key={idx} className="h-1 flex-grow bg-white/20 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-white transition-all duration-75" 
-              style={{ width: idx < currentMediaIndex ? '100%' : idx === currentMediaIndex ? `${progress}%` : '0%' }}
-            />
-          </div>
-        ))}
-      </div>
-
-      <div className="absolute top-8 left-4 right-4 z-50 flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <img src={currentStory.avatar} className="w-8 h-8 rounded-full border border-white/20" alt="" />
-          <span className="text-white text-xs font-black tracking-tight">{currentStory.user}</span>
-          <span className="text-white/40 text-[10px] font-bold">4h</span>
-        </div>
-        <button onClick={onClose} className="p-2 text-white">
-          <X className="w-6 h-6" />
-        </button>
-      </div>
-
-      <div className="w-full h-full flex items-center justify-center relative">
-        <img 
-          src={storyMedia[currentMediaIndex]} 
-          className="w-full h-full object-cover" 
-          alt="Story content" 
-        />
-        <div className="absolute inset-y-0 left-0 w-1/3 z-40" onClick={handlePrev} />
-        <div className="absolute inset-y-0 right-0 w-1/3 z-40" onClick={handleNext} />
-      </div>
-
-      {!showActivity && (
-        <div className="absolute bottom-6 left-4 right-4 z-50 flex items-center space-x-4">
-          {isMyStory ? (
-            <div 
-              className="flex-grow flex items-center justify-center space-x-3 bg-black/30 backdrop-blur-xl border border-white/10 rounded-[1.2rem] py-2 px-5 cursor-pointer active:scale-95 transition-all shadow-2xl"
-              onClick={() => setShowActivity(true)}
-            >
-              <div className="flex -space-x-1.5">
-                {currentStory.viewers?.slice(0, 3).map((v, i) => (
-                  <img key={i} src={v.avatar} className="w-3.5 h-3.5 rounded-full border border-black" alt="" />
-                ))}
-              </div>
-              <div className="flex items-center space-x-2">
-                <span className="text-[9px] font-black uppercase tracking-[0.25em] text-white">
-                  {currentStory.viewers?.length} Viewers
-                </span>
-                <ChevronUp className="w-3 h-3 text-white/60 animate-bounce" />
-              </div>
+    <motion.div 
+      className="fixed inset-0 z-[100] touch-none flex items-center justify-center overflow-hidden"
+      style={{ 
+        backgroundColor: useTransform(bgOpacity, (v) => `rgba(0, 0, 0, ${v})`),
+        backdropFilter: useTransform(blurValue, (v) => `blur(${v}px)`)
+      }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0, y: 800, transition: { duration: 0.1, ease: "circIn" } }}
+    >
+      <motion.div 
+        drag="y"
+        dragConstraints={{ top: 0, bottom: 1000 }}
+        dragElastic={0.2}
+        onDragStart={() => setIsDragging(true)}
+        onDrag={(_, info) => {
+          if (info.offset.y > 5) {
+            onClose();
+          }
+        }}
+        onDragEnd={() => {
+          setIsDragging(false);
+        }}
+        style={{ 
+          y: dragY,
+          scale,
+          borderRadius,
+        }}
+        className="w-full h-full relative overflow-hidden"
+      >
+        <div className="absolute top-4 left-4 right-4 z-50 flex space-x-1">
+          {currentStory.media?.map((_, idx) => (
+            <div key={idx} className="h-1 flex-grow bg-white/20 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-white transition-all duration-75" 
+                style={{ width: idx < currentMediaIndex ? '100%' : idx === currentMediaIndex ? `${progress}%` : '0%' }}
+              />
             </div>
-          ) : (
+          ))}
+        </div>
+
+        <div className="absolute top-8 left-4 right-4 z-50 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <img src={currentStory.avatar} className="w-8 h-8 rounded-full border border-white/20" alt="" />
+            <span className="text-white text-xs font-black tracking-tight">{currentStory.user}</span>
+            <span className="text-white/40 text-[10px] font-bold">4h</span>
+          </div>
+        </div>
+
+        <div 
+          className="w-full h-full flex items-center justify-center relative select-none"
+          onMouseDown={() => setIsPaused(true)}
+          onMouseUp={() => setIsPaused(false)}
+          onTouchStart={() => setIsPaused(true)}
+          onTouchEnd={() => setIsPaused(false)}
+        >
+          <img 
+            src={storyMedia[currentMediaIndex]} 
+            className="w-full h-full object-cover pointer-events-none" 
+            alt="Story content" 
+          />
+          {/* Tappable areas for next/prev navigation */}
+          {!isPaused && (
             <>
-              <div className="flex-grow bg-black/20 backdrop-blur-xl border border-white/20 rounded-full px-5 py-2.5">
-                <input 
-                  type="text" 
-                  placeholder="Send message..." 
-                  className="bg-transparent text-white text-sm w-full outline-none placeholder-white/40 font-medium" 
-                />
-              </div>
-              <Heart className="w-6 h-6 text-white" />
-              <Send className="w-6 h-6 text-white" />
+              <div className="absolute inset-y-0 left-0 w-1/3 z-40" onClick={(e) => { e.stopPropagation(); handlePrev(); }} />
+              <div className="absolute inset-y-0 right-0 w-1/3 z-40" onClick={(e) => { e.stopPropagation(); handleNext(); }} />
             </>
           )}
         </div>
-      )}
+
+        {!showActivity && (
+          <>
+            {/* Sidebar Icons (Smile, Layers, Music) - Corrected Arrangement Style */}
+            {!isMyStory && (
+              <div className="absolute left-5 bottom-28 flex flex-col items-center space-y-6 z-50 animate-in slide-in-from-left duration-500">
+                <button className="text-white drop-shadow-lg active:scale-90 transition-transform hover:opacity-70">
+                  <Smile className="w-5 h-5" />
+                </button>
+                <button className="text-white drop-shadow-lg active:scale-90 transition-transform hover:opacity-70">
+                  <Layers className="w-5 h-5" />
+                </button>
+                <button className="text-white drop-shadow-lg active:scale-90 transition-transform hover:opacity-70">
+                  <Music className="w-5 h-5" />
+                </button>
+              </div>
+            )}
+
+            <div className="absolute bottom-6 left-4 right-4 z-50 flex items-center space-x-4">
+            {isMyStory ? (
+              <div 
+                className="flex-grow flex items-center justify-center space-x-3 bg-black/30 backdrop-blur-xl border border-white/10 rounded-[1.2rem] py-2 px-5 cursor-pointer active:scale-95 transition-all shadow-2xl"
+                onClick={(e) => { e.stopPropagation(); setShowActivity(true); }}
+              >
+                <div className="flex -space-x-1.5">
+                  {currentStory.viewers?.slice(0, 3).map((v, i) => (
+                    <img key={i} src={v.avatar} className="w-3.5 h-3.5 rounded-full border border-black" alt="" />
+                  ))}
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-[9px] font-black uppercase tracking-[0.25em] text-white">
+                    {currentStory.viewers?.length} Viewers
+                  </span>
+                  <ChevronUp className="w-3 h-3 text-white/60 animate-bounce" />
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="flex-grow bg-black/20 backdrop-blur-xl border border-white/20 rounded-full px-5 py-2.5">
+                  <input 
+                    type="text" 
+                    placeholder="Send message..." 
+                    className="bg-transparent text-white text-sm w-full outline-none placeholder-white/40 font-medium" 
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                </div>
+                <Heart className="w-6 h-6 text-white active:scale-125 transition-transform" />
+                <Send className="w-6 h-6 text-white active:scale-125 transition-transform" />
+              </>
+            )}
+          </div>
+          </>
+        )}
+      </motion.div>
 
       {showActivity && isMyStory && currentStory.viewers && (
         <>
@@ -356,7 +421,7 @@ const StoryViewer: React.FC<{ stories: Story[], initialIndex: number, onClose: (
           <ActivityPanel viewers={currentStory.viewers} onClose={() => setShowActivity(false)} />
         </>
       )}
-    </div>
+    </motion.div>
   );
 };
 
@@ -455,6 +520,8 @@ const VideoPlayer: React.FC<{ url: string }> = ({ url }) => {
 
 const PostItem: React.FC<{ post: Post }> = ({ post }) => {
   const [currentMediaIndex, setCurrentMediaIndex] = useState(0);
+  const [isLiked, setIsLiked] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const handleScroll = () => {
@@ -464,26 +531,30 @@ const PostItem: React.FC<{ post: Post }> = ({ post }) => {
     }
   };
 
+  const toggleLike = () => setIsLiked(!isLiked);
+  const toggleBookmark = () => setIsBookmarked(!isBookmarked);
+
   return (
-    <article className="flex flex-col bg-[#0c0c0c] border-b border-white/5 mb-10">
-      <header className="p-4 flex items-center justify-between">
+    <article className="flex flex-col bg-[#0c0c0c] border-b border-white/5 mb-6">
+      <header className="px-4 py-2.5 flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          <img src={post.user.avatar} className="w-10 h-10 rounded-full object-cover border border-white/10" alt="" />
+          <img src={post.user.avatar} className="w-8 h-8 rounded-full object-cover border border-white/10" alt="" />
           <div className="flex flex-col">
-            <span className="font-bold text-[14px] leading-none tracking-tight">{post.user.name}</span>
-            <span className="text-[9px] font-black text-white/30 tracking-[0.2em] mt-1 uppercase">{post.time}</span>
+            <span className="font-bold text-[13px] leading-none tracking-tight">{post.user.name}</span>
+            <span className="text-[8px] font-black text-white/30 tracking-[0.2em] mt-1 uppercase">{post.time}</span>
           </div>
         </div>
-        <MoreHorizontal className="text-white/40 cursor-pointer w-5 h-5" />
+        <MoreHorizontal className="text-white/40 cursor-pointer w-4 h-4" />
       </header>
       
       <div className="px-4">
-        <div className="relative w-full aspect-[4/5] bg-zinc-900 overflow-hidden rounded-[2.5rem] shadow-2xl border border-white/10">
+        <div className="relative w-full aspect-[4/5] bg-zinc-900 overflow-hidden rounded-[2.5rem] shadow-2xl border border-white/10 group">
           {post.media.length > 1 && (
             <div className="absolute top-6 right-6 z-10 bg-black/40 backdrop-blur-xl px-3 py-1 rounded-full text-[10px] font-black text-white tracking-widest border border-white/10">
               {currentMediaIndex + 1}/{post.media.length}
             </div>
           )}
+          
           <div 
             ref={scrollRef}
             onScroll={handleScroll}
@@ -512,23 +583,47 @@ const PostItem: React.FC<{ post: Post }> = ({ post }) => {
         </div>
       </div>
 
-      <footer className="p-5">
-        <div className="flex justify-between items-center mb-4 px-1">
-          <div className="flex items-center space-x-6">
-            <Heart className="w-6 h-6 hover:text-red-500 transition-colors cursor-pointer" />
-            <MessageCircle className="w-6 h-6 cursor-pointer" />
-            <Send className="w-6 h-6 cursor-pointer" />
+      <footer className="px-4 py-2">
+        <div className="flex justify-between items-center mb-1.5 px-1">
+          <div className="flex items-center space-x-5">
+            <button onClick={toggleLike} className="p-0.5 active:scale-90 transition-transform">
+              <Heart 
+                className={`w-6.5 h-6.5 transition-colors cursor-pointer ${isLiked ? 'text-red-500 fill-current' : 'text-white'}`} 
+              />
+            </button>
+
+            {/* Giftit Button - Near Like button */}
+            <button 
+              className="flex items-center space-x-1.5 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full text-white active:scale-95 transition-all hover:bg-white/10"
+              onClick={(e) => { e.stopPropagation(); alert('Giftit feature coming soon!'); }}
+            >
+              <Gift className="w-3.5 h-3.5 text-pink-400" />
+              <span className="text-[9px] font-black uppercase tracking-wider">Gift</span>
+            </button>
+
+            <button className="p-0.5 active:scale-90 transition-transform">
+              <MessageCircle className="w-6.5 h-6.5 cursor-pointer text-white" />
+            </button>
+            <button className="p-0.5 active:scale-90 transition-transform">
+              <Send className="w-6.5 h-6.5 cursor-pointer text-white" />
+            </button>
           </div>
-          <Bookmark className="w-6 h-6 cursor-pointer" />
+          <button onClick={toggleBookmark} className="p-0.5 active:scale-90 transition-transform">
+            <Bookmark 
+              className={`w-6.5 h-6.5 cursor-pointer transition-colors ${isBookmarked ? 'text-white fill-current' : 'text-white'}`} 
+            />
+          </button>
         </div>
         <div className="px-1">
-          <p className="text-[14px] font-black text-white mb-1.5 tracking-tight">{post.likes.toLocaleString()} likes</p>
-          <p className="text-[14px] leading-relaxed">
-            <span className="font-bold mr-2">{post.user.name}</span>
-            <span className="text-white/80 font-medium">{post.caption}</span>
+          <p className="text-[15px] font-black text-white mb-0 tracking-tight">
+            {(isLiked ? post.likes + 1 : post.likes).toLocaleString()} likes
           </p>
-          <button className="text-white/30 text-[10px] font-black mt-2.5 uppercase tracking-widest hover:text-white/60 transition-colors">
-            View all {post.comments} comments
+          <div className="text-[14px] leading-snug">
+            <span className="font-bold mr-2 text-white">{post.user.name}</span>
+            <span className="text-white/85 font-medium">{post.caption}</span>
+          </div>
+          <button className="text-white/30 text-[10px] font-black mt-1.5 uppercase tracking-[0.1em] hover:text-white/60 transition-colors">
+            VIEW ALL {post.comments} COMMENTS
           </button>
         </div>
       </footer>
@@ -548,16 +643,16 @@ const HomeTab: React.FC<{
 
   return (
     <div className="flex flex-col animate-in fade-in duration-500 pb-20">
-      <div className="flex items-center space-x-5 overflow-x-auto scrollbar-hide px-5 pt-5 pb-4 border-b border-white/5 bg-[#0c0c0c]">
+      <div className="flex items-center space-x-5 overflow-x-auto scrollbar-hide px-5 pt-4 pb-2 border-b border-white/5 bg-[#0c0c0c]">
         {MOCK_STORIES.map((story, i) => (
           <div 
             key={story.id} 
-            className="flex-shrink-0 flex flex-col items-center space-y-2 cursor-pointer active:scale-95 transition-transform"
+            className="flex-shrink-0 flex flex-col items-center space-y-1.5 cursor-pointer active:scale-95 transition-transform"
             onClick={() => setActiveStoryIndex(i)}
           >
             <div className="relative">
               <div className={`p-[2px] rounded-full ${story.viewed ? 'bg-white/10' : 'insta-gradient-border'}`}>
-                <div className="w-[66px] h-[66px] rounded-full overflow-hidden border-2 border-[#0c0c0c]">
+                <div className="w-[58px] h-[58px] rounded-full overflow-hidden border-2 border-[#0c0c0c]">
                   <img src={story.avatar} className="w-full h-full object-cover" alt="" />
                 </div>
               </div>
@@ -584,13 +679,15 @@ const HomeTab: React.FC<{
         ))}
       </div>
 
-      {activeStoryIndex !== null && (
-        <StoryViewer 
-          stories={MOCK_STORIES} 
-          initialIndex={activeStoryIndex} 
-          onClose={() => setActiveStoryIndex(null)} 
-        />
-      )}
+      <AnimatePresence>
+        {activeStoryIndex !== null && (
+          <StoryViewer 
+            stories={MOCK_STORIES} 
+            initialIndex={activeStoryIndex} 
+            onClose={() => setActiveStoryIndex(null)} 
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

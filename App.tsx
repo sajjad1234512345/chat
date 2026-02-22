@@ -113,9 +113,9 @@ const App: React.FC = () => {
     }
   };
 
-  const isFullPage = (['create', 'messages'] as TabType[]).includes(activeTab) || isStoryActive;
+  const isFullPage = (['create'] as TabType[]).includes(activeTab) || isStoryActive;
   const hideHeader = isFullPage || activeTab === 'profile';
-  const hideBottomNav = isFullPage;
+  const hideBottomNav = isFullPage || activeTab === 'messages' && activeTab === 'create'; // Adjust as needed
 
   return (
     <div className="flex flex-col min-h-screen bg-[#0c0c0c] text-white font-sans antialiased overflow-x-hidden">
@@ -167,14 +167,14 @@ const App: React.FC = () => {
       )}
 
       {/* Main Content Area */}
-      <main className={`relative z-10 flex-grow ${hideBottomNav ? '' : 'pb-14'}`}>
+      <main className={`relative z-10 flex-grow ${activeTab === 'create' || isStoryActive ? '' : 'pb-14'}`}>
         <div className="w-full">
           {renderContent()}
         </div>
       </main>
 
       {/* Bottom Nav */}
-      {!hideBottomNav && (
+      {!(activeTab === 'create' || isStoryActive) && (
         <nav className="fixed bottom-0 left-0 right-0 bg-[#0c0c0c]/90 backdrop-blur-2xl border-t border-white/5 h-14 flex items-center justify-around z-50 px-2 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.6)]">
           <NavItem icon={Home} active={activeTab === 'home'} onClick={() => setActiveTab('home')} label="Home" />
           <NavItem icon={ShoppingBag} active={activeTab === 'shopping'} onClick={() => setActiveTab('shopping')} label="Market" /> 
