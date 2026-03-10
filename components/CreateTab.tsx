@@ -41,6 +41,8 @@ const CreateTab: React.FC<CreateTabProps> = ({ onCancel, initialMode = 'post' })
   const detectorRef = useRef<faceLandmarksDetection.FaceLandmarksDetector | null>(null);
   const requestRef = useRef<number>();
 
+  const [cameraError, setCameraError] = useState(false);
+
   const initDetector = async () => {
     if (detectorRef.current || isDetectorLoading) return;
     setIsDetectorLoading(true);
@@ -208,8 +210,8 @@ const CreateTab: React.FC<CreateTabProps> = ({ onCancel, initialMode = 'post' })
       }
     } catch (err) {
       console.error("Camera access denied:", err);
-      alert("Please allow camera access to use this feature.");
-      setMode('selection');
+      setCameraError(true);
+      // Don't automatically switch mode, let the user see the error message
     }
   };
 
@@ -301,6 +303,22 @@ const CreateTab: React.FC<CreateTabProps> = ({ onCancel, initialMode = 'post' })
         ref={canvasRef}
         className={`absolute inset-0 w-full h-full object-cover z-10 pointer-events-none ${cameraFacing === 'user' ? 'scale-x-[-1]' : ''}`}
       />
+
+      {cameraError && (
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/80 backdrop-blur-md px-8 text-center">
+          <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mb-6">
+            <Camera className="w-8 h-8 text-red-500" />
+          </div>
+          <h3 className="text-xl font-black text-white tracking-tight mb-2">Camera Access Denied</h3>
+          <p className="text-white/60 text-sm mb-8">Please enable camera permissions in your browser settings to use this feature.</p>
+          <button 
+            onClick={() => setMode('selection')}
+            className="bg-white text-black px-8 py-3 rounded-full font-bold text-sm active:scale-95 transition-transform"
+          >
+            Go Back
+          </button>
+        </div>
+      )}
 
       {/* Top Bar - Screenshot Style */}
       <header className="px-6 pt-8 flex items-center justify-between z-50 relative">

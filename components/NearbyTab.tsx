@@ -72,7 +72,9 @@ const NearbyTab: React.FC = () => {
     }).addTo(map);
 
     setTimeout(() => {
-      map.invalidateSize();
+      if (mapRef.current) {
+        mapRef.current.invalidateSize();
+      }
     }, 250);
 
     const destIcon = L.divIcon({
@@ -127,7 +129,7 @@ const NearbyTab: React.FC = () => {
 
       watchIdRef.current = navigator.geolocation.watchPosition((position) => {
         const { latitude: lat, longitude: lng } = position.coords;
-        if (userMarkerRef.current) userMarkerRef.current.setLatLng([lat, lng]);
+        if (userMarkerRef.current && mapRef.current) userMarkerRef.current.setLatLng([lat, lng]);
       });
     }
   };
