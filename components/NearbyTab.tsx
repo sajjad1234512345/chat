@@ -107,6 +107,8 @@ const NearbyTab: React.FC = () => {
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
+        if (!mapRef.current) return; // Ensure map still exists
+
         const { latitude: userLat, longitude: userLng } = position.coords;
         const userIcon = L.divIcon({
           html: `
@@ -134,10 +136,16 @@ const NearbyTab: React.FC = () => {
     const map = mapRef.current;
     if (!map) return;
 
-    eventMarkersRef.current.forEach(m => map.removeLayer(m));
+    eventMarkersRef.current.forEach(m => {
+      if (map.hasLayer(m)) {
+        map.removeLayer(m);
+      }
+    });
     eventMarkersRef.current = [];
 
     events.forEach(event => {
+      if (!mapRef.current) return; // Ensure map still exists
+
       const isExceptional = event.privacy === 'Exceptional';
       const color = isExceptional ? '#EAB308' : '#EC4899';
       const shadowColor = isExceptional ? 'rgba(234, 179, 8, 0.4)' : 'rgba(236, 72, 153, 0.4)';
@@ -194,6 +202,9 @@ const NearbyTab: React.FC = () => {
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
+        userMarkerRef.current = null;
+        destinationMarkerRef.current = null;
+        eventMarkersRef.current = [];
       }
     };
   }, []);
