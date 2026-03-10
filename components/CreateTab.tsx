@@ -1,5 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { X, Camera, Image as ImageIcon, Video, Radio, Users, ChevronLeft, ChevronRight, Send, Music, Zap, ZapOff, Settings, RefreshCw, Layers, Check, Share2, Smile, MapPin, Trash2, Sun, Moon, Sparkles, Search, MoreVertical, Box, Shield, Database, LayoutGrid, Settings2, User, Type, Infinity, CircleDot, CircleDashed, Circle, ChevronDown, ArrowLeftRight, Undo2, Download, Sticker, MoreHorizontal } from 'lucide-react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { X, Camera, Image as ImageIcon, Video, Radio, Users, ChevronLeft, ChevronRight, Send, Music, Zap, ZapOff, Settings, RefreshCw, Layers, Check, Share2, Smile, MapPin, Trash2, Sun, Moon, Sparkles, Search, MoreVertical, Box, Shield, Database, LayoutGrid, Settings2, User, Type, Infinity, CircleDot, CircleDashed, Circle, ChevronDown, ArrowLeftRight, Undo2, Download, Sticker, MoreHorizontal, Crown } from 'lucide-react';
+import * as tf from '@tensorflow/tfjs-core';
+import '@tensorflow/tfjs-backend-webgl';
+import * as faceLandmarksDetection from '@tensorflow-models/face-landmarks-detection';
 
 interface CreateTabProps {
   onCancel: () => void;
@@ -15,28 +18,198 @@ const FILTERS = [
   { id: 'none', name: 'DEFAULT', style: 'none', color: 'bg-white/20', icon: LayoutGrid },
 ];
 
+const FACE_FILTERS = [
+  { id: 'none', name: 'NONE', icon: Smile },
+  { id: 'glasses', name: 'GLASSES', icon: Sun },
+  { id: 'blush', name: 'BLUSH', icon: CircleDot },
+  { id: 'crown', name: 'CROWN', icon: Crown },
+];
+
 const CreateTab: React.FC<CreateTabProps> = ({ onCancel, initialMode = 'post' }) => {
   const [mode, setMode] = useState<'selection' | 'post' | 'live' | 'edit' | 'share'>(initialMode === 'post' ? 'post' : initialMode === 'live' ? 'live' : 'selection');
   const [capturedMedia, setCapturedMedia] = useState<{ url: string; type: 'image' | 'video' } | null>(null);
   const [flash, setFlash] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState(FILTERS[5]); // Default to 'Standard'
+  const [activeFaceFilter, setActiveFaceFilter] = useState(FACE_FILTERS[0]);
   const [cameraFacing, setCameraFacing] = useState<'user' | 'environment'>('user');
+  const [isDetectorLoading, setIsDetectorLoading] = useState(false);
   
   const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const detectorRef = useRef<faceLandmarksDetection.FaceLandmarksDetector | null>(null);
+  const requestRef = useRef<number>();
+
+  const initDetector = async () => {
+    if (detectorRef.current || isDetectorLoading) return;
+    setIsDetectorLoading(true);
+    try {
+      await tf.ready();
+      const model = faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh;
+      const detectorConfig = {
+        runtime: 'tfjs' as const,
+        refineLandmarks: true,
+      };
+      detectorRef.current = await faceLandmarksDetection.createDetector(model, detectorConfig);
+    } catch (err) {
+      console.error("Detector init failed:", err);
+    } finally {
+      setIsDetectorLoading(false);
+    }
+  };
+
+  const drawFilter = useCallback((faces: faceLandmarksDetection.Face[]) => {
+    const canvas = canvasRef.current;
+    const video = videoRef.current;
+    if (!canvas || !video || faces.length === 0) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    faces.forEach(face => {
+      const keypoints = face.keypoints;
+
+      if (activeFaceFilter.id === 'glasses') {
+        // Draw glasses
+        const leftEye = keypoints.find(kp => kp.name === 'leftEye');
+        const rightEye = keypoints.find(kp => kp.name === 'rightEye');
+        
+        if (leftEye && rightEye) {
+          const eyeDist = Math.sqrt(Math.pow(rightEye.x - leftEye.x, 2) + Math.pow(rightEye.y - leftEye.y, 2));
+          const glassSize = eyeDist * 0.8;
+
+          ctx.strokeStyle = 'black';
+          ctx.lineWidth = 4;
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+
+          // Left lens
+          ctx.beginPath();
+          ctx.arc(leftEye.x, leftEye.y, glassSize / 2, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+
+          // Right lens
+          ctx.beginPath();
+          ctx.arc(rightEye.x, rightEye.y, glassSize / 2, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.stroke();
+
+          // Bridge
+          ctx.beginPath();
+          ctx.moveTo(leftEye.x + glassSize / 2, leftEye.y);
+          ctx.lineTo(rightEye.x - glassSize / 2, rightEye.y);
+          ctx.stroke();
+        }
+      } else if (activeFaceFilter.id === 'blush') {
+        // Draw blush
+        const leftCheek = keypoints[234]; // Approximate cheek landmark
+        const rightCheek = keypoints[454];
+
+        if (leftCheek && rightCheek) {
+          ctx.fillStyle = 'rgba(255, 100, 100, 0.4)';
+          ctx.beginPath();
+          ctx.arc(leftCheek.x, leftCheek.y, 20, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.arc(rightCheek.x, rightCheek.y, 20, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      } else if (activeFaceFilter.id === 'crown') {
+        // Draw crown
+        const forehead = keypoints[10]; // Top of forehead
+        if (forehead) {
+          ctx.fillStyle = '#FFD700';
+          ctx.strokeStyle = '#B8860B';
+          ctx.lineWidth = 2;
+
+          const size = 60;
+          ctx.beginPath();
+          ctx.moveTo(forehead.x - size, forehead.y - size);
+          ctx.lineTo(forehead.x - size / 2, forehead.y - size / 2);
+          ctx.lineTo(forehead.x, forehead.y - size);
+          ctx.lineTo(forehead.x + size / 2, forehead.y - size / 2);
+          ctx.lineTo(forehead.x + size, forehead.y - size);
+          ctx.lineTo(forehead.x + size, forehead.y);
+          ctx.lineTo(forehead.x - size, forehead.y);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+        }
+      }
+    });
+  }, [activeFaceFilter]);
+
+  const detect = useCallback(async () => {
+    if (detectorRef.current && videoRef.current && videoRef.current.readyState === 4) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      
+      if (canvas) {
+        if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+        }
+      }
+
+      const faces = await detectorRef.current.estimateFaces(video);
+      drawFilter(faces);
+    }
+  }, [drawFilter]);
+
+  useEffect(() => {
+    if (mode === 'post' || mode === 'live') {
+      initDetector();
+    }
+  }, [mode]);
+
+  useEffect(() => {
+    let isActive = true;
+    const runDetection = async () => {
+      if (mode === 'post' || mode === 'live') {
+        await detect();
+        if (isActive) {
+          requestRef.current = requestAnimationFrame(runDetection);
+        }
+      }
+    };
+
+    if (mode === 'post' || mode === 'live') {
+      requestRef.current = requestAnimationFrame(runDetection);
+    }
+
+    return () => {
+      isActive = false;
+      if (requestRef.current) cancelAnimationFrame(requestRef.current);
+    };
+  }, [mode, detect]);
 
   const startCamera = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { facingMode: cameraFacing }, 
-        audio: true 
-      });
+      // Try with audio first, fallback to video only if audio fails
+      let stream: MediaStream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ 
+          video: { facingMode: cameraFacing }, 
+          audio: true 
+        });
+      } catch (audioErr) {
+        console.warn("Audio access denied, falling back to video only", audioErr);
+        stream = await navigator.mediaDevices.getUserMedia({ 
+          video: { facingMode: cameraFacing }
+        });
+      }
+      
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
     } catch (err) {
       console.error("Camera access denied:", err);
+      alert("Please allow camera access to use this feature.");
+      setMode('selection');
     }
   };
 
@@ -67,9 +240,26 @@ const CreateTab: React.FC<CreateTabProps> = ({ onCancel, initialMode = 'post' })
         if (cameraFacing === 'user') {
           ctx.scale(-1, 1);
           ctx.drawImage(videoRef.current, -canvas.width, 0, canvas.width, canvas.height);
+          ctx.scale(-1, 1); // Reset scale for drawing filters
         } else {
           ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
         }
+
+        // Draw face filters on the captured image
+        if (activeFaceFilter.id !== 'none' && detectorRef.current) {
+          // We need to run detection one last time on the video frame or use the last known positions
+          // For simplicity, we'll draw what's currently on the overlay canvas if we had it
+          // But it's better to just draw the current state of the overlay canvas onto this one
+          if (canvasRef.current) {
+            if (cameraFacing === 'user') {
+              ctx.scale(-1, 1);
+              ctx.drawImage(canvasRef.current, -canvas.width, 0, canvas.width, canvas.height);
+            } else {
+              ctx.drawImage(canvasRef.current, 0, 0, canvas.width, canvas.height);
+            }
+          }
+        }
+
         setCapturedMedia({ url: canvas.toDataURL('image/jpeg'), type: 'image' });
         setMode('edit');
       }
@@ -106,6 +296,10 @@ const CreateTab: React.FC<CreateTabProps> = ({ onCancel, initialMode = 'post' })
         muted 
         style={{ filter: activeFilter.style }}
         className={`absolute inset-0 w-full h-full object-cover z-0 transition-all duration-500 ${cameraFacing === 'user' ? 'scale-x-[-1]' : ''}`} 
+      />
+      <canvas
+        ref={canvasRef}
+        className={`absolute inset-0 w-full h-full object-cover z-10 pointer-events-none ${cameraFacing === 'user' ? 'scale-x-[-1]' : ''}`}
       />
 
       {/* Top Bar - Screenshot Style */}
@@ -155,7 +349,7 @@ const CreateTab: React.FC<CreateTabProps> = ({ onCancel, initialMode = 'post' })
 
       {/* Bottom Controls - Screenshot Style */}
       <footer className="pb-4 flex flex-col items-center justify-center relative z-30">
-        <div className="flex items-center justify-between w-full px-8 mb-10 relative">
+        <div className="flex items-center justify-between w-full px-12 mb-14 relative">
           {/* Gallery Preview */}
           <button 
             onClick={() => fileInputRef.current?.click()}
@@ -173,13 +367,29 @@ const CreateTab: React.FC<CreateTabProps> = ({ onCancel, initialMode = 'post' })
           </button>
 
           {/* Filter & Placeholder */}
-          <div className="flex items-center space-x-3">
-            <button className="w-10 h-10 rounded-full border-2 border-white/30 p-0.5 active:scale-90 transition-transform">
-              <div className="w-full h-full rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-white" />
+          <div className="flex items-center">
+            <div className="flex items-center bg-black/20 backdrop-blur-xl rounded-full p-1 border border-white/10 shadow-2xl">
+              <div className="flex -space-x-1 overflow-x-auto max-w-[140px] no-scrollbar px-1">
+                {FACE_FILTERS.map((f) => (
+                  <button
+                    key={f.id}
+                    onClick={() => setActiveFaceFilter(f)}
+                    className={`relative w-9 h-9 rounded-full transition-all duration-300 shrink-0 flex items-center justify-center group ${
+                      activeFaceFilter.id === f.id 
+                        ? 'bg-white scale-110 shadow-[0_0_15px_rgba(255,255,255,0.4)] z-20' 
+                        : 'hover:bg-white/10 z-10'
+                    }`}
+                  >
+                    <f.icon className={`w-4 h-4 transition-colors duration-300 ${
+                      activeFaceFilter.id === f.id ? 'text-black' : 'text-white/70 group-hover:text-white'
+                    }`} />
+                    {activeFaceFilter.id === f.id && (
+                      <div className="absolute -bottom-1 w-1 h-1 bg-white rounded-full animate-pulse" />
+                    )}
+                  </button>
+                ))}
               </div>
-            </button>
-            <div className="w-10 h-10" />
+            </div>
           </div>
         </div>
 
@@ -188,7 +398,10 @@ const CreateTab: React.FC<CreateTabProps> = ({ onCancel, initialMode = 'post' })
           <div className="flex-1 flex justify-end pr-6">
             <button className="hover:text-white transition-colors">Post</button>
           </div>
-          <button className="text-white border-b-2 border-white pb-1 shrink-0">Story</button>
+          <button className="text-white relative shrink-0 px-2">
+            Story
+            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1 h-1 bg-white rounded-full" />
+          </button>
           <div className="flex-1 flex justify-start pl-6 space-x-6">
             <button className="hover:text-white transition-colors">Reel</button>
             <button className="hover:text-white transition-colors">Live</button>
@@ -301,7 +514,7 @@ const CreateTab: React.FC<CreateTabProps> = ({ onCancel, initialMode = 'post' })
 
   return (
     <div className="fixed inset-0 z-[120]">
-      {mode === 'post' && renderCameraUI()}
+      {(mode === 'post' || mode === 'live') && renderCameraUI()}
       {mode === 'edit' && renderEditUI()}
       {mode === 'share' && renderShare()}
       {mode === 'selection' && (
