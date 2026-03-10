@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { X, Camera, Image as ImageIcon, Video, Radio, Users, ChevronLeft, ChevronRight, Send, Music, Zap, ZapOff, Settings, RefreshCw, Layers, Check, Share2, Smile, MapPin, Trash2, Sun, Moon, Sparkles, Search, MoreVertical, Box, Shield, Database, LayoutGrid, Settings2, User, Type, Infinity, CircleDot, CircleDashed, Circle, ChevronDown, ArrowLeftRight, Undo2, Download, Sticker, MoreHorizontal, Crown } from 'lucide-react';
+import { X, Camera, Image as ImageIcon, Video, Radio, Users, ChevronLeft, ChevronRight, Send, Music, Zap, ZapOff, Settings, RefreshCw, Layers, Check, Share2, Smile, MapPin, Trash2, Sun, Moon, Sparkles, Search, MoreVertical, Box, Shield, Database, LayoutGrid, Settings2, User, Type, Infinity, CircleDot, CircleDashed, Circle, ArrowLeftRight, Undo2, Download, Sticker, MoreHorizontal, Crown } from 'lucide-react';
 import * as tf from '@tensorflow/tfjs-core';
 import '@tensorflow/tfjs-backend-webgl';
 import * as faceLandmarksDetection from '@tensorflow-models/face-landmarks-detection';
@@ -321,7 +321,10 @@ const CreateTab: React.FC<CreateTabProps> = ({ onCancel, initialMode = 'post' })
       )}
 
       {/* Top Bar - Screenshot Style */}
-      <header className="px-6 pt-8 flex items-center justify-between z-50 relative">
+      <header 
+        className="px-6 pt-8 flex items-center justify-between z-50 relative"
+        style={{ paddingLeft: '5px', paddingRight: '24px', marginRight: '-9px', marginBottom: '-4px', marginTop: '-16px' }}
+      >
         <button onClick={onCancel} className="p-1.5 text-white drop-shadow-md active:scale-90 transition-transform">
           <X className="w-6 h-6" />
         </button>
@@ -345,7 +348,10 @@ const CreateTab: React.FC<CreateTabProps> = ({ onCancel, initialMode = 'post' })
       </header>
 
       {/* Left Sidebar - Screenshot Style */}
-      <div className="absolute left-6 top-[25%] flex flex-col items-center space-y-5 z-40 animate-in slide-in-from-left duration-700">
+      <div 
+        className="absolute left-6 top-[25%] flex flex-col items-center space-y-5 z-40 animate-in slide-in-from-left duration-700"
+        style={{ marginLeft: '-18px', marginBottom: '8px', marginTop: '-74px' }}
+      >
          <button className="p-1 rounded-lg active:bg-white/10 transition-colors">
            <Type className="w-5 h-5" />
          </button>
@@ -355,54 +361,71 @@ const CreateTab: React.FC<CreateTabProps> = ({ onCancel, initialMode = 'post' })
          <button className="p-1 rounded-lg active:bg-white/10 transition-colors">
            <LayoutGrid className="w-5 h-5" />
          </button>
-         <button 
-           onClick={() => fileInputRef.current?.click()}
-           className="p-1 rounded-lg active:bg-white/10 transition-colors"
-         >
-           <ChevronDown className="w-5 h-5" />
-         </button>
       </div>
 
       <div className="flex-grow pointer-events-none" />
 
       {/* Bottom Controls - Screenshot Style */}
       <footer className="pb-4 flex flex-col items-center justify-center relative z-30">
-        <div className="flex items-center justify-between w-full px-12 mb-14 relative">
+        <div 
+          className="flex items-center justify-between w-full px-12 mb-14 relative"
+          style={{ marginLeft: '0px', marginTop: '-73px', marginBottom: '25px' }}
+        >
           {/* Gallery Preview */}
           <button 
             onClick={() => fileInputRef.current?.click()}
             className="w-8 h-8 rounded-lg bg-white/10 border border-white/20 overflow-hidden active:scale-90 transition-transform"
+            style={{ height: '49px', width: '50px', marginLeft: '-39px' }}
           >
-            <img src="https://picsum.photos/seed/gallery/100/100" className="w-full h-full object-cover opacity-60" alt="" />
+            <img 
+              src="https://picsum.photos/seed/gallery/100/100" 
+              className="w-full h-full object-cover opacity-60" 
+              alt="" 
+              style={{ height: '24px' }}
+            />
           </button>
 
           {/* Main Capture Button - Centered at midpoint */}
           <button 
             onClick={handleCapture}
             className="absolute left-1/2 -translate-x-1/2 w-16 h-16 rounded-full border-[4px] border-white/30 p-0.5 active:scale-90 transition-transform z-10"
+            style={{ marginLeft: '-9px' }}
           >
-            <div className="w-full h-full rounded-full bg-white shadow-[0_0_15px_rgba(255,255,255,0.5)]" />
+            <div 
+              className="w-full h-full rounded-full bg-white shadow-[0_0_15px_rgba(255,255,255,0.5)]" 
+              style={{ marginRight: '-15px', marginLeft: '0px' }}
+            />
           </button>
 
           {/* Filter & Placeholder */}
-          <div className="flex items-center">
-            <div className="flex items-center bg-black/20 backdrop-blur-xl rounded-full p-1 border border-white/10 shadow-2xl">
-              <div className="flex -space-x-1 overflow-x-auto max-w-[140px] no-scrollbar px-1">
-                {FACE_FILTERS.map((f) => (
+          <div className="flex items-center absolute right-8">
+            <div 
+              className="flex items-center bg-black/30 backdrop-blur-xl rounded-full p-1.5 border border-white/20 shadow-2xl"
+              style={{ height: '49px', width: '158px', paddingLeft: '-9px', paddingTop: '5px', paddingBottom: '7px', paddingRight: '-2px', marginRight: '-28px', marginLeft: '-16px', marginBottom: '-61px', marginTop: '-66px' }}
+            >
+              <div 
+                className="flex -space-x-1 overflow-x-auto max-w-[160px] no-scrollbar px-1"
+                style={{ height: '36px' }}
+              >
+                {FACE_FILTERS.map((f, index) => (
                   <button
                     key={f.id}
                     onClick={() => setActiveFaceFilter(f)}
-                    className={`relative w-9 h-9 rounded-full transition-all duration-300 shrink-0 flex items-center justify-center group ${
+                    className={`relative w-10 h-10 rounded-full transition-all duration-300 shrink-0 flex items-center justify-center group ${
                       activeFaceFilter.id === f.id 
                         ? 'bg-white scale-110 shadow-[0_0_15px_rgba(255,255,255,0.4)] z-20' 
-                        : 'hover:bg-white/10 z-10'
+                        : 'hover:bg-white/20 z-10'
                     }`}
+                    style={index === 0 ? { height: '26px', marginBottom: '7px', marginTop: '6px' } : {}}
                   >
-                    <f.icon className={`w-4 h-4 transition-colors duration-300 ${
-                      activeFaceFilter.id === f.id ? 'text-black' : 'text-white/70 group-hover:text-white'
-                    }`} />
+                    <f.icon 
+                      className={`w-5 h-5 transition-colors duration-300 ${
+                        activeFaceFilter.id === f.id ? 'text-black' : 'text-white group-hover:text-white'
+                      }`} 
+                      style={index === 3 || index === 2 || index === 1 ? { height: '18px' } : {}}
+                    />
                     {activeFaceFilter.id === f.id && (
-                      <div className="absolute -bottom-1 w-1 h-1 bg-white rounded-full animate-pulse" />
+                      <div className="absolute -bottom-1 w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
                     )}
                   </button>
                 ))}

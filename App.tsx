@@ -125,7 +125,10 @@ const App: React.FC = () => {
 
       {/* Header - Fixed Top (Up Bar) */}
       {!hideHeader && (
-        <header className={`sticky top-7 bg-[#0c0c0c]/80 backdrop-blur-xl px-4 h-16 flex items-center justify-between z-50`}>
+        <header 
+          className={`sticky top-7 bg-[#0c0c0c]/80 backdrop-blur-xl px-4 h-16 flex items-center justify-between z-50`}
+          style={{ height: '35px' }}
+        >
           <div className="flex items-center shrink-0">
             {activeTab !== 'business' && (
               <h1 
@@ -175,7 +178,10 @@ const App: React.FC = () => {
 
       {/* Bottom Nav */}
       {!(activeTab === 'create' || isStoryActive) && (
-        <nav className="fixed bottom-0 left-0 right-0 bg-[#0c0c0c]/90 backdrop-blur-2xl border-t border-white/5 h-14 flex items-center justify-around z-50 px-2 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.6)]">
+        <nav 
+          className="fixed bottom-0 left-0 right-0 bg-[#0c0c0c]/90 backdrop-blur-2xl border-t border-white/5 h-14 flex items-center justify-around z-50 px-2 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.6)]"
+          style={{ height: '42px' }}
+        >
           <NavItem icon={Home} active={activeTab === 'home'} onClick={() => setActiveTab('home')} label="Home" />
           <NavItem icon={ShoppingBag} active={activeTab === 'shopping'} onClick={() => setActiveTab('shopping')} label="Market" /> 
           <NavItem icon={Wallet} active={activeTab === 'wallet'} onClick={() => setActiveTab('wallet')} label="Wallet" />
@@ -185,6 +191,7 @@ const App: React.FC = () => {
               onClick={handleCreatePost}
               className="w-12 h-12 bg-gradient-to-tr from-[#ff416c] to-[#ff4b2b] text-white rounded-2xl flex items-center justify-center shadow-[0_0_25px_rgba(255,75,43,0.6)] active:scale-75 hover:scale-105 transition-all transform -translate-y-2 border border-white/10"
               aria-label="Create Post"
+              style={{ height: '37px', marginTop: '5px' }}
             >
               <Plus className="w-7 h-7 stroke-[3]" />
             </button>

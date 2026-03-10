@@ -536,8 +536,14 @@ const PostItem: React.FC<{ post: Post }> = ({ post }) => {
 
   return (
     <article className="flex flex-col bg-[#0c0c0c] border-b border-white/5 mb-6">
-      <header className="px-4 py-2.5 flex items-center justify-between">
-        <div className="flex items-center space-x-3">
+      <header 
+        className="px-4 py-2.5 flex items-center justify-between"
+        style={post.id === MOCK_POSTS[0].id ? { height: '40px' } : {}}
+      >
+        <div 
+          className="flex items-center space-x-3"
+          style={post.id === MOCK_POSTS[0].id ? { height: '35px' } : {}}
+        >
           <img src={post.user.avatar} className="w-8 h-8 rounded-full object-cover border border-white/10" alt="" />
           <div className="flex flex-col">
             <span className="font-bold text-[13px] leading-none tracking-tight">{post.user.name}</span>
@@ -614,7 +620,10 @@ const PostItem: React.FC<{ post: Post }> = ({ post }) => {
             />
           </button>
         </div>
-        <div className="px-1">
+        <div 
+          className="px-1"
+          style={post.id === MOCK_POSTS[0].id ? { height: '86px' } : {}}
+        >
           <p className="text-[15px] font-black text-white mb-0 tracking-tight">
             {(isLiked ? post.likes + 1 : post.likes).toLocaleString()} likes
           </p>
@@ -643,14 +652,21 @@ const HomeTab: React.FC<{
 
   return (
     <div className="flex flex-col animate-in fade-in duration-500 pb-20">
-      <div className="flex items-center space-x-5 overflow-x-auto scrollbar-hide px-5 pt-4 pb-2 border-b border-white/5 bg-[#0c0c0c]">
+      <div 
+        className="flex items-center space-x-5 overflow-x-auto scrollbar-hide px-5 pt-4 pb-2 border-b border-white/5 bg-[#0c0c0c]"
+        style={{ height: '96px', marginTop: '1px' }}
+      >
         {MOCK_STORIES.map((story, i) => (
           <div 
             key={story.id} 
             className="flex-shrink-0 flex flex-col items-center space-y-1.5 cursor-pointer active:scale-95 transition-transform"
             onClick={() => setActiveStoryIndex(i)}
+            style={i === 1 ? { height: '78px' } : {}}
           >
-            <div className="relative">
+            <div 
+              className="relative"
+              style={i === 0 ? { height: '62px' } : {}}
+            >
               <div className={`p-[2px] rounded-full ${story.viewed ? 'bg-white/10' : 'insta-gradient-border'}`}>
                 <div className="w-[58px] h-[58px] rounded-full overflow-hidden border-2 border-[#0c0c0c]">
                   <img src={story.avatar} className="w-full h-full object-cover" alt="" />
@@ -673,7 +689,10 @@ const HomeTab: React.FC<{
         ))}
       </div>
 
-      <div className="flex flex-col">
+      <div 
+        className="flex flex-col"
+        style={{ height: '1000.5px' }}
+      >
         {MOCK_POSTS.map((post) => (
           <PostItem key={post.id} post={post} />
         ))}
