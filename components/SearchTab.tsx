@@ -65,7 +65,7 @@ const SearchTab: React.FC = () => {
 
       <div 
         className="px-4 py-6"
-        style={{ height: '32.5px', fontSize: '7px', lineHeight: '9px', fontWeight: 'normal' }}
+        style={{ height: '226px', fontSize: '7px', lineHeight: '9px', fontWeight: 'normal' }}
       >
         <button style={{ height: '31.5px', width: '70.4688px' }} className="hidden">1</button>
         <button style={{ height: '31.5px' }} className="hidden">2</button>
@@ -77,14 +77,14 @@ const SearchTab: React.FC = () => {
         >
           <div 
             className="flex items-center space-x-2"
-            style={{ width: '63.9844px', height: '28px', marginLeft: '-24px' }}
+            style={{ height: '29px', width: '49.9844px', marginLeft: '-23px' }}
           >
             <Sparkles className="w-4 h-4 text-blue-500" />
             <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Discover Explore</h3>
           </div>
           <button 
             className="text-[10px] font-black text-pink-500 uppercase tracking-widest"
-            style={{ height: '32px' }}
+            style={{ height: '28px', width: '100.383px', lineHeight: '10px' }}
           >See All</button>
         </div>
         <div className="grid grid-cols-3 gap-1">

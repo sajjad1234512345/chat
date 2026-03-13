@@ -132,7 +132,7 @@ const App: React.FC = () => {
           <div className="flex items-center shrink-0">
             {activeTab !== 'business' && (
               <h1 
-                className={`text-xl font-black italic cursor-pointer active:scale-95 transition-transform brand-text`}
+                className={`text-[13px] leading-[24px] font-black italic cursor-pointer active:scale-95 transition-transform brand-text`}
                 onClick={() => setActiveTab('home')}
               >
                 InstaMarket
@@ -159,7 +159,7 @@ const App: React.FC = () => {
             
             <div className="p-1 flex items-center justify-center">
               <div 
-                className={`w-8 h-8 rounded-full overflow-hidden border transition-all cursor-pointer active:scale-90 shadow-lg ${(activeTab as string) === 'profile' ? 'border-pink-500 ring-2 ring-pink-500/20' : 'border-white/20'}`} 
+                className={`w-7 h-7 rounded-full overflow-hidden border transition-all cursor-pointer active:scale-90 shadow-lg ${(activeTab as string) === 'profile' ? 'border-pink-500 ring-2 ring-pink-500/20' : 'border-white/20'}`} 
                 onClick={() => setActiveTab('profile')}
               >
                  <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200" className="w-full h-full object-cover" alt="" />

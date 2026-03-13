@@ -370,7 +370,7 @@ const ShoppingTab: React.FC = () => {
       <div className="p-4 bg-[#0c0c0c] sticky top-0 z-20 flex items-center space-x-3">
         <div className="relative group flex-grow">
           <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 group-focus-within:text-pink-500 transition-colors">
-            <Search className="w-5 h-5" />
+            <Search className="w-4 h-4" />
           </div>
           <input 
             type="text" 
@@ -383,7 +383,7 @@ const ShoppingTab: React.FC = () => {
           className="w-12 h-12 bg-white/5 border border-white/5 rounded-2xl flex items-center justify-center text-white/50 active:scale-95 transition-all hover:bg-white/10 hover:text-white"
           aria-label="My Market"
         >
-          <Store className="w-6 h-6" />
+          <Store className="w-5 h-5" />
         </button>
       </div>
 

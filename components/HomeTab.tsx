@@ -701,6 +701,7 @@ const HomeTab: React.FC<{
       <AnimatePresence>
         {activeStoryIndex !== null && (
           <StoryViewer 
+            key="story-viewer"
             stories={MOCK_STORIES} 
             initialIndex={activeStoryIndex} 
             onClose={() => setActiveStoryIndex(null)} 

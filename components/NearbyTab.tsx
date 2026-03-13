@@ -266,20 +266,7 @@ const NearbyTab: React.FC = () => {
         </div>
       </div>
 
-      {/* Categories - High Contrast Dark Mode Buttons */}
-      <div className="absolute top-24 left-4 right-4 z-10 flex space-x-3 overflow-x-auto scrollbar-hide pb-2 px-2 pointer-events-auto">
-        {['All', 'Hot Spots', 'Market', 'Events', 'Elite'].map(f => (
-          <button 
-            key={f} 
-            onClick={() => setFilter(f)} 
-            className={`flex-shrink-0 px-7 py-3 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] shadow-xl transition-all duration-300 active:scale-95 border ${filter === f ? 'bg-pink-600 text-white border-pink-500 shadow-pink-500/50' : 'bg-zinc-900/80 backdrop-blur-3xl text-white/60 border-white/5 hover:border-white/20 hover:text-white'}`}
-          >
-            {f === 'Hot Spots' && <Zap className="w-3 h-3 inline mr-1 mb-0.5" />}
-            {f === 'Elite' && <Sparkles className="w-3 h-3 inline mr-1 mb-0.5" />}
-            {f}
-          </button>
-        ))}
-      </div>
+
 
       {/* Floating Controls - High Contrast */}
       <div className="absolute bottom-32 right-4 z-10 flex flex-col space-y-4 pointer-events-auto">
@@ -294,43 +281,7 @@ const NearbyTab: React.FC = () => {
         </button>
       </div>
 
-      {/* Bottom Card: Nearby Happenings - Darker theme for better separation */}
-      {view === 'map' && (
-        <div className="absolute bottom-6 left-4 right-4 z-10">
-          <div className="bg-zinc-900/95 backdrop-blur-3xl px-7 py-7 rounded-[3rem] shadow-[0_25px_60px_rgba(0,0,0,0.3)] border border-white/10 max-w-lg mx-auto overflow-hidden relative group">
-            <div className="absolute top-[-30%] right-[-30%] w-64 h-64 bg-pink-600/10 blur-[110px] rounded-full group-hover:bg-pink-600/20 transition-all duration-700"></div>
-            
-            <div className="flex justify-between items-center mb-7 relative z-10">
-              <div className="flex items-center space-x-3.5">
-                 <Target className="w-5.5 h-5.5 text-pink-500" />
-                 <h3 className="text-sm font-black tracking-[0.2em] text-white uppercase">Vibes in Radius</h3>
-              </div>
-              <button 
-                onClick={() => setView('create-event')} 
-                className="bg-white text-zinc-900 px-5 py-3 rounded-2xl shadow-xl flex items-center space-x-2.5 active:scale-95 transition-all group"
-              >
-                <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-900">Host Now</span>
-              </button>
-            </div>
 
-            <div className="flex space-x-6 overflow-x-auto scrollbar-hide py-1.5 relative z-10">
-              {events.map(item => (
-                <div key={item.id} className="flex flex-col items-center space-y-3 group cursor-pointer flex-shrink-0 w-24">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-pink-600/30 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <img src={item.image || `https://picsum.photos/seed/${item.id}/120/120`} className="w-18 h-18 rounded-[2rem] object-cover ring-2 ring-white/10 shadow-2xl transition-all group-hover:scale-110 group-hover:-translate-y-1.5" />
-                    <div className="absolute -top-1.5 -right-1.5 w-7 h-7 bg-zinc-800 rounded-full shadow-2xl flex items-center justify-center border border-white/20 scale-90">
-                      {item.privacy === 'Exceptional' ? <span className="text-[11px]">✨</span> : <span className="text-[11px]">📅</span>}
-                    </div>
-                  </div>
-                  <p className="text-[10px] font-black text-white/50 truncate w-full text-center uppercase tracking-tight group-hover:text-pink-500 transition-colors">{item.name}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Host Event Drawer Overlay */}
       {view === 'create-event' && (
