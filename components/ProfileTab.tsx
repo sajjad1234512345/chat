@@ -6,7 +6,7 @@ import {
   Clapperboard, Award, SquareUser, Pin, Sparkles, AtSign
 } from 'lucide-react';
 
-const ProfileTab: React.FC = () => {
+const ProfileTab: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
   const stats = [
     { label: 'posts', value: '151' },
     { label: 'followers', value: '112K' },
@@ -41,7 +41,7 @@ const ProfileTab: React.FC = () => {
       <div className="relative z-10 animate-in fade-in duration-700">
         {/* Navigation Header */}
         <header className="flex items-center justify-between px-4 py-4 backdrop-blur-md bg-black/40 sticky top-0 z-50">
-          <ChevronLeft className="w-7 h-7 stroke-[2.5]" />
+          <ChevronLeft className="w-7 h-7 stroke-[2.5] cursor-pointer active:scale-90 transition-transform" onClick={onBack} />
           <div className="flex items-center space-x-1">
             <span className="font-black text-[17px] tracking-tight">kdot.coleman</span>
             <div className="bg-blue-500 rounded-full p-[2px]">

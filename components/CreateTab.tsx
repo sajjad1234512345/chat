@@ -561,7 +561,7 @@ const CreateTab: React.FC<CreateTabProps> = ({ onCancel, initialMode = 'post' })
       {mode === 'selection' && (
          <div className="fixed inset-0 bg-[#0c0c0c] flex flex-col items-center justify-center p-8 space-y-8 animate-in zoom-in-95 duration-300">
             <div className="text-center">
-               <h2 className="text-4xl font-black text-white tracking-tighter italic brand-text">InstaMarket</h2>
+               <h2 className="text-4xl font-black text-white tracking-tighter italic brand-text">Games</h2>
                <p className="text-white/40 font-bold mt-2 uppercase tracking-[0.3em] text-[10px]">What's your vision?</p>
             </div>
             <div className="grid grid-cols-2 gap-6 w-full max-w-sm">

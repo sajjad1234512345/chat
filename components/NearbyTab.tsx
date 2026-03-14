@@ -115,15 +115,14 @@ const NearbyTab: React.FC = () => {
         const userIcon = L.divIcon({
           html: `
             <div class="relative flex items-center justify-center">
-              <div class="absolute w-14 h-14 bg-blue-500/10 rounded-full animate-pulse blur-md"></div>
-              <div class="absolute w-24 h-24 border border-blue-400/20 rounded-full animate-[ping_4s_linear_infinite]"></div>
-              <div class="w-6 h-6 bg-blue-600 rounded-full border-2 border-white shadow-[0_0_15px_rgba(37,99,235,0.6)] z-10"></div>
+              <div class="absolute w-16 h-16 bg-blue-500/20 rounded-full animate-pulse"></div>
+              <div class="w-4 h-4 bg-blue-600 rounded-full border-2 border-white shadow-md z-10"></div>
             </div>`,
           className: 'user-location-marker', iconSize: [24, 24], iconAnchor: [12, 12]
         });
         
-        userMarkerRef.current = L.marker([userLat, userLng], { icon: userIcon }).addTo(map);
-        map.setView([userLat, userLng], 15);
+        userMarkerRef.current = L.marker([userLat, userLng], { icon: userIcon }).addTo(mapRef.current);
+        mapRef.current.setView([userLat, userLng], 15);
         renderMarkers(userLat, userLng);
       });
 
@@ -134,7 +133,7 @@ const NearbyTab: React.FC = () => {
     }
   };
 
-  const renderMarkers = (userLat: number, userLng: number) => {
+  const renderMarkers = (userLat: number, userLng: number, currentEvents: NearbyEvent[] = events) => {
     const map = mapRef.current;
     if (!map) return;
 
@@ -145,7 +144,7 @@ const NearbyTab: React.FC = () => {
     });
     eventMarkersRef.current = [];
 
-    events.forEach(event => {
+    currentEvents.forEach(event => {
       if (!mapRef.current) return; // Ensure map still exists
 
       const isExceptional = event.privacy === 'Exceptional';
@@ -154,11 +153,15 @@ const NearbyTab: React.FC = () => {
       
       const iconHtml = `
         <div class="relative group">
-          <div class="absolute -inset-3 bg-[${color}]/20 rounded-full blur-xl group-hover:bg-[${color}]/40 transition-all duration-300"></div>
-          <div class="w-10 h-10 bg-[${color}] rounded-2xl border-2 border-white shadow-[0_8px_20px_${shadowColor}] flex items-center justify-center transform group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-300 backdrop-blur-sm">
-            ${isExceptional ? '<span class="text-xl">✨</span>' : '<span class="text-lg">📅</span>'}
+          <div class="absolute -inset-2 bg-[${color}]/20 rounded-full blur-md group-hover:bg-[${color}]/40 transition-all duration-300"></div>
+          <div class="w-10 h-10 bg-[${color}] rounded-full border-2 border-white shadow-md flex items-center justify-center transform group-hover:scale-110 transition-all duration-300">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
           </div>
-          ${isExceptional ? `<div class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-500 rounded-full border-2 border-white animate-bounce shadow-lg"></div>` : ''}
         </div>`;
       
       const icon = L.divIcon({
@@ -224,11 +227,12 @@ const NearbyTab: React.FC = () => {
       privacy: newEvent.privacy,
       image: newEvent.image || undefined
     };
-    setEvents([event, ...events]);
+    const newEvents = [event, ...events];
+    setEvents(newEvents);
     setView('map');
     if (userMarkerRef.current) {
       const pos = userMarkerRef.current.getLatLng();
-      renderMarkers(pos.lat, pos.lng);
+      renderMarkers(pos.lat, pos.lng, newEvents);
     }
   };
 
@@ -246,27 +250,36 @@ const NearbyTab: React.FC = () => {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] h-[90%] bg-pink-500/[0.03] blur-[140px] rounded-full" />
       </div>
 
-      {/* Glass Search UI - Darker glass for better contrast on white */}
+      {/* Glass Search UI - Light theme */}
       <div className="absolute top-4 left-4 right-4 z-10 pointer-events-none">
-        <div className="bg-zinc-900/90 backdrop-blur-3xl rounded-[2.5rem] flex items-center px-6 py-4.5 shadow-2xl pointer-events-auto max-w-lg mx-auto border border-white/10 ring-1 ring-white/5">
-          <div className="w-10 h-10 bg-gradient-to-tr from-pink-600 to-rose-500 rounded-full flex items-center justify-center text-white mr-4 shadow-xl shadow-pink-600/30">
+        <div className="bg-white rounded-full flex items-center px-2 py-2 shadow-lg pointer-events-auto max-w-lg mx-auto">
+          <div className="w-10 h-10 bg-pink-600 rounded-full flex items-center justify-center text-white mr-3 shrink-0 shadow-md">
             <Search className="w-5 h-5" />
           </div>
           <input 
             type="text" 
             placeholder="Search the white canvas..." 
-            className="bg-transparent border-none outline-none w-full text-sm font-bold text-white placeholder-white/40" 
+            className="bg-transparent border-none outline-none w-full text-sm font-bold text-zinc-800 placeholder-zinc-400" 
             value={address} 
             readOnly 
           />
-          <div className="h-6 w-px bg-white/20 mx-4" />
-          <button className="p-1 text-white/60 hover:text-pink-500 transition-colors pointer-events-auto">
-            <Filter className="w-5 h-5" />
-          </button>
         </div>
       </div>
 
-
+      {/* Categories - High Contrast Dark Mode Buttons */}
+      <div className="absolute top-20 left-4 right-4 z-10 flex space-x-3 overflow-x-auto scrollbar-hide pb-2 px-2 pointer-events-auto">
+        {['All', 'Hot Spots', 'Market', 'Events', 'Elite'].map(f => (
+          <button 
+            key={f} 
+            onClick={() => setFilter(f)} 
+            className={`flex-shrink-0 px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-[0.1em] shadow-lg transition-all duration-300 active:scale-95 border ${filter === f ? 'bg-pink-600 text-white border-pink-500' : 'bg-zinc-900/90 backdrop-blur-md text-white/80 border-white/10 hover:bg-zinc-800'}`}
+          >
+            {f === 'Hot Spots' && <Zap className="w-3 h-3 inline mr-1 mb-0.5" />}
+            {f === 'Elite' && <Sparkles className="w-3 h-3 inline mr-1 mb-0.5" />}
+            {f}
+          </button>
+        ))}
+      </div>
 
       {/* Floating Controls - High Contrast */}
       <div className="absolute bottom-32 right-4 z-10 flex flex-col space-y-4 pointer-events-auto">
@@ -281,7 +294,40 @@ const NearbyTab: React.FC = () => {
         </button>
       </div>
 
+      {/* Bottom Card: Nearby Happenings - Darker theme for better separation */}
+      {view === 'map' && (
+        <div className="absolute bottom-6 left-4 right-4 z-10">
+          <div className="bg-zinc-900/95 backdrop-blur-xl px-6 py-6 rounded-[2rem] shadow-2xl border border-white/10 max-w-lg mx-auto relative overflow-hidden">
+            <div className="flex justify-between items-center mb-6 relative z-10">
+              <div className="flex items-center space-x-3">
+                 <Target className="w-5 h-5 text-pink-500" />
+                 <h3 className="text-sm font-black tracking-[0.1em] text-white uppercase">Vibes in Radius</h3>
+              </div>
+              <button 
+                onClick={() => setView('create-event')} 
+                className="bg-white text-zinc-900 px-4 py-2 rounded-xl shadow-md flex items-center space-x-2 active:scale-95 transition-all"
+              >
+                <Plus className="w-4 h-4" />
+                <span className="text-[10px] font-black uppercase tracking-widest">Host Now</span>
+              </button>
+            </div>
 
+            <div className="flex space-x-4 overflow-x-auto scrollbar-hide pb-2 relative z-10">
+              {events.map(item => (
+                <div key={item.id} className="flex flex-col items-center space-y-2 group cursor-pointer flex-shrink-0 w-20">
+                  <div className="relative">
+                    <img src={item.image || `https://picsum.photos/seed/${item.id}/120/120`} className="w-16 h-16 rounded-full object-cover ring-2 ring-white/10 shadow-lg transition-all group-hover:scale-105" />
+                    <div className="absolute -top-1 -right-1 w-5 h-5 bg-zinc-800 rounded-full shadow-md flex items-center justify-center border border-white/20">
+                      {item.privacy === 'Exceptional' ? <span className="text-[8px]">✨</span> : <span className="text-[8px]">📅</span>}
+                    </div>
+                  </div>
+                  <p className="text-[9px] font-black text-white/60 truncate w-full text-center uppercase tracking-tight group-hover:text-pink-500 transition-colors">{item.name}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Host Event Drawer Overlay */}
       {view === 'create-event' && (

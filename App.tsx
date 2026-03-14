@@ -40,7 +40,7 @@ const SplashScreen = ({ onComplete }: { onComplete: () => void }) => {
       <div className="relative">
         <div className="absolute inset-0 bg-pink-500/20 blur-[100px] rounded-full animate-pulse" />
         <h1 className="text-5xl font-black italic brand-text tracking-tighter relative z-10 animate-in zoom-in-95 duration-1000">
-          InstaMarket
+          Games
         </h1>
       </div>
       <div className="absolute bottom-12 flex flex-col items-center space-y-4">
@@ -101,7 +101,7 @@ const App: React.FC = () => {
       case 'nearby': return <NearbyTab />;
       case 'giving': return <GivingTab />;
       case 'business': return <BusinessTab />;
-      case 'profile': return <ProfileTab />;
+      case 'profile': return <ProfileTab onBack={() => setActiveTab('home')} />;
       case 'reels': return <ReelsTab />;
       case 'events': return <EventsTab />;
       case 'jobs': return <JobsTab />;
@@ -132,10 +132,10 @@ const App: React.FC = () => {
           <div className="flex items-center shrink-0">
             {activeTab !== 'business' && (
               <h1 
-                className={`text-[13px] leading-[24px] font-black italic cursor-pointer active:scale-95 transition-transform brand-text`}
+                className={`text-[21px] w-[72px] h-[27px] leading-[27px] font-black italic cursor-pointer active:scale-95 transition-transform brand-text`}
                 onClick={() => setActiveTab('home')}
               >
-                InstaMarket
+                Games
               </h1>
             )}
           </div>
@@ -189,9 +189,9 @@ const App: React.FC = () => {
           <div className="flex items-center justify-center px-1">
             <button 
               onClick={handleCreatePost}
-              className="w-12 h-12 bg-gradient-to-tr from-[#ff416c] to-[#ff4b2b] text-white rounded-2xl flex items-center justify-center shadow-[0_0_25px_rgba(255,75,43,0.6)] active:scale-75 hover:scale-105 transition-all transform -translate-y-2 border border-white/10"
+              className="w-12 h-12 bg-gradient-to-tr from-[#ff416c] to-[#ff4b2b] text-white rounded-full flex items-center justify-center shadow-[0_0_25px_rgba(255,75,43,0.6)] active:scale-75 hover:scale-105 transition-all transform -translate-y-2 border border-white/10"
               aria-label="Create Post"
-              style={{ height: '37px', marginTop: '5px' }}
+              style={{ height: '40px', width: '40px', marginTop: '5px' }}
             >
               <Plus className="w-7 h-7 stroke-[3]" />
             </button>

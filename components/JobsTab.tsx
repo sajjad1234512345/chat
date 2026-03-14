@@ -7,7 +7,7 @@ const MOCK_JOBS: Job[] = [
   {
     id: 'j1',
     title: 'Senior Frontend Engineer',
-    company: 'InstaMarket Tech',
+    company: 'Games Tech',
     logo: 'https://picsum.photos/seed/techlogo/100/100',
     location: 'Remote',
     salary: '$120k - $160k',
@@ -92,7 +92,7 @@ const JobsTab: React.FC = () => {
 
             <div>
               <label className="block text-xs font-bold text-white/40 uppercase mb-2">Company Name</label>
-              <input required type="text" placeholder="e.g. InstaMarket Inc." className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 outline-none focus:ring-2 focus:ring-blue-500/20 text-sm font-medium text-white" value={newJob.company} onChange={e => setNewJob({...newJob, company: e.target.value})} />
+              <input required type="text" placeholder="e.g. Games Inc." className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 outline-none focus:ring-2 focus:ring-blue-500/20 text-sm font-medium text-white" value={newJob.company} onChange={e => setNewJob({...newJob, company: e.target.value})} />
             </div>
 
             <button type="submit" className="w-full bg-blue-600 text-white py-4 rounded-2xl font-black text-lg shadow-xl active:scale-95 transition-transform">
