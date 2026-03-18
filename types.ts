@@ -134,6 +134,46 @@ export interface Bet {
   image?: string;
 }
 
+export interface Event {
+  id: string;
+  name: string;
+  description: string;
+  image: string;
+  startDate: any; // Firestore Timestamp
+  endDate: any; // Firestore Timestamp
+  openingTime: string;
+  location: { lat: number; lng: number };
+  visibility: 'public' | 'private';
+  participation: 'free' | 'paid';
+  price?: number;
+  hostId: string;
+  participants: string[];
+}
+
+export interface Accommodation {
+  id: string;
+  name: string;
+  description: string;
+  image: string;
+  pricePerNight: number;
+  location: { lat: number; lng: number };
+  availableDates: string[];
+  bookedDates: string[];
+  whatsapp: string;
+  phone: string;
+  hostId: string;
+}
+
+export interface Booking {
+  id: string;
+  accommodationId: string;
+  guestId: string;
+  checkIn: any; // Firestore Timestamp
+  checkOut: any; // Firestore Timestamp
+  totalCost: number;
+  status: 'pending' | 'confirmed' | 'cancelled';
+}
+
 export interface Job {
   id: string;
   title: string;

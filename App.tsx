@@ -170,8 +170,8 @@ const App: React.FC = () => {
       )}
 
       {/* Main Content Area */}
-      <main className={`relative z-10 flex-grow ${activeTab === 'create' || isStoryActive ? '' : 'pb-14'}`}>
-        <div className="w-full">
+      <main className={`relative z-10 flex-grow flex flex-col ${activeTab === 'create' || isStoryActive ? '' : 'pb-14'}`}>
+        <div className="w-full flex-grow flex flex-col">
           {renderContent()}
         </div>
       </main>

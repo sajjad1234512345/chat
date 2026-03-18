@@ -1,58 +1,19 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import L from 'leaflet';
-import { MapPin, Search, Navigation, Users, Store, Calendar, Filter, List, Locate, Plus, X, Camera, Clock, Shield, Sparkles, Image as ImageIcon, ChevronLeft, Zap, Target } from 'lucide-react';
-
-interface NearbyEvent {
-  id: string;
-  type: 'event' | 'exceptional';
-  name: string;
-  dist: string;
-  coords: [number, number];
-  date: string;
-  time: string;
-  privacy: 'Public' | 'Private' | 'Exceptional';
-  image?: string;
-}
-
-const INITIAL_EVENTS: NearbyEvent[] = [
-  { id: 'e1', type: 'event', name: 'Elite Coffee Meetup', dist: '500m', coords: [0.003, -0.001], date: '2024-06-15', time: '10:00', privacy: 'Public', image: 'https://picsum.photos/seed/cafe/400/300' },
-  { id: 'e2', type: 'exceptional', name: 'Vibrant Opening Gala', dist: '1.5km', coords: [-0.004, 0.002], date: '2024-06-20', time: '19:00', privacy: 'Exceptional', image: 'https://picsum.photos/seed/gala/400/300' },
-  { id: 'e3', type: 'event', name: 'Digital Art Showcase', dist: '800m', coords: [0.001, 0.005], date: '2024-06-18', time: '14:00', privacy: 'Public', image: 'https://picsum.photos/seed/art/400/300' },
-];
+import { MapPin, Search, Navigation, Users, Store, Calendar, Filter, List, Locate, Plus, X, Camera, Clock, Shield, Sparkles, Image as ImageIcon, ChevronLeft, Zap, Target, Phone, MessageCircle } from 'lucide-react';
+import { mockEvents, mockHousing, Event, Housing } from '../src/constants';
 
 const NearbyTab: React.FC = () => {
-  const [view, setView] = useState<'map' | 'create-event'>('map');
-  const [filter, setFilter] = useState('All');
+  const [view, setView] = useState<'map' | 'create-event' | 'create-housing' | 'housing-details'>('map');
+  const [filter, setFilter] = useState<'All' | 'Events' | 'Housing'>('All');
+  const [selectedHousing, setSelectedHousing] = useState<Housing | null>(null);
   const mapRef = useRef<L.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  const userMarkerRef = useRef<L.Marker | null>(null);
-  const destinationMarkerRef = useRef<L.Marker | null>(null);
   const eventMarkersRef = useRef<L.Marker[]>([]);
-  const watchIdRef = useRef<number | null>(null);
+  const housingMarkersRef = useRef<L.Marker[]>([]);
+  const userMarkerRef = useRef<L.Marker | null>(null);
   const [address, setAddress] = useState('');
-  const [events, setEvents] = useState<NearbyEvent[]>(INITIAL_EVENTS);
-
-  const [newEvent, setNewEvent] = useState({
-    name: '',
-    date: '',
-    time: '',
-    privacy: 'Public' as 'Public' | 'Private' | 'Exceptional',
-    image: null as string | null,
-    coords: null as [number, number] | null
-  });
-
-  const reverseGeocode = async (lat: number, lng: number) => {
-    return `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
-  };
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const reader = new FileReader();
-      reader.onload = (event) => setNewEvent({ ...newEvent, image: event.target?.result as string });
-      reader.readAsDataURL(e.target.files[0]);
-    }
-  };
 
   const initMap = () => {
     if (!mapContainerRef.current || mapRef.current) return;
@@ -60,384 +21,215 @@ const NearbyTab: React.FC = () => {
     const map = L.map(mapContainerRef.current, { 
       zoomControl: false, 
       attributionControl: false,
-      fadeAnimation: true,
-      zoomAnimation: true
-    }).setView([0, 0], 2);
+    }).setView([37.422, -122.084], 15);
     
     mapRef.current = map;
 
-    // Use CartoDB Positron (Light/White) for the "Write-on" effect
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { 
       maxZoom: 20,
     }).addTo(map);
 
-    setTimeout(() => {
-      if (mapRef.current) {
-        mapRef.current.invalidateSize();
-      }
-    }, 250);
-
-    const destIcon = L.divIcon({
-      html: `
-        <div class="relative flex items-center justify-center">
-          <div class="absolute w-12 h-12 bg-pink-500/40 rounded-full animate-ping"></div>
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 0 12px rgba(0, 0, 0, 0.3))">
-            <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13 15.87 2 12 2Z" fill="url(#grad_nearby_white)" />
-            <circle cx="12" cy="9" r="3" fill="white" />
-            <defs>
-              <linearGradient id="grad_nearby_white" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style="stop-color:#ec4899;stop-opacity:1" />
-                <stop offset="100%" style="stop-color:#f43f5e;stop-opacity:1" />
-              </linearGradient>
-            </defs>
-          </svg>
-        </div>`,
-      className: 'destination-marker', iconSize: [32, 32], iconAnchor: [16, 32]
-    });
-
-    map.on('click', (e: L.LeafletMouseEvent) => {
-      const { lat, lng } = e.latlng;
-      if (destinationMarkerRef.current) {
-        destinationMarkerRef.current.setLatLng([lat, lng]);
-      } else {
-        destinationMarkerRef.current = L.marker([lat, lng], { icon: destIcon }).addTo(map);
-      }
-      
-      setNewEvent(prev => ({ ...prev, coords: [lat, lng] }));
-      reverseGeocode(lat, lng).then(addr => setAddress(addr));
-    });
-
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        if (!mapRef.current) return; // Ensure map still exists
-
-        const { latitude: userLat, longitude: userLng } = position.coords;
-        const userIcon = L.divIcon({
-          html: `
-            <div class="relative flex items-center justify-center">
-              <div class="absolute w-16 h-16 bg-blue-500/20 rounded-full animate-pulse"></div>
-              <div class="w-4 h-4 bg-blue-600 rounded-full border-2 border-white shadow-md z-10"></div>
-            </div>`,
-          className: 'user-location-marker', iconSize: [24, 24], iconAnchor: [12, 12]
-        });
-        
-        userMarkerRef.current = L.marker([userLat, userLng], { icon: userIcon }).addTo(mapRef.current);
-        mapRef.current.setView([userLat, userLng], 15);
-        renderMarkers(userLat, userLng);
-      });
-
-      watchIdRef.current = navigator.geolocation.watchPosition((position) => {
-        const { latitude: lat, longitude: lng } = position.coords;
-        if (userMarkerRef.current && mapRef.current) userMarkerRef.current.setLatLng([lat, lng]);
-      });
-    }
+    renderMarkers();
   };
 
-  const renderMarkers = (userLat: number, userLng: number, currentEvents: NearbyEvent[] = events) => {
+  const renderMarkers = () => {
     const map = mapRef.current;
     if (!map) return;
 
-    eventMarkersRef.current.forEach(m => {
-      if (map.hasLayer(m)) {
-        map.removeLayer(m);
-      }
-    });
+    // Clear old markers
+    eventMarkersRef.current.forEach(m => m.remove());
+    housingMarkersRef.current.forEach(m => m.remove());
     eventMarkersRef.current = [];
+    housingMarkersRef.current = [];
 
-    currentEvents.forEach(event => {
-      if (!mapRef.current) return; // Ensure map still exists
-
-      const isExceptional = event.privacy === 'Exceptional';
-      const color = isExceptional ? '#EAB308' : '#EC4899';
-      const shadowColor = isExceptional ? 'rgba(234, 179, 8, 0.4)' : 'rgba(236, 72, 153, 0.4)';
-      
-      const iconHtml = `
-        <div class="relative group">
-          <div class="absolute -inset-2 bg-[${color}]/20 rounded-full blur-md group-hover:bg-[${color}]/40 transition-all duration-300"></div>
-          <div class="w-10 h-10 bg-[${color}] rounded-full border-2 border-white shadow-md flex items-center justify-center transform group-hover:scale-110 transition-all duration-300">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-              <line x1="16" y1="2" x2="16" y2="6"></line>
-              <line x1="8" y1="2" x2="8" y2="6"></line>
-              <line x1="3" y1="10" x2="21" y2="10"></line>
-            </svg>
-          </div>
-        </div>`;
-      
-      const icon = L.divIcon({
-        html: iconHtml,
-        className: 'event-marker',
-        iconSize: [40, 40],
-        iconAnchor: [20, 20]
-      });
-
-      const marker = L.marker([userLat + event.coords[0], userLng + event.coords[1]], { icon })
-        .addTo(map)
-        .bindPopup(`
-          <div class="p-0 min-w-[200px] bg-white overflow-hidden rounded-[2.2rem] border border-zinc-200 shadow-2xl">
-            <div class="h-32 w-full bg-zinc-100 relative">
-               <img src="${event.image || `https://picsum.photos/seed/${event.id}/200/120`}" class="w-full h-full object-cover" />
-               <div class="absolute inset-0 bg-gradient-to-t from-white/90 via-transparent to-transparent"></div>
-               <div class="absolute bottom-3 left-4">
-                  <span class="text-[9px] font-black text-pink-600 uppercase tracking-[0.2em] bg-white/80 backdrop-blur-md px-3 py-1 rounded-full border border-pink-100 shadow-sm">${event.privacy}</span>
-               </div>
-            </div>
-            <div class="p-5">
-              <h4 class="font-black text-[16px] mb-2.5 text-zinc-900 tracking-tight leading-none">${event.name}</h4>
-              <div class="flex items-center text-[10px] text-zinc-400 space-x-4">
-                <span class="flex items-center font-bold tracking-widest uppercase">📅 ${event.date}</span>
-                <span class="flex items-center font-bold tracking-widest uppercase">⏰ ${event.time}</span>
-              </div>
-              <button class="w-full mt-5 py-3 bg-zinc-900 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:shadow-xl hover:shadow-zinc-500/20 active:scale-95 transition-all">Join Vibe</button>
-            </div>
-          </div>
-        `, {
-          className: 'custom-leaflet-popup',
-          closeButton: false
+    // Render Events
+    if (filter === 'All' || filter === 'Events') {
+      mockEvents.forEach(event => {
+        const icon = L.divIcon({
+          html: `<div class="w-8 h-8 bg-pink-500 rounded-full border-2 border-white flex items-center justify-center text-white font-bold">E</div>`,
+          className: 'event-marker',
+          iconSize: [32, 32],
         });
-      
-      eventMarkersRef.current.push(marker);
-    });
+        const marker = L.marker([event.lat, event.lng], { icon }).addTo(map);
+        eventMarkersRef.current.push(marker);
+      });
+    }
+
+    // Render Housing
+    if (filter === 'All' || filter === 'Housing') {
+      mockHousing.forEach(housing => {
+        const icon = L.divIcon({
+          html: `<div class="w-8 h-8 bg-blue-500 rounded-full border-2 border-white flex items-center justify-center text-white font-bold">H</div>`,
+          className: 'housing-marker',
+          iconSize: [32, 32],
+        });
+        const marker = L.marker([housing.lat, housing.lng], { icon }).addTo(map);
+        marker.on('click', () => {
+          setSelectedHousing(housing);
+          setView('housing-details');
+        });
+        housingMarkersRef.current.push(marker);
+      });
+    }
   };
 
   useEffect(() => {
     initMap();
+    
+    // Get user location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          if (mapRef.current) {
+            mapRef.current.setView([latitude, longitude], 14);
+            
+            const userIcon = L.divIcon({
+              html: `<div class="w-5 h-5 bg-blue-500 rounded-full border-2 border-white shadow-[0_0_15px_rgba(59,130,246,0.8)] flex items-center justify-center animate-pulse"></div>`,
+              className: 'user-marker',
+              iconSize: [20, 20],
+            });
+            
+            if (userMarkerRef.current) {
+              userMarkerRef.current.setLatLng([latitude, longitude]);
+            } else {
+              userMarkerRef.current = L.marker([latitude, longitude], { icon: userIcon }).addTo(mapRef.current);
+            }
+          }
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+        },
+        { enableHighAccuracy: true }
+      );
+    }
+
+    const resizeObserver = new ResizeObserver(() => {
+      if (mapRef.current) {
+        mapRef.current.invalidateSize();
+      }
+    });
+
+    if (mapContainerRef.current) {
+      resizeObserver.observe(mapContainerRef.current);
+    }
+
     return () => {
-      if (watchIdRef.current !== null) navigator.geolocation.clearWatch(watchIdRef.current);
+      resizeObserver.disconnect();
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
-        userMarkerRef.current = null;
-        destinationMarkerRef.current = null;
-        eventMarkersRef.current = [];
       }
     };
   }, []);
 
+  useEffect(() => {
+    renderMarkers();
+  }, [filter]);
+
   const handleCreateEvent = (e: React.FormEvent) => {
     e.preventDefault();
-    const event: NearbyEvent = {
-      id: `e-${Date.now()}`,
-      type: newEvent.privacy === 'Exceptional' ? 'exceptional' : 'event',
-      name: newEvent.name,
-      dist: '0m',
-      coords: newEvent.coords || [0.001, 0.001],
-      date: newEvent.date,
-      time: newEvent.time,
-      privacy: newEvent.privacy,
-      image: newEvent.image || undefined
-    };
-    const newEvents = [event, ...events];
-    setEvents(newEvents);
+    // Logic to save event (mocked)
     setView('map');
-    if (userMarkerRef.current) {
-      const pos = userMarkerRef.current.getLatLng();
-      renderMarkers(pos.lat, pos.lng, newEvents);
+  };
+
+  const handleCreateHousing = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Logic to save housing (mocked)
+    setView('map');
+  };
+
+  const handleLocateMe = () => {
+    if (navigator.geolocation && mapRef.current) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          mapRef.current?.setView([latitude, longitude], 14);
+          
+          if (userMarkerRef.current) {
+            userMarkerRef.current.setLatLng([latitude, longitude]);
+          }
+        },
+        (error) => console.error("Error getting location:", error),
+        { enableHighAccuracy: true }
+      );
     }
   };
 
   return (
-    <div className="relative flex flex-col h-[calc(100vh-120px)] w-full bg-[#f8f9fa] overflow-hidden">
-      {/* Map Container - Optimized for "Write-on" White Theme */}
-      <div 
-        ref={mapContainerRef} 
-        className="absolute inset-0 z-0 block w-full h-full bg-[#f8f9fa]" 
-        style={{ filter: 'saturate(1.2) contrast(1.05)' }}
-      />
+    <div className="relative flex flex-col flex-grow w-full bg-[#f8f9fa] overflow-hidden">
+      <div ref={mapContainerRef} className="absolute inset-0 z-0 block w-full h-full" />
 
-      {/* Global Background Glows - Adjusted for Light Mode */}
-      <div className="absolute inset-0 pointer-events-none z-[1]">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] h-[90%] bg-pink-500/[0.03] blur-[140px] rounded-full" />
-      </div>
-
-      {/* Glass Search UI - Light theme */}
-      <div className="absolute top-4 left-4 right-4 z-10 pointer-events-none">
-        <div className="bg-white rounded-full flex items-center px-2 py-2 shadow-lg pointer-events-auto max-w-lg mx-auto">
-          <div className="w-10 h-10 bg-pink-600 rounded-full flex items-center justify-center text-white mr-3 shrink-0 shadow-md">
-            <Search className="w-5 h-5" />
-          </div>
-          <input 
-            type="text" 
-            placeholder="Search the white canvas..." 
-            className="bg-transparent border-none outline-none w-full text-sm font-bold text-zinc-800 placeholder-zinc-400" 
-            value={address} 
-            readOnly 
-          />
-        </div>
-      </div>
-
-      {/* Categories - High Contrast Dark Mode Buttons */}
-      <div className="absolute top-20 left-4 right-4 z-10 flex space-x-3 overflow-x-auto scrollbar-hide pb-2 px-2 pointer-events-auto">
-        {['All', 'Hot Spots', 'Market', 'Events', 'Elite'].map(f => (
+      {/* Filter UI */}
+      <div className="absolute top-4 left-4 z-10 flex space-x-2">
+        {(['All', 'Events', 'Housing'] as const).map(f => (
           <button 
             key={f} 
             onClick={() => setFilter(f)} 
-            className={`flex-shrink-0 px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-[0.1em] shadow-lg transition-all duration-300 active:scale-95 border ${filter === f ? 'bg-pink-600 text-white border-pink-500' : 'bg-zinc-900/90 backdrop-blur-md text-white/80 border-white/10 hover:bg-zinc-800'}`}
+            className={`px-4 py-2 rounded-full text-xs font-bold shadow-md ${filter === f ? 'bg-zinc-900 text-white' : 'bg-white text-zinc-900'}`}
           >
-            {f === 'Hot Spots' && <Zap className="w-3 h-3 inline mr-1 mb-0.5" />}
-            {f === 'Elite' && <Sparkles className="w-3 h-3 inline mr-1 mb-0.5" />}
             {f}
           </button>
         ))}
       </div>
 
-      {/* Floating Controls - High Contrast */}
-      <div className="absolute bottom-32 right-4 z-10 flex flex-col space-y-4 pointer-events-auto">
-        <button className="p-4.5 bg-zinc-900/90 backdrop-blur-3xl rounded-3xl shadow-2xl text-white/60 border border-white/10 hover:text-white active:scale-95 transition-all">
-          <Navigation className="w-6 h-6" />
-        </button>
-        <button 
-          onClick={() => { if (userMarkerRef.current && mapRef.current) mapRef.current.setView(userMarkerRef.current.getLatLng(), 16); }} 
-          className="p-4.5 bg-zinc-900 text-white rounded-3xl shadow-2xl active:scale-95 transition-all border border-white/10"
-        >
-          <Locate className="w-6 h-6" />
-        </button>
+      {/* Locate Me Button */}
+      <button 
+        onClick={handleLocateMe}
+        className="absolute top-4 right-4 z-10 bg-white p-2.5 rounded-full shadow-md text-zinc-900 hover:bg-gray-50 active:scale-95 transition-transform mt-[480px]"
+      >
+        <Locate className="w-5 h-5" />
+      </button>
+
+      {/* Add Buttons */}
+      <div className="absolute bottom-20 left-4 z-10 flex flex-col space-y-2">
+        <button onClick={() => setView('create-event')} className="bg-pink-600 text-white px-4 py-2 rounded-full text-xs font-bold">Host Event</button>
+        <button onClick={() => setView('create-housing')} className="bg-blue-600 text-white px-4 py-2 rounded-full text-xs font-bold">Add Housing</button>
       </div>
 
-      {/* Bottom Card: Nearby Happenings - Darker theme for better separation */}
-      {view === 'map' && (
-        <div className="absolute bottom-6 left-4 right-4 z-10">
-          <div className="bg-zinc-900/95 backdrop-blur-xl px-6 py-6 rounded-[2rem] shadow-2xl border border-white/10 max-w-lg mx-auto relative overflow-hidden">
-            <div className="flex justify-between items-center mb-6 relative z-10">
-              <div className="flex items-center space-x-3">
-                 <Target className="w-5 h-5 text-pink-500" />
-                 <h3 className="text-sm font-black tracking-[0.1em] text-white uppercase">Vibes in Radius</h3>
-              </div>
-              <button 
-                onClick={() => setView('create-event')} 
-                className="bg-white text-zinc-900 px-4 py-2 rounded-xl shadow-md flex items-center space-x-2 active:scale-95 transition-all"
-              >
-                <Plus className="w-4 h-4" />
-                <span className="text-[10px] font-black uppercase tracking-widest">Host Now</span>
-              </button>
-            </div>
-
-            <div className="flex space-x-4 overflow-x-auto scrollbar-hide pb-2 relative z-10">
-              {events.map(item => (
-                <div key={item.id} className="flex flex-col items-center space-y-2 group cursor-pointer flex-shrink-0 w-20">
-                  <div className="relative">
-                    <img src={item.image || `https://picsum.photos/seed/${item.id}/120/120`} className="w-16 h-16 rounded-full object-cover ring-2 ring-white/10 shadow-lg transition-all group-hover:scale-105" />
-                    <div className="absolute -top-1 -right-1 w-5 h-5 bg-zinc-800 rounded-full shadow-md flex items-center justify-center border border-white/20">
-                      {item.privacy === 'Exceptional' ? <span className="text-[8px]">✨</span> : <span className="text-[8px]">📅</span>}
-                    </div>
-                  </div>
-                  <p className="text-[9px] font-black text-white/60 truncate w-full text-center uppercase tracking-tight group-hover:text-pink-500 transition-colors">{item.name}</p>
-                </div>
-              ))}
-            </div>
+      {/* Housing Details Drawer */}
+      {view === 'housing-details' && selectedHousing && (
+        <div className="absolute inset-x-0 bottom-0 top-20 z-50 bg-white rounded-t-3xl p-6 shadow-2xl">
+          <button onClick={() => setView('map')} className="mb-4"><X /></button>
+          <h2 className="text-2xl font-black mb-2">{selectedHousing.title}</h2>
+          <p className="text-lg font-bold text-pink-600 mb-4">${selectedHousing.pricePerNight} / night</p>
+          <div className="flex space-x-4">
+            <a href={`https://wa.me/${selectedHousing.whatsappNumber}`} className="flex-1 bg-green-500 text-white py-3 rounded-xl flex items-center justify-center space-x-2">
+              <MessageCircle /> <span>WhatsApp</span>
+            </a>
+            <a href={`tel:${selectedHousing.phoneNumber}`} className="flex-1 bg-blue-500 text-white py-3 rounded-xl flex items-center justify-center space-x-2">
+              <Phone /> <span>Call</span>
+            </a>
           </div>
         </div>
       )}
 
-      {/* Host Event Drawer Overlay */}
+      {/* Create Event Form */}
       {view === 'create-event' && (
-        <div className="absolute inset-x-0 bottom-0 top-0 z-50 bg-[#f8f9fa]/95 backdrop-blur-3xl overflow-y-auto animate-in slide-in-from-bottom duration-500">
-          <div className="p-8 pb-32 max-w-lg mx-auto min-h-full">
-            <header className="flex items-center justify-between mb-12">
-              <div className="flex items-center space-x-6">
-                <button onClick={() => setView('map')} className="p-3.5 bg-zinc-900/5 rounded-2xl shadow-sm border border-zinc-200 hover:bg-zinc-100 active:scale-95 transition-all">
-                  <ChevronLeft className="w-7 h-7 text-zinc-900" />
-                </button>
-                <h2 className="text-3xl font-black text-zinc-900 tracking-tight">Host Your Vibe</h2>
-              </div>
-            </header>
-
-            <form onSubmit={handleCreateEvent} className="space-y-10">
-              <div 
-                onClick={() => document.getElementById('event-img-upload-nearby')?.click()}
-                className="w-full aspect-video bg-zinc-100 border-2 border-dashed border-zinc-300 rounded-[3.5rem] flex flex-col items-center justify-center text-zinc-400 space-y-4 cursor-pointer hover:bg-zinc-50 hover:border-pink-500/50 transition-all overflow-hidden shadow-sm group"
-              >
-                {newEvent.image ? (
-                  <img src={newEvent.image} className="w-full h-full object-cover" />
-                ) : (
-                  <>
-                    <div className="p-5 bg-white rounded-[2rem] shadow-sm group-hover:bg-pink-50 transition-colors">
-                      <ImageIcon className="w-11 h-11 group-hover:text-pink-500" />
-                    </div>
-                    <span className="text-[11px] font-black uppercase tracking-[0.3em] text-zinc-500">Drop Banner Asset</span>
-                  </>
-                )}
-                <input id="event-img-upload-nearby" type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
-              </div>
-
-              <div className="space-y-8">
-                <div className="bg-white p-7 rounded-[2.5rem] border border-zinc-200 shadow-sm focus-within:ring-2 ring-pink-500/10 transition-all">
-                  <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-2.5 ml-1">Event Vibe</label>
-                  <input required type="text" placeholder="e.g. Neon Rooftop Party" className="w-full bg-transparent border-none p-0 outline-none text-2xl font-black text-zinc-900 placeholder-zinc-200" value={newEvent.name} onChange={e => setNewEvent({...newEvent, name: e.target.value})} />
-                </div>
-
-                <div className="grid grid-cols-2 gap-5">
-                  <div className="bg-white p-7 rounded-[2.5rem] border border-zinc-200 shadow-sm">
-                    <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-2.5 ml-1">Date</label>
-                    <input required type="date" className="w-full bg-transparent border-none p-0 outline-none text-sm font-black text-zinc-900" value={newEvent.date} onChange={e => setNewEvent({...newEvent, date: e.target.value})} />
-                  </div>
-                  <div className="bg-white p-7 rounded-[2.5rem] border border-zinc-200 shadow-sm">
-                    <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-2.5 ml-1">Time</label>
-                    <input required type="time" className="w-full bg-transparent border-none p-0 outline-none text-sm font-black text-zinc-900" value={newEvent.time} onChange={e => setNewEvent({...newEvent, time: e.target.value})} />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-6 ml-2">Privacy & Tiers</label>
-                  <div className="grid grid-cols-3 gap-4">
-                    {[
-                      { id: 'Public', icon: Users, color: 'text-blue-600', bg: 'bg-blue-50' },
-                      { id: 'Private', icon: Shield, color: 'text-zinc-400', bg: 'bg-zinc-50' },
-                      { id: 'Exceptional', icon: Sparkles, color: 'text-yellow-600', bg: 'bg-yellow-50' }
-                    ].map(tier => (
-                      <button 
-                        key={tier.id}
-                        type="button"
-                        onClick={() => setNewEvent({...newEvent, privacy: tier.id as any})}
-                        className={`flex flex-col items-center p-6 rounded-[2.5rem] border-2 transition-all ${newEvent.privacy === tier.id ? 'border-pink-500 bg-white shadow-xl scale-105' : 'border-zinc-100 bg-transparent opacity-60 hover:opacity-100'}`}
-                      >
-                        <div className={`p-4 ${tier.bg} rounded-2xl mb-3 ${tier.color}`}>
-                          <tier.icon className="w-7 h-7" />
-                        </div>
-                        <span className="text-[10px] font-black uppercase text-zinc-900 tracking-widest">{tier.id}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="p-7 bg-zinc-900 rounded-[3rem] flex items-center justify-between border border-white/10 shadow-2xl">
-                  <div className="flex items-center space-x-6">
-                    <div className="p-4 bg-pink-600/30 rounded-2xl text-pink-500">
-                      <MapPin className="w-7 h-7" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-black text-white uppercase tracking-widest leading-none mb-1.5 text-white">Drop Pin</p>
-                      <p className="text-[11px] text-white/40 font-bold leading-none tracking-tight">Tap map through form</p>
-                    </div>
-                  </div>
-                  {newEvent.coords && <div className="w-5 h-5 bg-green-500 rounded-full animate-pulse border-2 border-[#1f1f23] shadow-[0_0_20px_rgba(34,197,94,0.8)]" />}
-                </div>
-              </div>
-
-              <button type="submit" className="w-full bg-zinc-900 text-white py-6 rounded-[3rem] font-black text-lg shadow-xl hover:shadow-zinc-500/20 active:scale-[0.98] transition-all tracking-[0.3em] uppercase">
-                LAUNCH VIBE
-              </button>
-            </form>
-          </div>
+        <div className="absolute inset-0 z-50 bg-white p-6 overflow-y-auto">
+          <button onClick={() => setView('map')} className="mb-4"><X /></button>
+          <h2 className="text-2xl font-black mb-4">Host New Event</h2>
+          <form onSubmit={handleCreateEvent} className="space-y-4">
+            <input type="text" placeholder="Event Title" className="w-full p-3 border rounded-xl" required />
+            <input type="date" className="w-full p-3 border rounded-xl" required />
+            <button type="submit" className="w-full bg-pink-600 text-white py-3 rounded-xl font-bold">Create Event</button>
+          </form>
         </div>
       )}
 
-      {/* Global Style for Popups */}
-      <style>{`
-        .custom-leaflet-popup .leaflet-popup-content-wrapper {
-          padding: 0;
-          background: transparent !important;
-          box-shadow: none !important;
-          border-radius: 2.2rem;
-        }
-        .custom-leaflet-popup .leaflet-popup-tip {
-          background: #ffffff !important;
-        }
-        .custom-leaflet-popup .leaflet-popup-content {
-          margin: 0;
-          border-radius: 2.2rem;
-        }
-      `}</style>
+      {/* Create Housing Form */}
+      {view === 'create-housing' && (
+        <div className="absolute inset-0 z-50 bg-white p-6 overflow-y-auto">
+          <button onClick={() => setView('map')} className="mb-4"><X /></button>
+          <h2 className="text-2xl font-black mb-4">Add Housing</h2>
+          <form onSubmit={handleCreateHousing} className="space-y-4">
+            <input type="text" placeholder="Housing Title" className="w-full p-3 border rounded-xl" required />
+            <input type="number" placeholder="Price per night" className="w-full p-3 border rounded-xl" required />
+            <input type="text" placeholder="WhatsApp Number" className="w-full p-3 border rounded-xl" required />
+            <button type="submit" className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold">Add Housing</button>
+          </form>
+        </div>
+      )}
     </div>
   );
 };
