@@ -1,5 +1,5 @@
 
-export type TabType = 'home' | 'search' | 'shopping' | 'wallet' | 'nearby' | 'giving' | 'business' | 'create' | 'profile' | 'messages' | 'reels' | 'events' | 'jobs' | 'ads' | 'notifications';
+export type TabType = 'home' | 'search' | 'shopping' | 'wallet' | 'map' | 'giving' | 'business' | 'create' | 'profile' | 'messages' | 'reels' | 'events' | 'jobs' | 'ads' | 'notifications';
 
 export interface PostMedia {
   type: 'image' | 'video';
@@ -101,7 +101,7 @@ export interface ChatThread {
   lastMessage: string;
   time: string;
   unreadCount: number;
-  category?: 'messages' | 'foreign' | 'nearby';
+  category?: 'messages' | 'foreign' | 'map';
 }
 
 export interface Reel {
