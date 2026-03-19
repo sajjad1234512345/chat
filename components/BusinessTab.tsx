@@ -124,6 +124,234 @@ const BusinessTab: React.FC = () => {
           color="text-purple-500" 
         />
       </div>
+
+      {/* Recent Activity Section */}
+      <section className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-8 shadow-2xl">
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h3 className="text-xl font-black text-white tracking-tighter uppercase italic">Recent Activity</h3>
+            <p className="text-[9px] text-white/30 font-black uppercase tracking-[0.3em] mt-1">Latest system events</p>
+          </div>
+          <button className="p-2 bg-white/5 rounded-xl text-white/40 hover:text-white transition-all">
+            <MoreHorizontal className="w-5 h-5" />
+          </button>
+        </div>
+        <div className="space-y-4">
+          {[
+            { user: 'Ava Jones', action: 'Created new campaign', time: '2m ago', icon: Megaphone, color: 'text-pink-500' },
+            { user: 'Samuel Young', action: 'Updated billing info', time: '15m ago', icon: CreditCard, color: 'text-blue-500' },
+            { user: 'Lincoln Rogers', action: 'System backup completed', time: '1h ago', icon: ShieldCheck, color: 'text-emerald-500' },
+            { user: 'Claire Peterson', action: 'New team member joined', time: '3h ago', icon: UserX, color: 'text-purple-500' },
+          ].map((item, i) => (
+            <div key={i} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-white/10 transition-all group">
+              <div className="flex items-center space-x-4">
+                <div className={`p-3 bg-white/5 rounded-xl ${item.color}`}>
+                  <item.icon className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-xs font-black text-white italic">{item.user}</p>
+                  <p className="text-[10px] text-white/40 font-black uppercase tracking-widest">{item.action}</p>
+                </div>
+              </div>
+              <span className="text-[9px] text-white/20 font-black uppercase tracking-widest">{item.time}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+
+  const renderTeam = () => (
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-700">
+      <div className="flex justify-between items-end">
+        <div>
+          <h3 className="text-3xl font-black text-white tracking-tighter uppercase italic">Team Management</h3>
+          <p className="text-[10px] text-white/40 font-black uppercase tracking-[0.4em] mt-1">Manage your organization members</p>
+        </div>
+        <div className="flex space-x-2">
+          <button className="p-3 bg-white/5 border border-white/10 rounded-2xl text-white/40 hover:text-white transition-all">
+            <Search className="w-5 h-5" />
+          </button>
+          <button className="p-3 bg-white/5 border border-white/10 rounded-2xl text-white/40 hover:text-white transition-all">
+            <Filter className="w-5 h-5" />
+          </button>
+        </div>
+      </div>
+
+      <div className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="border-b border-white/5">
+                <th className="p-6 text-[10px] font-black text-white/30 uppercase tracking-[0.3em] italic">Member</th>
+                <th className="p-6 text-[10px] font-black text-white/30 uppercase tracking-[0.3em] italic">Role</th>
+                <th className="p-6 text-[10px] font-black text-white/30 uppercase tracking-[0.3em] italic">Username</th>
+                <th className="p-6 text-[10px] font-black text-white/30 uppercase tracking-[0.3em] italic">Status</th>
+                <th className="p-6 text-[10px] font-black text-white/30 uppercase tracking-[0.3em] italic">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/5">
+              {MOCK_USERS.map((user, i) => (
+                <tr key={user.id} className="hover:bg-white/[0.02] transition-all group">
+                  <td className="p-6">
+                    <div className="flex items-center space-x-4">
+                      <img src={user.avatar} alt={user.name} className="w-12 h-12 rounded-2xl object-cover border-2 border-white/10 group-hover:border-pink-500/50 transition-all" />
+                      <div>
+                        <p className="text-sm font-black text-white italic">{user.name}</p>
+                        <p className="text-[10px] text-white/40 font-black uppercase tracking-widest">{user.email}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="p-6">
+                    <span className="px-3 py-1 bg-white/5 rounded-lg text-[10px] font-black text-white/60 uppercase tracking-widest border border-white/5">
+                      {['Admin', 'Editor', 'Analyst', 'Viewer'][i % 4]}
+                    </span>
+                  </td>
+                  <td className="p-6">
+                    <span className="text-xs font-black text-pink-500/80 italic">{user.username}</span>
+                  </td>
+                  <td className="p-6">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+                      <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">{user.status}</span>
+                    </div>
+                  </td>
+                  <td className="p-6">
+                    <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-all">
+                      <button className="p-2 bg-white/5 rounded-xl text-white/40 hover:text-white hover:bg-white/10 transition-all">
+                        <BarChart3 className="w-4 h-4" />
+                      </button>
+                      <button className="p-2 bg-white/5 rounded-xl text-white/40 hover:text-red-500 hover:bg-red-500/10 transition-all">
+                        <UserX className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderProducts = () => (
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-700">
+      <div className="flex justify-between items-end">
+        <div>
+          <h3 className="text-3xl font-black text-white tracking-tighter uppercase italic">Products</h3>
+          <p className="text-[10px] text-white/40 font-black uppercase tracking-[0.4em] mt-1">Manage your inventory and listings</p>
+        </div>
+        <button className="p-4 bg-pink-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-lg active:scale-95 transition-all">
+          Add Product
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        {[
+          { name: 'Neon Glow Sneakers', price: '$129.00', stock: 42, sales: 156, img: 'https://images.unsplash.com/photo-1542291026-7eec264c274f?q=80&w=400' },
+          { name: 'Cyberpunk Jacket', price: '$299.00', stock: 12, sales: 84, img: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?q=80&w=400' },
+          { name: 'Holographic Backpack', price: '$89.00', stock: 28, sales: 210, img: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=400' },
+          { name: 'Digital Watch X', price: '$199.00', stock: 5, sales: 342, img: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=400' },
+        ].map((product, i) => (
+          <div key={i} className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-6 flex space-x-6 group hover:border-pink-500/30 transition-all">
+            <div className="w-32 h-32 rounded-3xl overflow-hidden border border-white/10 flex-shrink-0">
+              <img src={product.img} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+            </div>
+            <div className="flex-grow flex flex-col justify-between py-2">
+              <div>
+                <h4 className="text-lg font-black text-white italic leading-tight">{product.name}</h4>
+                <p className="text-xl font-black text-pink-500 mt-1">{product.price}</p>
+              </div>
+              <div className="flex items-center space-x-4">
+                <div>
+                  <p className="text-[9px] font-black text-white/30 uppercase tracking-widest">Stock</p>
+                  <p className={`text-xs font-black ${product.stock < 10 ? 'text-red-500' : 'text-white'}`}>{product.stock} units</p>
+                </div>
+                <div className="w-px h-6 bg-white/10" />
+                <div>
+                  <p className="text-[9px] font-black text-white/30 uppercase tracking-widest">Sales</p>
+                  <p className="text-xs font-black text-emerald-400">{product.sales} sold</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderSystemConfig = () => (
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-700">
+      <div>
+        <h3 className="text-3xl font-black text-white tracking-tighter uppercase italic">System Config</h3>
+        <p className="text-[10px] text-white/40 font-black uppercase tracking-[0.4em] mt-1">Configure your business environment</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <section className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-8 space-y-6">
+          <div className="flex items-center space-x-4 mb-2">
+            <div className="p-3 bg-pink-500/20 rounded-2xl text-pink-500">
+              <Shield className="w-6 h-6" />
+            </div>
+            <h4 className="text-lg font-black text-white tracking-tighter uppercase italic">Security & Access</h4>
+          </div>
+          
+          <div className="space-y-4">
+            <ToggleSetting label="Two-Factor Auth" description="Add an extra layer of security" active={true} />
+            <ToggleSetting label="Session Timeout" description="Auto logout after 30m inactivity" active={false} />
+            <ToggleSetting label="IP Whitelisting" description="Restrict access to specific IPs" active={false} />
+          </div>
+        </section>
+
+        <section className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-8 space-y-6">
+          <div className="flex items-center space-x-4 mb-2">
+            <div className="p-3 bg-blue-500/20 rounded-2xl text-blue-500">
+              <Bell className="w-6 h-6" />
+            </div>
+            <h4 className="text-lg font-black text-white tracking-tighter uppercase italic">Notifications</h4>
+          </div>
+          
+          <div className="space-y-4">
+            <ToggleSetting label="Email Alerts" description="Receive daily performance reports" active={true} />
+            <ToggleSetting label="Push Notifications" description="Real-time system alerts" active={true} />
+            <ToggleSetting label="Slack Integration" description="Sync alerts to your workspace" active={false} />
+          </div>
+        </section>
+
+        <section className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-8 space-y-6 md:col-span-2">
+          <div className="flex items-center space-x-4 mb-2">
+            <div className="p-3 bg-emerald-500/20 rounded-2xl text-emerald-500">
+              <Layers className="w-6 h-6" />
+            </div>
+            <h4 className="text-lg font-black text-white tracking-tighter uppercase italic">Appearance & Branding</h4>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="p-6 bg-white/5 rounded-3xl border border-white/5 hover:border-pink-500/30 transition-all cursor-pointer group">
+              <Palette className="w-8 h-8 text-white/20 group-hover:text-pink-500 mb-4 transition-all" />
+              <p className="text-xs font-black text-white italic">Theme Colors</p>
+              <p className="text-[10px] text-white/30 font-black uppercase tracking-widest mt-1">Customize UI palette</p>
+            </div>
+            <div className="p-6 bg-white/5 rounded-3xl border border-white/5 hover:border-blue-500/30 transition-all cursor-pointer group">
+              <Sparkles className="w-8 h-8 text-white/20 group-hover:text-blue-500 mb-4 transition-all" />
+              <p className="text-xs font-black text-white italic">Animations</p>
+              <p className="text-[10px] text-white/30 font-black uppercase tracking-widest mt-1">Motion & transitions</p>
+            </div>
+            <div className="p-6 bg-white/5 rounded-3xl border border-white/5 hover:border-emerald-500/30 transition-all cursor-pointer group">
+              <Columns className="w-8 h-8 text-white/20 group-hover:text-emerald-500 mb-4 transition-all" />
+              <p className="text-xs font-black text-white italic">Layout Grid</p>
+              <p className="text-[10px] text-white/30 font-black uppercase tracking-widest mt-1">Dashboard structure</p>
+            </div>
+          </div>
+        </section>
+
+        <div className="md:col-span-2 flex justify-end pt-4">
+          <button className="px-10 py-5 bg-gradient-to-tr from-pink-600 to-rose-500 text-white rounded-[2rem] font-black text-[12px] uppercase tracking-[0.4em] italic shadow-[0_15px_40px_rgba(236,72,153,0.3)] active:scale-95 transition-all border border-white/20">
+            Save Configuration
+          </button>
+        </div>
+      </div>
     </div>
   );
 
@@ -143,17 +371,15 @@ const BusinessTab: React.FC = () => {
         className={`fixed top-[92px] bottom-[56px] left-0 w-[82%] max-w-[300px] bg-[#0c0c0c]/95 backdrop-blur-3xl border-r border-y border-white/10 z-[110] transform transition-transform duration-500 ease-out shadow-[40px_0_100px_rgba(0,0,0,0.9)] rounded-r-[3rem] ${isCurtainOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
         <div className="p-6 h-full flex flex-col">
-          {/* Header removed based on visual feedback */}
-          
           <nav className="flex-grow space-y-2 overflow-y-auto scrollbar-hide pr-1 pt-4">
             <DrawerItem icon={LayoutGrid} label="Dashboard" active={activeTab === 'Dashboard'} onClick={() => { setActiveTab('Dashboard'); setIsCurtainOpen(false); }} />
-            <DrawerItem icon={Briefcase} label="Team" active={activeTab === 'Team'} onClick={() => setActiveTab('Team')} />
-            <DrawerItem icon={Box} label="Products" active={activeTab === 'Products'} onClick={() => setActiveTab('Products')} />
-            <DrawerItem icon={FileText} label="Reports" active={activeTab === 'Reports'} onClick={() => setActiveTab('Reports')} />
-            <DrawerItem icon={CreditCard} label="Billing" active={activeTab === 'Billing'} onClick={() => setActiveTab('Billing')} />
-            <DrawerItem icon={Trophy} label="Events" active={activeTab === 'Events'} onClick={() => setActiveTab('Events')} />
-            <DrawerItem icon={MessageCircle} label="Favor Chats" active={activeTab === 'Favor Chats'} onClick={() => setActiveTab('Favor Chats')} />
-            <DrawerItem icon={SettingsIcon} label="System Config" active={activeTab === 'System Config'} onClick={() => setActiveTab('System Config')} />
+            <DrawerItem icon={Briefcase} label="Team" active={activeTab === 'Team'} onClick={() => { setActiveTab('Team'); setIsCurtainOpen(false); }} />
+            <DrawerItem icon={Box} label="Products" active={activeTab === 'Products'} onClick={() => { setActiveTab('Products'); setIsCurtainOpen(false); }} />
+            <DrawerItem icon={FileText} label="Reports" active={activeTab === 'Reports'} onClick={() => { setActiveTab('Reports'); setIsCurtainOpen(false); }} />
+            <DrawerItem icon={CreditCard} label="Billing" active={activeTab === 'Billing'} onClick={() => { setActiveTab('Billing'); setIsCurtainOpen(false); }} />
+            <DrawerItem icon={Trophy} label="Events" active={activeTab === 'Events'} onClick={() => { setActiveTab('Events'); setIsCurtainOpen(false); }} />
+            <DrawerItem icon={MessageCircle} label="Favor Chats" active={activeTab === 'Favor Chats'} onClick={() => { setActiveTab('Favor Chats'); setIsCurtainOpen(false); }} />
+            <DrawerItem icon={SettingsIcon} label="System Config" active={activeTab === 'System Config'} onClick={() => { setActiveTab('System Config'); setIsCurtainOpen(false); }} />
           </nav>
 
           <div className="pt-6 border-t border-white/5 mt-auto">
@@ -184,7 +410,10 @@ const BusinessTab: React.FC = () => {
 
       <main className="px-6">
         {activeTab === 'Dashboard' && renderDashboard()}
-        {activeTab !== 'Dashboard' && (
+        {activeTab === 'Team' && renderTeam()}
+        {activeTab === 'Products' && renderProducts()}
+        {activeTab === 'System Config' && renderSystemConfig()}
+        {!['Dashboard', 'Team', 'Products', 'System Config'].includes(activeTab) && (
           <div className="h-64 flex flex-col items-center justify-center text-center space-y-4 animate-in fade-in zoom-in duration-500">
             <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center border border-white/10">
                <Activity className="w-8 h-8 text-white/20 animate-pulse" />
@@ -215,6 +444,18 @@ const BusinessTab: React.FC = () => {
     </div>
   );
 };
+
+const ToggleSetting = ({ label, description, active }: any) => (
+  <div className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-white/10 transition-all">
+    <div>
+      <p className="text-xs font-black text-white italic">{label}</p>
+      <p className="text-[10px] text-white/30 font-black uppercase tracking-widest">{description}</p>
+    </div>
+    <button className={`w-12 h-6 rounded-full relative transition-all duration-300 ${active ? 'bg-pink-500 shadow-[0_0_15px_rgba(236,72,153,0.4)]' : 'bg-white/10'}`}>
+      <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all duration-300 ${active ? 'left-7' : 'left-1'}`} />
+    </button>
+  </div>
+);
 
 const DrawerItem = ({ icon: Icon, label, active, onClick }: any) => (
   <button 

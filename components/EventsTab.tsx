@@ -119,12 +119,12 @@ const RouteDisplay: React.FC<{ origin: any; destination: any }> = ({ origin, des
     // Clear previous route
     polylinesRef.current.forEach(p => p.setMap(null));
 
-    routesLib.Route.computeRoutes({
+    (routesLib as any).Route.computeRoutes({
       origin,
       destination,
       travelMode: 'DRIVING',
       fields: ['path', 'viewport'],
-    }).then(({ routes }) => {
+    }).then(({ routes }: any) => {
       if (routes?.[0]) {
         const newPolylines = routes[0].createPolylines();
         newPolylines.forEach(p => p.setMap(map));

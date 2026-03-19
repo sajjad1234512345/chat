@@ -61,27 +61,27 @@ const ProductStudio: React.FC<{ onBack: () => void }> = ({ onBack }) => {
   const categories = ['Full body', 'Top Body', 'Head', 'Pants', 'Foot'];
 
   return (
-    <div className="fixed inset-0 z-[100] bg-[#050505] animate-in fade-in duration-700 overflow-hidden">
+    <div className="fixed inset-0 z-[100] bg-[#050505] animate-in fade-in duration-1000 overflow-hidden">
       {/* Immersive Interior Background */}
       <div className="absolute inset-0">
         <img 
           src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=2000" 
-          className="w-full h-full object-cover brightness-[0.3] saturate-[0.7]" 
+          className="w-full h-full object-cover brightness-[0.2] saturate-[0.5] scale-110 transition-transform duration-[10s] animate-pulse" 
           alt="Modern Studio Interior" 
         />
-        <div className="absolute inset-0 bg-gradient-to-tr from-black/90 via-transparent to-black/40" />
+        <div className="absolute inset-0 bg-gradient-to-tr from-black via-black/40 to-transparent" />
       </div>
 
       <div className="relative h-full flex flex-col items-center">
         
         {/* Top Header - Category Selectors */}
-        <div className="w-full max-w-lg flex justify-center pt-8 pb-4 z-20">
-          <div className="bg-white/5 backdrop-blur-[30px] border border-white/10 rounded-full p-1 flex items-center space-x-1 shadow-2xl">
+        <div className="w-full max-w-lg flex justify-center pt-12 pb-6 z-20">
+          <div className="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-full p-1.5 flex items-center space-x-1 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
             {categories.map(cat => (
               <button 
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`px-3 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest transition-all ${activeCategory === cat ? 'bg-white/10 text-white' : 'text-white/20 hover:text-white/50'}`}
+                className={`px-6 py-2.5 rounded-full text-[11px] font-black uppercase tracking-[0.2em] transition-all italic ${activeCategory === cat ? 'bg-white text-black shadow-2xl scale-105' : 'text-white/30 hover:text-white/60'}`}
               >
                 {cat}
               </button>
@@ -93,78 +93,80 @@ const ProductStudio: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         <div className="relative w-full max-w-2xl flex-grow flex items-center justify-center animate-in zoom-in-95 duration-1000">
           
           {/* COMPACT TOP CONTROLS */}
-          <div className="absolute top-4 left-6 right-6 flex justify-between items-center z-30">
-            <div className="flex items-center space-x-2">
+          <div className="absolute top-6 left-8 right-8 flex justify-between items-center z-30">
+            <div className="flex items-center space-x-4">
               <button 
                 onClick={onBack}
-                className="bg-black/60 backdrop-blur-2xl border border-white/10 text-white px-3 py-1.5 rounded-full font-black text-[8px] uppercase tracking-widest shadow-xl active:scale-95 transition-all flex items-center space-x-1.5 hover:bg-white/5"
+                className="bg-black/60 backdrop-blur-3xl border border-white/10 text-white px-6 py-3 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] shadow-2xl active:scale-90 transition-all flex items-center space-x-3 hover:bg-white/10 italic"
               >
-                <X className="w-3 h-3" />
+                <X className="w-5 h-5" />
                 <span>Exit Studio</span>
               </button>
 
-              <div className="bg-black/60 backdrop-blur-2xl border border-white/10 rounded-full pl-2.5 pr-3.5 py-1.5 flex items-center space-x-2 text-white shadow-xl">
-                <div className="w-1.5 h-1.5 bg-pink-500 rounded-full animate-pulse shadow-[0_0_8px_#ec4899]" />
-                <span className="text-[8px] font-black uppercase tracking-widest">VirtualFit</span>
+              <div className="bg-pink-600/20 backdrop-blur-3xl border border-pink-500/20 rounded-2xl pl-4 pr-6 py-3 flex items-center space-x-3 text-white shadow-2xl">
+                <div className="w-2.5 h-2.5 bg-pink-500 rounded-full animate-pulse shadow-[0_0_15px_#ec4899]" />
+                <span className="text-[11px] font-black uppercase tracking-[0.2em] italic">VirtualFit</span>
               </div>
             </div>
 
-            <div className="flex items-center space-x-1.5">
-               <button className="p-2.5 bg-black/60 backdrop-blur-2xl border border-white/10 rounded-full text-white/40 hover:text-white transition-all active:scale-90 shadow-xl">
-                  <LayoutGrid className="w-3.5 h-3.5" />
+            <div className="flex items-center space-x-2">
+               <button className="p-3.5 bg-black/60 backdrop-blur-3xl border border-white/10 rounded-2xl text-white/40 hover:text-white transition-all active:scale-90 shadow-2xl">
+                  <LayoutGrid className="w-5 h-5" />
                </button>
-               <button onClick={onBack} className="p-2.5 bg-black/60 backdrop-blur-2xl border border-white/10 rounded-full text-white/40 hover:text-white transition-all shadow-xl active:rotate-90">
-                  <Settings className="w-3.5 h-3.5" />
+               <button onClick={onBack} className="p-3.5 bg-black/60 backdrop-blur-3xl border border-white/10 rounded-2xl text-white/40 hover:text-white transition-all shadow-2xl active:rotate-90">
+                  <Settings className="w-5 h-5" />
                </button>
             </div>
           </div>
 
-          {/* SIDE TOOLS STRIP - Decreased size */}
-          <div className="absolute left-6 top-1/2 -translate-y-1/2 z-30">
-            <div className="bg-black/40 backdrop-blur-3xl border border-white/10 rounded-full p-1.5 flex flex-col items-center space-y-3 shadow-2xl">
-              <button className="p-2.5 bg-white/10 rounded-full text-white shadow-lg hover:bg-white/20 transition-all"><Plus className="w-4 h-4" /></button>
-              <button className="p-2.5 text-white/20 hover:text-white transition-all"><ShoppingCart className="w-4 h-4" /></button>
-              <button className="p-2.5 text-white/20 hover:text-white transition-all"><List className="w-4 h-4" /></button>
-              <button className="p-2.5 text-white/20 hover:text-white transition-all"><UserIcon className="w-4 h-4" /></button>
+          {/* SIDE TOOLS STRIP */}
+          <div className="absolute left-8 top-1/2 -translate-y-1/2 z-30">
+            <div className="bg-black/40 backdrop-blur-3xl border border-white/10 rounded-[2rem] p-2 flex flex-col items-center space-y-4 shadow-2xl">
+              <button className="p-4 bg-white text-black rounded-2xl shadow-2xl hover:scale-110 transition-all active:scale-90"><Plus className="w-5 h-5" /></button>
+              <button className="p-4 text-white/30 hover:text-white transition-all active:scale-110"><ShoppingCart className="w-5 h-5" /></button>
+              <button className="p-4 text-white/30 hover:text-white transition-all active:scale-110"><List className="w-5 h-5" /></button>
+              <button className="p-4 text-white/30 hover:text-white transition-all active:scale-110"><UserIcon className="w-5 h-5" /></button>
             </div>
           </div>
 
           {/* MAIN STAGE: Model */}
-          <div className="relative w-full h-full flex flex-col items-center justify-center pt-12 pb-24 px-8">
+          <div className="relative w-full h-full flex flex-col items-center justify-center pt-16 pb-32 px-10">
              <div className="relative group">
+               <div className="absolute -inset-4 bg-pink-600/10 rounded-full blur-[100px] opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
                <img 
                  src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=1200" 
-                 className="h-[45vh] sm:h-[60vh] object-contain drop-shadow-[0_40px_80px_rgba(0,0,0,0.6)] contrast-[1.05] relative z-10 rounded-[2rem]"
+                 className="h-[50vh] sm:h-[65vh] object-contain drop-shadow-[0_50px_100px_rgba(0,0,0,0.8)] contrast-[1.1] relative z-10 rounded-[3rem] transition-transform duration-700 group-hover:scale-105"
                  alt="Model"
                />
                
                {/* Selection HUD on the model */}
-               <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-4 h-4 border-2 border-white/50 rounded-full z-20 animate-ping" />
+               <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-6 h-6 border-2 border-white/30 rounded-full z-20 animate-ping" />
+               <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-2 h-2 bg-white rounded-full z-20 shadow-[0_0_15px_rgba(255,255,255,0.8)]" />
              </div>
 
-             {/* PRODUCT CARD - More compact, white/glass style as per screenshot */}
-             <div className="absolute bottom-6 w-full max-w-[280px] bg-white/95 backdrop-blur-[60px] border border-white/20 rounded-[2rem] p-5 shadow-[0_30px_60px_rgba(0,0,0,0.6)] z-20 animate-in slide-in-from-bottom-8 duration-700 delay-500">
+             {/* PRODUCT CARD */}
+             <div className="absolute bottom-10 w-full max-w-[340px] bg-white backdrop-blur-3xl border border-white/20 rounded-[3rem] p-8 shadow-[0_50px_120px_rgba(0,0,0,0.8)] z-20 animate-in slide-in-from-bottom-12 duration-1000 delay-500">
                <div className="flex items-start justify-between">
-                 <div className="flex flex-col">
-                   <h4 className="text-[14px] font-black text-zinc-900 tracking-tighter uppercase italic leading-none">Basic t-shirt</h4>
-                   <p className="text-[18px] font-black text-zinc-900 tracking-tighter mt-1">$105</p>
+                 <div className="flex flex-col flex-grow">
+                   <h4 className="text-[18px] font-black text-zinc-900 tracking-tighter uppercase italic leading-none">Basic t-shirt</h4>
+                   <p className="text-[28px] font-black text-zinc-900 tracking-tighter mt-2">$105</p>
                    
-                   <div className="flex items-center space-x-4 mt-3">
+                   <div className="flex items-center space-x-6 mt-6">
                      <div className="flex flex-col">
-                       <span className="text-[7px] font-black text-zinc-400 uppercase tracking-widest mb-0.5">Size</span>
-                       <span className="text-[9px] font-black text-zinc-800 uppercase">Medium</span>
+                       <span className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-1.5 italic">Size</span>
+                       <span className="text-[13px] font-black text-zinc-800 uppercase italic">Medium</span>
                      </div>
-                     <div className="h-6 w-px bg-zinc-200" />
+                     <div className="h-10 w-px bg-zinc-100" />
                      <div className="flex flex-col">
-                       <span className="text-[7px] font-black text-zinc-400 uppercase tracking-widest mb-0.5">Color Way</span>
-                       <div className="flex items-center space-x-1">
-                         <div className="w-2 h-2 rounded-full bg-zinc-200 shadow-sm border border-zinc-300" />
-                         <span className="text-[9px] font-black text-zinc-800 uppercase">Cloud</span>
+                       <span className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mb-1.5 italic">Color Way</span>
+                       <div className="flex items-center space-x-2">
+                         <div className="w-3.5 h-3.5 rounded-full bg-zinc-200 shadow-inner border border-zinc-300" />
+                         <span className="text-[13px] font-black text-zinc-800 uppercase italic">Cloud</span>
                        </div>
                      </div>
                    </div>
                  </div>
-                 <button className="bg-zinc-900 px-4 py-2 rounded-xl text-[8px] font-black uppercase tracking-widest text-white hover:bg-zinc-800 transition-all active:scale-95 shadow-lg shrink-0">
+                 <button className="bg-zinc-900 px-6 py-3.5 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] text-white hover:bg-zinc-800 transition-all active:scale-95 shadow-2xl shrink-0 italic">
                     Edit Item
                  </button>
                </div>
@@ -173,16 +175,16 @@ const ProductStudio: React.FC<{ onBack: () => void }> = ({ onBack }) => {
         </div>
 
         {/* Decorative Status Bar */}
-        <div className="w-full max-w-sm mb-12 flex justify-center items-center z-20">
-           <div className="flex items-center space-x-6">
-              <div className="flex items-center space-x-2">
-                 <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                 <p className="text-[7px] font-black text-white/30 uppercase tracking-[0.3em]">Hardware: V.Pro</p>
+        <div className="w-full max-w-sm mb-16 flex justify-center items-center z-20">
+           <div className="flex items-center space-x-8 bg-black/40 backdrop-blur-2xl px-6 py-3 rounded-full border border-white/5">
+              <div className="flex items-center space-x-3">
+                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_#22c55e]" />
+                 <p className="text-[8px] font-black text-white/40 uppercase tracking-[0.4em] italic">Hardware: V.Pro</p>
               </div>
-              <div className="h-0.5 w-12 bg-white/5 rounded-full overflow-hidden">
-                <div className="h-full w-2/3 bg-pink-500/30 rounded-full" />
+              <div className="h-1 w-16 bg-white/5 rounded-full overflow-hidden">
+                <div className="h-full w-2/3 bg-pink-500/40 rounded-full" />
               </div>
-              <p className="text-[7px] font-black text-white/30 uppercase tracking-[0.3em]">Latency: 12ms</p>
+              <p className="text-[8px] font-black text-white/40 uppercase tracking-[0.4em] italic">Latency: 12ms</p>
            </div>
         </div>
       </div>
@@ -229,83 +231,83 @@ const ShoppingTab: React.FC = () => {
 
   if (view === 'my-store') {
     return (
-      <div className="relative min-h-screen flex flex-col animate-in slide-in-from-right duration-500 pb-32 overflow-hidden">
-        {/* Background Atmosphere - Match the reference image style */}
+      <div className="relative min-h-screen flex flex-col animate-in slide-in-from-right duration-700 pb-32 overflow-hidden">
+        {/* Background Atmosphere */}
         <div className="absolute inset-0 pointer-events-none">
           <img 
             src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=2000&auto=format&fit=crop" 
-            className="w-full h-full object-cover brightness-[0.25] grayscale-[0.2]" 
+            className="w-full h-full object-cover brightness-[0.15] grayscale-[0.5] scale-110" 
             alt="Dashboard Atmosphere" 
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/20 to-black/80" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black via-black/40 to-black" />
         </div>
 
         {/* Main Dashboard Layout */}
-        <div className="relative z-10 px-6 pt-10 pb-20 space-y-10 max-w-lg mx-auto w-full">
+        <div className="relative z-10 px-8 pt-16 pb-24 space-y-12 max-w-xl mx-auto w-full">
           
           {/* Header Action Row */}
-          <div className="flex justify-between items-center mb-4">
-             <button onClick={() => setView('browse')} className="p-4 bg-white/10 backdrop-blur-3xl border border-white/10 rounded-2xl text-white shadow-2xl active:scale-90 transition-all">
-                <ArrowLeft className="w-6 h-6" />
+          <div className="flex justify-between items-center mb-10">
+             <button onClick={() => setView('browse')} className="p-5 bg-white/5 backdrop-blur-3xl border border-white/10 rounded-3xl text-white shadow-2xl active:scale-90 transition-all hover:bg-white/10 hover:border-white/20">
+                <ArrowLeft className="w-7 h-7" />
              </button>
              <div className="text-center">
-                <h2 className="text-3xl font-black text-white tracking-tighter uppercase italic leading-none">My Market</h2>
-                <p className="text-[10px] text-white/30 font-black uppercase tracking-[0.4em] mt-2">Visionary Dashboard</p>
+                <h2 className="text-5xl font-black text-white tracking-tighter uppercase italic leading-none drop-shadow-2xl">My Market</h2>
+                <p className="text-[13px] text-pink-500 font-black uppercase tracking-[0.5em] mt-4 italic">Visionary Dashboard</p>
              </div>
-             <button className="p-4 bg-white/10 backdrop-blur-3xl border border-white/10 rounded-2xl text-white/40 shadow-2xl active:rotate-90 transition-all">
-                <Settings className="w-6 h-6" />
+             <button className="p-5 bg-white/5 backdrop-blur-3xl border border-white/10 rounded-3xl text-white/40 shadow-2xl active:rotate-90 transition-all hover:bg-white/10 hover:text-white">
+                <Settings className="w-7 h-7" />
              </button>
           </div>
 
           {/* Stats Section */}
-          <div className="grid grid-cols-2 gap-6">
-            <div className="bg-white/5 backdrop-blur-[60px] p-8 rounded-[3.5rem] border border-white/20 shadow-[0_40px_80px_rgba(0,0,0,0.5)]">
-              <div className="flex justify-between items-center mb-6">
-                <div className="p-3 bg-green-500/10 rounded-2xl text-green-400">
-                  <TrendingUp className="w-5 h-5" />
+          <div className="grid grid-cols-2 gap-8">
+            <div className="bg-white/5 backdrop-blur-3xl p-10 rounded-[4rem] border border-white/10 shadow-[0_40px_100px_rgba(0,0,0,0.6)] group hover:bg-white/10 transition-all hover:border-white/20">
+              <div className="flex justify-between items-center mb-10">
+                <div className="p-4 bg-green-500/10 rounded-2xl text-green-400 border border-green-500/20">
+                  <TrendingUp className="w-7 h-7" />
                 </div>
-                <span className="text-[11px] font-black text-green-400 tracking-widest">+12%</span>
+                <span className="text-[13px] font-black text-green-400 tracking-widest italic">+12%</span>
               </div>
-              <p className="text-4xl font-black text-white tracking-tighter">$2,450</p>
-              <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.3em] mt-2">Total Earnings</p>
+              <p className="text-6xl font-black text-white tracking-tighter italic">$2,450</p>
+              <p className="text-[12px] font-black text-white/30 uppercase tracking-[0.4em] mt-4 italic">Total Earnings</p>
             </div>
-            <div className="bg-white/5 backdrop-blur-[60px] p-8 rounded-[3.5rem] border border-white/20 shadow-[0_40px_80px_rgba(0,0,0,0.5)]">
-              <div className="flex justify-between items-center mb-6">
-                <div className="p-3 bg-blue-500/10 rounded-2xl text-blue-400">
-                  <Eye className="w-5 h-5" />
+            <div className="bg-white/5 backdrop-blur-3xl p-10 rounded-[4rem] border border-white/10 shadow-[0_40px_100px_rgba(0,0,0,0.6)] group hover:bg-white/10 transition-all hover:border-white/20">
+              <div className="flex justify-between items-center mb-10">
+                <div className="p-4 bg-blue-500/10 rounded-2xl text-blue-400 border border-blue-500/20">
+                  <Eye className="w-7 h-7" />
                 </div>
-                <span className="text-[11px] font-black text-blue-400 tracking-widest">+4.2k</span>
+                <span className="text-[13px] font-black text-blue-400 tracking-widest italic">+4.2k</span>
               </div>
-              <p className="text-4xl font-black text-white tracking-tighter">12.8k</p>
-              <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.3em] mt-2">Store Visits</p>
+              <p className="text-6xl font-black text-white tracking-tighter italic">12.8k</p>
+              <p className="text-[12px] font-black text-white/30 uppercase tracking-[0.4em] mt-4 italic">Store Visits</p>
             </div>
           </div>
 
           {/* Quick Actions */}
           <section>
-            <h3 className="text-[10px] font-black text-white/30 uppercase tracking-[0.5em] mb-6 ml-4">Quick Actions</h3>
-            <div className="bg-black/40 backdrop-blur-[60px] border border-white/10 rounded-[4rem] p-6 shadow-2xl">
-              <div className="grid grid-cols-3 gap-6">
+            <h3 className="text-[12px] font-black text-white/30 uppercase tracking-[0.6em] mb-10 ml-6 italic">Quick Actions</h3>
+            <div className="bg-black/40 backdrop-blur-3xl border border-white/10 rounded-[4.5rem] p-10 shadow-2xl">
+              <div className="grid grid-cols-3 gap-10">
                 <button 
                   onClick={() => setView('studio')}
-                  className="flex flex-col items-center justify-center space-y-4 group active:scale-95 transition-all"
+                  className="flex flex-col items-center justify-center space-y-6 group active:scale-95 transition-all"
                 >
-                  <div className="p-5 bg-pink-600 text-white rounded-[1.8rem] shadow-pink-600/30 group-hover:scale-110 transition-transform shadow-xl">
-                    <Plus className="w-7 h-7" />
+                  <div className="p-8 bg-pink-600 text-white rounded-[2.5rem] shadow-[0_20px_40px_rgba(236,72,153,0.3)] group-hover:scale-110 transition-transform shadow-2xl">
+                    <Plus className="w-10 h-10" />
                   </div>
-                  <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/60">Add Item</span>
+                  <span className="text-[11px] font-black uppercase tracking-[0.3em] text-white/60 italic group-hover:text-white transition-colors">Add Item</span>
                 </button>
-                <button className="flex flex-col items-center justify-center space-y-4 group active:scale-95 transition-all">
-                  <div className="p-5 bg-indigo-600 text-white rounded-[1.8rem] shadow-indigo-600/30 group-hover:scale-110 transition-transform shadow-xl">
-                    <Package className="w-7 h-7" />
+                <button className="flex flex-col items-center justify-center space-y-6 group active:scale-95 transition-all">
+                  <div className="p-8 bg-indigo-600 text-white rounded-[2.5rem] shadow-[0_20px_40px_rgba(79,70,229,0.3)] group-hover:scale-110 transition-transform shadow-2xl">
+                    <Package className="w-10 h-10" />
                   </div>
-                  <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/60">Orders</span>
+                  <span className="text-[11px] font-black uppercase tracking-[0.3em] text-white/60 italic group-hover:text-white transition-colors">Orders</span>
                 </button>
-                <button className="flex flex-col items-center justify-center space-y-4 group active:scale-95 transition-all">
-                  <div className="p-5 bg-orange-600 text-white rounded-[1.8rem] shadow-orange-600/30 group-hover:scale-110 transition-transform shadow-xl">
-                    <BarChart3 className="w-7 h-7" />
+                <button className="flex flex-col items-center justify-center space-y-6 group active:scale-95 transition-all">
+                  <div className="p-8 bg-orange-600 text-white rounded-[2.5rem] shadow-[0_20px_40px_rgba(234,88,12,0.3)] group-hover:scale-110 transition-transform shadow-2xl">
+                    <BarChart3 className="w-10 h-10" />
                   </div>
-                  <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/60">Analytics</span>
+                  <span className="text-[11px] font-black uppercase tracking-[0.3em] text-white/60 italic group-hover:text-white transition-colors">Analytics</span>
                 </button>
               </div>
             </div>
@@ -313,31 +315,32 @@ const ShoppingTab: React.FC = () => {
 
           {/* Live Listings */}
           <section>
-            <div className="flex justify-between items-center mb-6 ml-4">
-              <h3 className="text-[10px] font-black text-white/30 uppercase tracking-[0.5em]">Live Listings</h3>
-              <button className="text-[10px] font-black text-white uppercase tracking-widest bg-white/10 px-4 py-2 rounded-full border border-white/10 hover:bg-white/20 transition-all">See All</button>
+            <div className="flex justify-between items-center mb-10 ml-6">
+              <h3 className="text-[12px] font-black text-white/30 uppercase tracking-[0.6em] italic">Live Listings</h3>
+              <button className="text-[11px] font-black text-white uppercase tracking-[0.3em] bg-white/5 px-6 py-3 rounded-2xl border border-white/10 hover:bg-white/10 transition-all italic">See All</button>
             </div>
             
-            <div className="space-y-4">
+            <div className="space-y-8">
               {INITIAL_MOCK_PRODUCTS.slice(0, 2).map((product) => (
-                <div key={product.id} className="bg-white/5 backdrop-blur-[60px] p-6 rounded-[3rem] border border-white/20 flex items-center justify-between group active:scale-[0.98] transition-all shadow-xl">
-                  <div className="flex items-center space-x-6">
+                <div key={product.id} className="bg-white/5 backdrop-blur-3xl p-10 rounded-[4rem] border border-white/10 flex items-center justify-between group active:scale-[0.98] transition-all shadow-2xl hover:bg-white/10 hover:border-white/20">
+                  <div className="flex items-center space-x-10">
                     <div className="relative">
-                      <img src={product.image} className="w-20 h-20 rounded-[1.5rem] object-cover border border-white/20 shadow-2xl" alt="" />
-                      <div className="absolute -top-2 -right-2 bg-green-500 w-4 h-4 rounded-full border-2 border-zinc-900 animate-pulse" />
+                      <div className="absolute -inset-2 bg-gradient-to-tr from-pink-600 to-orange-500 rounded-[2.5rem] blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
+                      <img src={product.image} className="relative w-28 h-28 rounded-[2.5rem] object-cover border-2 border-white/10 shadow-2xl" alt="" />
+                      <div className="absolute -top-2 -right-2 bg-green-500 w-6 h-6 rounded-full border-[4px] border-[#0c0c0c] animate-pulse shadow-lg" />
                     </div>
                     <div>
-                      <h4 className="text-[16px] font-black text-white tracking-tight">{product.name}</h4>
-                      <p className="text-[12px] font-black text-white/40 uppercase tracking-widest mt-1">${product.price}</p>
+                      <h4 className="text-[22px] font-black text-white tracking-tight italic uppercase">{product.name}</h4>
+                      <p className="text-[16px] font-black text-pink-500 uppercase tracking-[0.3em] mt-3 italic">${product.price}</p>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-4">
-                    <div className="hidden sm:flex flex-col items-end mr-2">
-                       <span className="text-[10px] font-black text-green-400 uppercase tracking-widest">Active</span>
-                       <span className="text-[8px] font-bold text-white/20 uppercase">Listed 2d ago</span>
+                  <div className="flex items-center space-x-6">
+                    <div className="hidden sm:flex flex-col items-end mr-4">
+                       <span className="text-[12px] font-black text-green-400 uppercase tracking-[0.3em] italic">Active</span>
+                       <span className="text-[10px] font-black text-white/20 uppercase mt-2 italic">Listed 2d ago</span>
                     </div>
-                    <button className="p-3 bg-white/5 rounded-2xl text-white/30 hover:text-white transition-colors border border-white/5">
-                      <MoreHorizontal className="w-6 h-6" />
+                    <button className="p-5 bg-white/5 rounded-3xl text-white/30 hover:text-white transition-all border border-white/5 active:scale-90">
+                      <MoreHorizontal className="w-8 h-8" />
                     </button>
                   </div>
                 </div>
@@ -346,18 +349,20 @@ const ShoppingTab: React.FC = () => {
           </section>
 
           {/* Visionary Promotion HUD */}
-          <div className="bg-black/50 backdrop-blur-[80px] border border-white/20 rounded-[3.5rem] p-10 shadow-[0_50px_120px_rgba(0,0,0,0.9)] animate-in slide-in-from-bottom duration-1000 relative overflow-hidden">
+          <div className="bg-black/60 backdrop-blur-3xl border border-white/10 rounded-[4.5rem] p-12 shadow-[0_60px_150px_rgba(0,0,0,1)] animate-in slide-in-from-bottom-12 duration-1000 relative overflow-hidden group">
+             <div className="absolute inset-0 bg-gradient-to-br from-pink-600/10 via-transparent to-blue-600/10 opacity-50" />
              <div className="relative z-10 flex flex-col items-center text-center">
-                <div className="p-4 bg-white/10 rounded-[2rem] text-white mb-6">
-                   <Sparkles className="w-8 h-8 text-pink-500 animate-pulse" />
+                <div className="p-6 bg-white/5 rounded-[2.5rem] text-white mb-8 border border-white/10 group-hover:scale-110 transition-transform duration-700">
+                   <Sparkles className="w-10 h-10 text-pink-500 animate-pulse" />
                 </div>
-                <h3 className="text-2xl font-black text-white tracking-tight uppercase italic mb-4">Boost Marketplace Reach</h3>
-                <p className="text-white/50 text-xs font-medium leading-relaxed mb-8 max-w-[240px]">Use our advanced AR rendering tools to increase engagement by up to 300%.</p>
-                <button className="w-full bg-white text-black py-5 rounded-[2rem] font-black text-[11px] uppercase tracking-[0.4em] shadow-2xl active:scale-95 transition-all">
+                <h3 className="text-3xl font-black text-white tracking-tighter uppercase italic mb-6 leading-tight">Boost Marketplace Reach</h3>
+                <p className="text-white/40 text-[13px] font-medium leading-relaxed mb-10 max-w-[280px] italic">Use our advanced AR rendering tools to increase engagement by up to 300%.</p>
+                <button className="w-full bg-white text-black py-6 rounded-[2.5rem] font-black text-[12px] uppercase tracking-[0.5em] shadow-2xl active:scale-95 transition-all hover:bg-gray-100 italic">
                   Upgrade Store
                 </button>
              </div>
-             <div className="absolute -top-10 -right-10 w-40 h-40 bg-pink-500/10 rounded-full blur-[60px]" />
+             <div className="absolute -top-20 -right-20 w-60 h-60 bg-pink-500/10 rounded-full blur-[100px]" />
+             <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-blue-500/10 rounded-full blur-[100px]" />
           </div>
         </div>
       </div>
@@ -365,54 +370,54 @@ const ShoppingTab: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen pb-24 animate-in fade-in duration-500">
+    <div className="min-h-screen pb-32 animate-in fade-in duration-700 bg-[#0c0c0c]">
       {/* Search Header */}
-      <div className="p-4 bg-[#0c0c0c] sticky top-0 z-20 flex items-center space-x-3">
+      <div className="p-6 bg-[#0c0c0c]/80 backdrop-blur-3xl sticky top-0 z-40 flex items-center space-x-4 border-b border-white/5">
         <div className="relative group flex-grow">
-          <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 group-focus-within:text-pink-500 transition-colors">
-            <Search className="w-4 h-4" />
+          <div className="absolute left-5 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-pink-500 transition-all duration-300">
+            <Search className="w-5 h-5" />
           </div>
           <input 
             type="text" 
-            placeholder="Search products..." 
-            className="w-full bg-white/5 border border-white/5 rounded-2xl py-3.5 pl-12 pr-4 text-sm font-medium text-white shadow-sm focus:ring-1 focus:ring-pink-500/20 transition-all outline-none"
+            placeholder="Search visionary products..." 
+            className="w-full bg-white/5 border border-white/10 rounded-[1.5rem] py-4 pl-14 pr-6 text-[15px] font-medium text-white shadow-inner focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500/30 transition-all outline-none italic"
           />
         </div>
         <button 
           onClick={() => setView('my-store')}
-          className="w-12 h-12 bg-white/5 border border-white/5 rounded-2xl flex items-center justify-center text-white/50 active:scale-95 transition-all hover:bg-white/10 hover:text-white"
+          className="w-14 h-14 bg-white/5 border border-white/10 rounded-[1.5rem] flex items-center justify-center text-white/40 active:scale-90 transition-all hover:bg-white/10 hover:text-white shadow-2xl group"
           aria-label="My Market"
         >
-          <Store className="w-5 h-5" />
+          <Store className="w-6 h-6 group-hover:scale-110 transition-transform" />
         </button>
       </div>
 
       {/* Banner / AR Try-on CTA */}
-      <div className="px-4 mb-8">
-        <div className="relative h-48 rounded-[2.5rem] overflow-hidden group cursor-pointer border border-white/10" onClick={() => setView('ar')}>
+      <div className="px-6 mb-12 mt-6">
+        <div className="relative h-64 rounded-[3.5rem] overflow-hidden group cursor-pointer border border-white/10 shadow-[0_40px_80px_rgba(0,0,0,0.5)]" onClick={() => setView('ar')}>
           <img 
             src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2000&auto=format&fit=crop" 
-            className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-700 brightness-[0.7]" 
+            className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-[2s] brightness-[0.5] saturate-[0.8]" 
             alt="AR Try-on" 
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6">
-            <div className="flex items-center space-x-2 bg-pink-500 w-fit px-3 py-1 rounded-full text-[10px] font-black text-white uppercase tracking-widest mb-2">
-              <Sparkles className="w-3 h-3" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent flex flex-col justify-end p-10">
+            <div className="flex items-center space-x-3 bg-pink-600 w-fit px-5 py-2 rounded-full text-[11px] font-black text-white uppercase tracking-[0.3em] mb-4 shadow-2xl italic">
+              <Sparkles className="w-4 h-4 animate-pulse" />
               <span>Visionary Try-on</span>
             </div>
-            <h3 className="text-xl font-black text-white mb-1">VirtualFit Studio</h3>
-            <p className="text-xs text-white/60 font-medium">Experience commerce in high fidelity.</p>
+            <h3 className="text-4xl font-black text-white mb-2 tracking-tighter uppercase italic leading-none">VirtualFit Studio</h3>
+            <p className="text-[14px] text-white/50 font-medium italic">Experience commerce in high fidelity.</p>
           </div>
         </div>
       </div>
 
       {/* Categories */}
-      <div className="flex space-x-3 overflow-x-auto scrollbar-hide px-4 mb-8">
+      <div className="flex space-x-5 overflow-x-auto scrollbar-hide px-6 mb-12">
         {['All', 'Fashion', 'Beauty', 'Art'].map(cat => (
           <button 
             key={cat}
             onClick={() => setActiveCategory(cat)}
-            className={`flex-shrink-0 px-6 py-2.5 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all ${activeCategory === cat ? 'bg-white text-black shadow-lg' : 'bg-white/5 text-white/40 border border-white/10'}`}
+            className={`flex-shrink-0 px-10 py-4 rounded-[1.5rem] text-[13px] font-black uppercase tracking-[0.3em] transition-all italic ${activeCategory === cat ? 'bg-white text-black shadow-[0_20px_40px_rgba(255,255,255,0.2)] scale-105' : 'bg-white/5 text-white/30 border border-white/10 hover:bg-white/10 hover:text-white/60'}`}
           >
             {cat}
           </button>
@@ -420,32 +425,32 @@ const ShoppingTab: React.FC = () => {
       </div>
 
       {/* Product Grid */}
-      <div className="grid grid-cols-2 gap-4 px-4">
+      <div className="grid grid-cols-2 gap-8 px-6">
         {INITIAL_MOCK_PRODUCTS.filter(p => activeCategory === 'All' || p.category === activeCategory).map(product => (
-          <div key={product.id} className="flex flex-col group animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="relative aspect-[3/4] rounded-[2rem] overflow-hidden mb-3 border border-white/5 shadow-xl bg-zinc-900">
-              <img src={product.image} className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-700" alt={product.name} />
-              <button className="absolute top-4 right-4 p-2 bg-black/40 backdrop-blur-md rounded-xl text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                <Heart className="w-4 h-4" />
+          <div key={product.id} className="flex flex-col group animate-in fade-in slide-in-from-bottom-8 duration-700">
+            <div className="relative aspect-[3/4] rounded-[3.5rem] overflow-hidden mb-6 border border-white/10 shadow-[0_30px_60px_rgba(0,0,0,0.5)] bg-zinc-900">
+              <img src={product.image} className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-[1.5s] brightness-[0.9]" alt={product.name} />
+              <button className="absolute top-6 right-6 p-3.5 bg-black/40 backdrop-blur-xl rounded-2xl text-white opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:scale-110 active:scale-90 border border-white/10">
+                <Heart className="w-5 h-5" />
               </button>
-              <div className="absolute bottom-4 left-4 right-4">
+              <div className="absolute bottom-6 left-6 right-6">
                 <button 
                   onClick={() => setView('ar')}
-                  className="w-full bg-white/90 backdrop-blur-md text-black py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl transform translate-y-12 group-hover:translate-y-0 transition-transform duration-500 flex items-center justify-center space-x-2"
+                  className="w-full bg-white text-black py-4 rounded-[1.5rem] text-[12px] font-black uppercase tracking-[0.3em] shadow-2xl transform translate-y-24 group-hover:translate-y-0 transition-all duration-500 flex items-center justify-center space-x-3 italic hover:bg-gray-100 active:scale-95"
                 >
-                  <Camera className="w-3.5 h-3.5" />
+                  <Camera className="w-5 h-5" />
                   <span>Try-on</span>
                 </button>
               </div>
             </div>
-            <div className="px-1">
-              <div className="flex justify-between items-start mb-1">
-                <h4 className="text-[13px] font-bold text-white/90 truncate pr-2">{product.name}</h4>
-                <span className="text-[13px] font-black text-white">${product.price}</span>
+            <div className="px-4">
+              <div className="flex justify-between items-start mb-2">
+                <h4 className="text-[17px] font-black text-white/90 truncate pr-4 leading-tight italic uppercase tracking-tight">{product.name}</h4>
+                <span className="text-[17px] font-black text-pink-500 italic tracking-tight">${product.price}</span>
               </div>
-              <div className="flex items-center space-x-1">
-                <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
-                <span className="text-[10px] font-black text-white/40 uppercase tracking-widest">{product.rating} • {product.reviews} reviews</span>
+              <div className="flex items-center space-x-2">
+                <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                <span className="text-[12px] font-black text-white/30 uppercase tracking-[0.2em] italic">{product.rating} • {product.reviews} reviews</span>
               </div>
             </div>
           </div>

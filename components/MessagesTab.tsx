@@ -8,21 +8,32 @@ const MOCK_CHATS: ChatThread[] = [
     user: { name: 'marta_k', avatar: 'https://picsum.photos/seed/marta/100/100', isOnline: false },
     lastMessage: 'Sent you the payment for the coffee. Check your wallet! ☕️',
     time: '1h ago',
-    unreadCount: 0
+    unreadCount: 0,
+    category: 'messages'
   },
   {
     id: '5',
     user: { name: 'foodie_adventures', avatar: 'https://picsum.photos/seed/food/100/100', isOnline: false },
     lastMessage: 'That pizza place you posted about was incredible!',
     time: '2d ago',
-    unreadCount: 0
+    unreadCount: 0,
+    category: 'messages'
   },
   {
     id: '1',
     user: { name: 'alex_j', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200', isOnline: true },
     lastMessage: 'Are we still on for the VirtualFit demo tomorrow?',
     time: '2m ago',
-    unreadCount: 1
+    unreadCount: 1,
+    category: 'messages'
+  },
+  {
+    id: '7',
+    user: { name: 'local_guide', avatar: 'https://picsum.photos/seed/guide/100/100', isOnline: false },
+    lastMessage: 'There is a new park opening nearby! 🌳',
+    time: '10m ago',
+    unreadCount: 0,
+    category: 'nearby'
   }
 ];
 
@@ -33,15 +44,35 @@ interface MessagesTabProps {
 const MessagesTab: React.FC<MessagesTabProps> = ({ onBack }) => {
   const [selectedChat, setSelectedChat] = useState<ChatThread | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState<'messages' | 'nearby'>('messages');
 
   const filteredChats = [...MOCK_CHATS]
-    .filter(chat => chat.user.name.toLowerCase().includes(searchQuery.toLowerCase()))
+    .filter(chat => {
+      const matchesSearch = chat.user.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesTab = (chat.category || 'messages') === activeTab;
+      return matchesSearch && matchesTab;
+    })
     .sort((a, b) => (a.unreadCount > 0 ? -1 : 1));
 
   const renderChatList = () => (
     <div className="px-6 pt-1 h-full text-white animate-in fade-in duration-500 pb-20 overflow-y-auto">
       <div className="flex items-center justify-between mb-0.5">
-        <h2 className="text-xl font-black">Messages</h2>
+        <div className="flex items-center space-x-4">
+          <h2 
+            className={`text-xl font-black cursor-pointer transition-colors ${activeTab === 'messages' ? 'text-white' : 'text-white/40'}`}
+            onClick={() => setActiveTab('messages')}
+          >
+            Messages
+          </h2>
+          <div className="flex items-center bg-white/5 border border-white/5 rounded-lg p-0.5 backdrop-blur-md">
+            <button 
+              className={`px-3 py-1 text-[11px] font-bold rounded-md transition-all ${activeTab === 'nearby' ? 'bg-white/10 text-white shadow-sm' : 'text-white/40 hover:text-white/60'}`}
+              onClick={() => setActiveTab('nearby')}
+            >
+              Nearby
+            </button>
+          </div>
+        </div>
         <div className="flex items-center space-x-1">
           <button className="p-1.5 text-white/40 hover:text-white transition-colors">
             <Edit3 className="w-5 h-5" />

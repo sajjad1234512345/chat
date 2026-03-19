@@ -38,37 +38,65 @@ const SplashScreen = ({ onComplete }: { onComplete: () => void }) => {
   return (
     <div className="fixed inset-0 z-[100] bg-[#0c0c0c] flex flex-col items-center justify-center animate-out fade-out duration-1000 fill-mode-forwards">
       <div className="relative">
-        <div className="absolute inset-0 bg-pink-500/20 blur-[100px] rounded-full animate-pulse" />
-        <h1 className="text-5xl font-black italic brand-text tracking-tighter relative z-10 animate-in zoom-in-95 duration-1000">
+        <div className="absolute inset-0 bg-pink-500/10 blur-[120px] rounded-full animate-pulse" />
+        <h1 className="text-6xl font-black italic brand-text tracking-tighter relative z-10 animate-in zoom-in-95 duration-1000">
           Games
         </h1>
       </div>
-      <div className="absolute bottom-12 flex flex-col items-center space-y-4">
-        <div className="w-1 h-1 bg-white rounded-full animate-bounce" />
-        <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.5em]">Visionary Commerce</p>
+      <div className="absolute bottom-16 flex flex-col items-center space-y-6">
+        <div className="w-1.5 h-1.5 bg-white/60 rounded-full animate-bounce" />
+        <p className="text-[12px] font-black text-white/40 uppercase tracking-[0.6em]">Visionary Commerce</p>
       </div>
     </div>
   );
 };
 
 const NotificationsTab = () => (
-  <div className="p-6 animate-in fade-in duration-500 pb-20">
-    <h2 className="text-2xl font-black mb-8">Activity</h2>
-    <div className="space-y-6">
+  <div className="p-8 animate-in fade-in duration-700 pb-32 max-w-xl mx-auto w-full">
+    <div className="flex justify-between items-end mb-12">
+      <div>
+        <h2 className="text-5xl font-black tracking-tighter uppercase italic leading-none">Activity</h2>
+        <p className="text-[11px] font-black text-pink-500 uppercase tracking-[0.5em] mt-4 italic">Real-time updates</p>
+      </div>
+      <button className="text-[11px] font-black text-white/40 uppercase tracking-[0.3em] hover:text-white transition-colors italic">Clear All</button>
+    </div>
+
+    <div className="space-y-10">
       {[
-        { user: 'alex_j', action: 'liked your photo', time: '2m ago', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200' },
-        { user: 'marta_k', action: 'started following you', time: '15m ago', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200' },
-        { user: 'pixel_art', action: 'commented: "Incredible vibes! 🔥"', time: '1h ago', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200' },
-        { user: 'dev_crew', action: 'shared your reel', time: '3h ago', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200' }
+        { user: 'alex_j', action: 'liked your photo', time: '2m ago', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200', type: 'like' },
+        { user: 'marta_k', action: 'started following you', time: '15m ago', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200', type: 'follow' },
+        { user: 'pixel_art', action: 'commented: "Incredible vibes! 🔥"', time: '1h ago', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200', type: 'comment' },
+        { user: 'dev_crew', action: 'shared your reel', time: '3h ago', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200', type: 'share' }
       ].map((notif, i) => (
-        <div key={i} className="flex items-center space-x-4">
-          <img src={notif.avatar} className="w-12 h-12 rounded-full object-cover border border-white/10" alt="" />
-          <div className="flex-grow">
-            <p className="text-sm"><span className="font-bold">{notif.user}</span> {notif.action}</p>
-            <p className="text-[10px] text-white/30 font-black uppercase tracking-widest mt-1">{notif.time}</p>
+        <div key={i} className="flex items-center space-x-6 group cursor-pointer active:scale-[0.98] transition-all">
+          <div className="relative shrink-0">
+            <div className="absolute -inset-1.5 bg-gradient-to-tr from-pink-600 to-purple-600 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
+            <img src={notif.avatar} className="relative w-16 h-16 rounded-full object-cover border-2 border-white/10 shadow-2xl group-hover:scale-105 transition-transform duration-500" alt="" />
+            {notif.type === 'follow' && (
+              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-pink-500 rounded-full border-[3px] border-[#0c0c0c] shadow-lg flex items-center justify-center">
+                <Plus className="w-2.5 h-2.5 text-white stroke-[4]" />
+              </div>
+            )}
+            {notif.type === 'like' && (
+              <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-red-500 rounded-full border-[3px] border-[#0c0c0c] shadow-lg flex items-center justify-center">
+                <Heart className="w-2.5 h-2.5 text-white fill-white" />
+              </div>
+            )}
           </div>
-          {i === 1 && (
-             <button className="bg-pink-600 px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest">Follow</button>
+          <div className="flex-grow">
+            <p className="text-[15px] text-white/90 leading-tight">
+              <span className="font-black text-white uppercase italic tracking-tight mr-1.5">{notif.user}</span> 
+              <span className="text-white/60 italic">{notif.action}</span>
+            </p>
+            <p className="text-[10px] text-white/30 font-black uppercase tracking-[0.4em] mt-2 italic">{notif.time}</p>
+          </div>
+          {notif.type === 'follow' && (
+             <button className="bg-white text-black px-6 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all active:scale-90 shadow-2xl hover:bg-zinc-200 italic shrink-0">Follow</button>
+          )}
+          {notif.type === 'like' && (
+            <div className="w-12 h-12 rounded-xl overflow-hidden border border-white/10 shrink-0">
+              <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=200" className="w-full h-full object-cover brightness-75" alt="" />
+            </div>
           )}
         </div>
       ))}

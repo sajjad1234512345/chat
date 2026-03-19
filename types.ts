@@ -101,6 +101,7 @@ export interface ChatThread {
   lastMessage: string;
   time: string;
   unreadCount: number;
+  category?: 'messages' | 'foreign' | 'nearby';
 }
 
 export interface Reel {

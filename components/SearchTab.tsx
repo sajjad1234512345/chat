@@ -14,83 +14,56 @@ const SearchTab: React.FC = () => {
   ];
 
   return (
-    <div 
-      className="flex flex-col animate-in fade-in duration-500 pb-20"
-      style={{ height: '970.5px' }}
-    >
-      <div 
-        className="p-4 bg-[#0c0c0c] sticky top-0 z-20"
-        style={{ height: '53px' }}
-      >
-        <div 
-          className="relative group flex items-center"
-          style={{ height: '29px' }}
-        >
-          <button 
-            className="absolute left-4 text-white/30 group-focus-within:text-pink-500 transition-colors"
-            style={{ height: '35px', marginTop: '-7px' }}
-          >
-            <Search className="w-5 h-5" style={{ height: '20px', marginTop: '-9px' }} />
-          </button>
+    <div className="flex flex-col animate-in fade-in duration-700 pb-32 min-h-screen bg-[#0c0c0c]">
+      {/* Search Header */}
+      <div className="p-6 sticky top-0 z-20 backdrop-blur-xl bg-black/40 border-b border-white/5">
+        <div className="relative group flex items-center">
+          <Search className="absolute left-5 w-5 h-5 text-white/30 group-focus-within:text-pink-500 transition-colors z-10" />
           <input 
             type="text" 
             placeholder="Search items, users, or vibez..." 
-            className="w-full bg-white/5 border border-white/5 rounded-2xl py-3.5 pl-12 pr-4 text-sm font-medium text-white shadow-sm focus:ring-1 focus:ring-pink-500/20 transition-all outline-none"
-            style={{ height: '35px', marginTop: '-14px' }}
+            className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-14 pr-6 text-[15px] font-bold text-white shadow-2xl focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500/50 transition-all outline-none placeholder-white/20"
           />
         </div>
       </div>
 
-      <div 
-        className="px-4 py-2"
-        style={{ height: '195px', width: '349px', marginLeft: '-2px', marginTop: '-2px' }}
-      >
-        <div 
-          className="flex items-center space-x-2 mb-4"
-          style={{ height: '32.5px' }}
-        >
-          <div className="flex items-center space-x-2">
-            <Flame className="w-4 h-4 text-orange-500" />
-            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Trending Now</h3>
+      {/* Trending Section */}
+      <div className="px-6 py-8">
+        <div className="flex items-center space-x-3 mb-6">
+          <div className="p-2 bg-orange-500/10 rounded-xl">
+            <Flame className="w-5 h-5 text-orange-500" />
           </div>
+          <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-white/40">Trending Now</h3>
         </div>
-        <div className="flex space-x-3 overflow-x-auto scrollbar-hide pb-2">
+        <div className="flex space-x-4 overflow-x-auto scrollbar-hide pb-2">
           {trendingTags.map(tag => (
-            <button key={tag} className="flex-shrink-0 bg-white/5 border border-white/5 px-4 py-2 rounded-xl text-[11px] font-bold text-white/80 hover:bg-white/10 transition-colors">
+            <button key={tag} className="flex-shrink-0 bg-white/5 border border-white/10 px-6 py-3 rounded-2xl text-[13px] font-black text-white/80 hover:bg-white/10 hover:text-white transition-all active:scale-95 shadow-xl">
               {tag}
             </button>
           ))}
         </div>
       </div>
 
-      <div 
-        className="px-4 py-6"
-        style={{ height: '226px', fontSize: '7px', lineHeight: '9px', fontWeight: 'normal' }}
-      >
-        <button style={{ height: '31.5px', width: '70.4688px' }} className="hidden">1</button>
-        <button style={{ height: '31.5px' }} className="hidden">2</button>
-        <button style={{ height: '31.5px' }} className="hidden">3</button>
-        <button style={{ height: '31.5px' }} className="hidden">4</button>
-        <div 
-          className="flex items-center justify-between mb-4"
-          style={{ marginTop: '-12px' }}
-        >
-          <div 
-            className="flex items-center space-x-2"
-            style={{ height: '29px', width: '49.9844px', marginLeft: '-23px' }}
-          >
-            <Sparkles className="w-4 h-4 text-blue-500" />
-            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">Discover Explore</h3>
+      {/* Explore Grid */}
+      <div className="px-6 py-4">
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-blue-500/10 rounded-xl">
+              <Sparkles className="w-5 h-5 text-blue-500" />
+            </div>
+            <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-white/40">Discover Explore</h3>
           </div>
-          <button 
-            className="text-[10px] font-black text-pink-500 uppercase tracking-widest"
-            style={{ height: '28px', width: '100.383px', lineHeight: '10px' }}
-          >See All</button>
+          <button className="text-[11px] font-black text-pink-500 uppercase tracking-widest hover:underline">See All</button>
         </div>
-        <div className="grid grid-cols-3 gap-1">
+        
+        <div className="grid grid-cols-3 gap-1.5">
           {suggestedPosts.map((url, i) => (
-            <div key={i} className="aspect-square bg-zinc-900 relative group cursor-pointer overflow-hidden rounded-sm">
-              <img src={url} className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-500" alt="" />
+            <div 
+              key={i} 
+              className={`aspect-square bg-zinc-900 relative group cursor-pointer overflow-hidden rounded-xl shadow-2xl ${i === 0 ? 'col-span-2 row-span-2' : ''}`}
+            >
+              <img src={url} className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-1000" alt="" />
+              <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
           ))}
         </div>

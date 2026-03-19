@@ -283,7 +283,7 @@ const CreateTab: React.FC<CreateTabProps> = ({ onCancel, initialMode = 'post' })
   };
 
   const renderCameraUI = () => (
-    <div className="fixed inset-0 bg-black flex flex-col text-white animate-in fade-in duration-300 overflow-hidden">
+    <div className="fixed inset-0 bg-black flex flex-col text-text-primary animate-in fade-in duration-300 overflow-hidden">
       <input 
         type="file" 
         ref={fileInputRef} 
@@ -305,15 +305,15 @@ const CreateTab: React.FC<CreateTabProps> = ({ onCancel, initialMode = 'post' })
       />
 
       {cameraError && (
-        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/80 backdrop-blur-md px-8 text-center">
-          <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mb-6">
-            <Camera className="w-8 h-8 text-red-500" />
+        <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-base-bg/80 backdrop-blur-md px-8 text-center">
+          <div className="w-16 h-16 bg-danger/20 rounded-full flex items-center justify-center mb-6">
+            <Camera className="w-8 h-8 text-danger" />
           </div>
-          <h3 className="text-xl font-black text-white tracking-tight mb-2">Camera Access Denied</h3>
-          <p className="text-white/60 text-sm mb-8">Please enable camera permissions in your browser settings to use this feature.</p>
+          <h3 className="text-h1 text-text-primary mb-2">Camera Access Denied</h3>
+          <p className="text-text-secondary text-body-default mb-8">Please enable camera permissions in your browser settings to use this feature.</p>
           <button 
             onClick={() => setMode('selection')}
-            className="bg-white text-black px-8 py-3 rounded-full font-bold text-sm active:scale-95 transition-transform"
+            className="btn-primary"
           >
             Go Back
           </button>
@@ -325,24 +325,24 @@ const CreateTab: React.FC<CreateTabProps> = ({ onCancel, initialMode = 'post' })
         className="px-6 pt-8 flex items-center justify-between z-50 relative"
         style={{ paddingLeft: '5px', paddingRight: '24px', marginRight: '-9px', marginBottom: '-4px', marginTop: '-16px' }}
       >
-        <button onClick={onCancel} className="p-1.5 text-white drop-shadow-md active:scale-90 transition-transform">
+        <button onClick={onCancel} className="btn-icon bg-transparent border-none text-text-primary drop-shadow-md active:scale-90 transition-transform">
           <X className="w-6 h-6" />
         </button>
         <div className="flex items-center space-x-3">
-          <button onClick={() => setFlash(!flash)} className="p-1.5 text-white drop-shadow-md active:scale-90 transition-transform">
-            {flash ? <Zap className="w-5 h-5 fill-yellow-400 text-yellow-400" /> : <ZapOff className="w-5 h-5" />}
+          <button onClick={() => setFlash(!flash)} className="btn-icon bg-transparent border-none text-text-primary drop-shadow-md active:scale-90 transition-transform">
+            {flash ? <Zap className="w-5 h-5 fill-warning text-warning" /> : <ZapOff className="w-5 h-5" />}
           </button>
-          <button className="p-1.5 text-white drop-shadow-md active:scale-90 transition-transform">
+          <button className="btn-icon bg-transparent border-none text-text-primary drop-shadow-md active:scale-90 transition-transform">
             <Moon className="w-5 h-5" />
           </button>
           <button 
             onClick={() => setCameraFacing(prev => prev === 'user' ? 'environment' : 'user')}
-            className="p-1.5 text-white drop-shadow-md active:rotate-180 transition-transform"
+            className="btn-icon bg-transparent border-none text-text-primary drop-shadow-md active:rotate-180 transition-transform"
           >
             <RefreshCw className="w-5 h-5" />
           </button>
         </div>
-        <button className="p-1.5 text-white drop-shadow-md active:scale-90 transition-transform">
+        <button className="btn-icon bg-transparent border-none text-text-primary drop-shadow-md active:scale-90 transition-transform">
           <Settings className="w-5 h-5" />
         </button>
       </header>
@@ -352,13 +352,13 @@ const CreateTab: React.FC<CreateTabProps> = ({ onCancel, initialMode = 'post' })
         className="absolute left-6 top-[25%] flex flex-col items-center space-y-5 z-40 animate-in slide-in-from-left duration-700"
         style={{ marginLeft: '-18px', marginBottom: '8px', marginTop: '-74px' }}
       >
-         <button className="p-1 rounded-lg active:bg-white/10 transition-colors">
+         <button className="p-1 rounded-lg hover:bg-white/10 transition-colors text-text-primary">
            <Type className="w-5 h-5" />
          </button>
-         <button className="p-1 rounded-lg active:bg-white/10 transition-colors">
+         <button className="p-1 rounded-lg hover:bg-white/10 transition-colors text-text-primary">
            <Infinity className="w-5 h-5" />
          </button>
-         <button className="p-1 rounded-lg active:bg-white/10 transition-colors">
+         <button className="p-1 rounded-lg hover:bg-white/10 transition-colors text-text-primary">
            <LayoutGrid className="w-5 h-5" />
          </button>
       </div>
@@ -374,14 +374,14 @@ const CreateTab: React.FC<CreateTabProps> = ({ onCancel, initialMode = 'post' })
           {/* Gallery Preview */}
           <button 
             onClick={() => fileInputRef.current?.click()}
-            className="w-8 h-8 rounded-lg bg-white/10 border border-white/20 overflow-hidden active:scale-90 transition-transform"
-            style={{ height: '49px', width: '50px', marginLeft: '-39px' }}
+            className="w-12 h-12 rounded-lg glass-level-1 overflow-hidden active:scale-90 transition-transform"
+            style={{ marginLeft: '-39px' }}
           >
             <img 
               src="https://picsum.photos/seed/gallery/100/100" 
               className="w-full h-full object-cover opacity-60" 
               alt="" 
-              style={{ height: '24px' }}
+              referrerPolicy="no-referrer"
             />
           </button>
 
@@ -392,7 +392,7 @@ const CreateTab: React.FC<CreateTabProps> = ({ onCancel, initialMode = 'post' })
             style={{ marginLeft: '-9px' }}
           >
             <div 
-              className="w-full h-full rounded-full bg-white shadow-[0_0_15px_rgba(255,255,255,0.5)]" 
+              className="w-full h-full rounded-full bg-text-primary shadow-[0_0_15px_rgba(255,255,255,0.5)]" 
               style={{ marginRight: '-15px', marginLeft: '0px' }}
             />
           </button>
@@ -400,7 +400,7 @@ const CreateTab: React.FC<CreateTabProps> = ({ onCancel, initialMode = 'post' })
           {/* Filter & Placeholder */}
           <div className="flex items-center absolute right-8">
             <div 
-              className="flex items-center bg-black/30 backdrop-blur-xl rounded-full p-1.5 border border-white/20 shadow-2xl"
+              className="flex items-center glass-level-2 rounded-full p-1.5 shadow-2xl"
               style={{ height: '49px', width: '158px', paddingLeft: '-9px', paddingTop: '5px', paddingBottom: '7px', paddingRight: '-2px', marginRight: '-28px', marginLeft: '-16px', marginBottom: '-61px', marginTop: '-66px' }}
             >
               <div 
@@ -413,19 +413,19 @@ const CreateTab: React.FC<CreateTabProps> = ({ onCancel, initialMode = 'post' })
                     onClick={() => setActiveFaceFilter(f)}
                     className={`relative w-10 h-10 rounded-full transition-all duration-300 shrink-0 flex items-center justify-center group ${
                       activeFaceFilter.id === f.id 
-                        ? 'bg-white scale-110 shadow-[0_0_15px_rgba(255,255,255,0.4)] z-20' 
+                        ? 'bg-text-primary scale-110 shadow-[0_0_15px_rgba(255,255,255,0.4)] z-20' 
                         : 'hover:bg-white/20 z-10'
                     }`}
                     style={index === 0 ? { height: '26px', marginBottom: '7px', marginTop: '6px' } : {}}
                   >
                     <f.icon 
                       className={`w-5 h-5 transition-colors duration-300 ${
-                        activeFaceFilter.id === f.id ? 'text-black' : 'text-white group-hover:text-white'
+                        activeFaceFilter.id === f.id ? 'text-base-bg' : 'text-text-primary group-hover:text-text-primary'
                       }`} 
                       style={index === 3 || index === 2 || index === 1 ? { height: '18px' } : {}}
                     />
                     {activeFaceFilter.id === f.id && (
-                      <div className="absolute -bottom-1 w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+                      <div className="absolute -bottom-1 w-1.5 h-1.5 bg-text-primary rounded-full animate-pulse" />
                     )}
                   </button>
                 ))}
@@ -435,17 +435,17 @@ const CreateTab: React.FC<CreateTabProps> = ({ onCancel, initialMode = 'post' })
         </div>
 
         {/* Mode Tabs - 'Story' centered at midpoint */}
-        <div className="w-full flex items-center text-[11px] font-black uppercase tracking-widest text-white/40">
+        <div className="w-full flex items-center text-label text-text-muted">
           <div className="flex-1 flex justify-end pr-6">
-            <button className="hover:text-white transition-colors">Post</button>
+            <button className="hover:text-text-primary transition-colors">Post</button>
           </div>
-          <button className="text-white relative shrink-0 px-2">
+          <button className="text-text-primary relative shrink-0 px-2">
             Story
-            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1 h-1 bg-white rounded-full" />
+            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1 h-1 bg-text-primary rounded-full" />
           </button>
           <div className="flex-1 flex justify-start pl-6 space-x-6">
-            <button className="hover:text-white transition-colors">Reel</button>
-            <button className="hover:text-white transition-colors">Live</button>
+            <button className="hover:text-text-primary transition-colors">Reel</button>
+            <button className="hover:text-text-primary transition-colors">Live</button>
           </div>
         </div>
       </footer>
@@ -453,14 +453,14 @@ const CreateTab: React.FC<CreateTabProps> = ({ onCancel, initialMode = 'post' })
   );
 
   const renderEditUI = () => (
-    <div className="fixed inset-0 bg-black flex flex-col text-white animate-in fade-in duration-300 overflow-hidden">
+    <div className="fixed inset-0 bg-black flex flex-col text-text-primary animate-in fade-in duration-300 overflow-hidden">
       {capturedMedia && (
-        <img src={capturedMedia.url} className="absolute inset-0 w-full h-full object-cover z-0" alt="" />
+        <img src={capturedMedia.url} className="absolute inset-0 w-full h-full object-cover z-0" alt="" referrerPolicy="no-referrer" />
       )}
 
       {/* Top Bar - Screenshot Style */}
       <header className="px-6 pt-12 flex items-center justify-between z-50 relative">
-        <button onClick={() => setMode('post')} className="p-2 active:scale-95 transition-transform">
+        <button onClick={() => setMode('post')} className="btn-icon bg-transparent border-none text-text-primary active:scale-95 transition-transform">
           <ChevronLeft className="w-7 h-7" />
         </button>
         <div className="flex items-center space-x-5">
@@ -477,21 +477,21 @@ const CreateTab: React.FC<CreateTabProps> = ({ onCancel, initialMode = 'post' })
       {/* Bottom Controls - Screenshot Style */}
       <footer className="p-6 pb-12 flex items-center justify-between z-50 relative">
         <div className="flex items-center space-x-3">
-          <button className="flex items-center space-x-2 bg-white/10 backdrop-blur-xl border border-white/10 px-4 py-2.5 rounded-full active:scale-95 transition-transform">
+          <button className="flex items-center space-x-2 glass-level-1 px-4 py-2.5 rounded-full active:scale-95 transition-transform">
             <div className="w-6 h-6 rounded-full overflow-hidden border border-white/20">
-              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200" className="w-full h-full object-cover" alt="" />
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200" className="w-full h-full object-cover" alt="" referrerPolicy="no-referrer" />
             </div>
-            <span className="text-xs font-bold">Your story</span>
+            <span className="text-body-small font-bold">Your story</span>
           </button>
-          <button className="flex items-center space-x-2 bg-white/10 backdrop-blur-xl border border-white/10 px-4 py-2.5 rounded-full active:scale-95 transition-transform">
-            <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center">
-              <Smile className="w-4 h-4 text-white" />
+          <button className="flex items-center space-x-2 glass-level-1 px-4 py-2.5 rounded-full active:scale-95 transition-transform">
+            <div className="w-6 h-6 rounded-full bg-success flex items-center justify-center">
+              <Smile className="w-4 h-4 text-text-primary" />
             </div>
-            <span className="text-xs font-bold">Close Friends</span>
+            <span className="text-body-small font-bold">Close Friends</span>
           </button>
         </div>
-        <button onClick={() => setMode('share')} className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-xl active:scale-90 transition-transform">
-          <ChevronRight className="w-7 h-7 text-black" />
+        <button onClick={() => setMode('share')} className="w-12 h-12 bg-text-primary rounded-full flex items-center justify-center shadow-xl active:scale-90 transition-transform">
+          <ChevronRight className="w-7 h-7 text-base-bg" />
         </button>
       </footer>
     </div>
@@ -499,50 +499,49 @@ const CreateTab: React.FC<CreateTabProps> = ({ onCancel, initialMode = 'post' })
 
 
   const renderShare = () => (
-    <div className="fixed inset-0 z-[130] bg-white flex flex-col text-zinc-900 animate-in slide-in-from-bottom duration-500">
-      <header className="px-4 py-4 flex items-center justify-between border-b border-zinc-100">
+    <div className="fixed inset-0 z-[130] bg-base-bg flex flex-col text-text-primary animate-in slide-in-from-bottom duration-500">
+      <header className="px-4 py-4 flex items-center justify-between border-b border-white/5">
         <div className="flex items-center space-x-4">
-          <button onClick={() => setMode('edit')} className="p-1 active:scale-90 transition-transform">
-            <ChevronLeft className="w-7 h-7 text-zinc-800" />
+          <button onClick={() => setMode('edit')} className="btn-icon bg-transparent border-none text-text-primary active:scale-90 transition-transform">
+            <ChevronLeft className="w-7 h-7" />
           </button>
-          <h2 className="text-lg font-bold">Share</h2>
+          <h2 className="text-h2">Share</h2>
         </div>
-        <button className="p-1">
-          <MoreVertical className="w-6 h-6 text-zinc-400" />
+        <button className="btn-icon bg-transparent border-none text-text-muted">
+          <MoreVertical className="w-6 h-6" />
         </button>
       </header>
 
       <div className="px-4 py-3">
-        <div className="bg-zinc-100/80 rounded-xl px-4 py-2.5 flex items-center space-x-2">
-          <Search className="w-4 h-4 text-zinc-400" />
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
           <input 
             type="text" 
             placeholder="Search" 
-            className="bg-transparent border-none outline-none text-sm w-full text-zinc-800 placeholder-zinc-400 font-medium"
+            className="input-field w-full pl-10"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <Users className="w-5 h-5 text-zinc-400" />
         </div>
       </div>
 
       <div className="flex-grow overflow-y-auto pb-10 px-5 pt-4">
-        <h3 className="text-[14px] font-bold text-zinc-900 mb-5">Recent Contacts</h3>
+        <h3 className="text-label text-text-muted mb-5">Recent Contacts</h3>
         <div className="space-y-6">
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div key={i} className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 rounded-full bg-zinc-100 border border-zinc-200 overflow-hidden">
-                  <img src={`https://picsum.photos/seed/${i + 20}/100/100`} className="w-full h-full object-cover" alt="" />
+                <div className="w-12 h-12 rounded-full glass-level-1 overflow-hidden">
+                  <img src={`https://picsum.photos/seed/${i + 20}/100/100`} className="w-full h-full object-cover" alt="" referrerPolicy="no-referrer" />
                 </div>
                 <div>
-                  <div className="w-32 h-2.5 bg-zinc-100 rounded-full mb-2" />
-                  <div className="w-20 h-2 bg-zinc-50 rounded-full" />
+                  <div className="w-32 h-2.5 bg-surface-1 rounded-full mb-2" />
+                  <div className="w-20 h-2 bg-surface-2 rounded-full" />
                 </div>
               </div>
               <button 
                 onClick={onCancel}
-                className="bg-sky-500 text-white px-5 py-2 rounded-xl text-xs font-black uppercase tracking-widest active:scale-95 transition-transform"
+                className="btn-primary py-2 px-5 text-xs uppercase tracking-widest"
               >
                 Send
               </button>
@@ -559,26 +558,26 @@ const CreateTab: React.FC<CreateTabProps> = ({ onCancel, initialMode = 'post' })
       {mode === 'edit' && renderEditUI()}
       {mode === 'share' && renderShare()}
       {mode === 'selection' && (
-         <div className="fixed inset-0 bg-[#0c0c0c] flex flex-col items-center justify-center p-8 space-y-8 animate-in zoom-in-95 duration-300">
+         <div className="fixed inset-0 bg-base-bg flex flex-col items-center justify-center p-8 space-y-8 animate-in zoom-in-95 duration-300">
             <div className="text-center">
-               <h2 className="text-4xl font-black text-white tracking-tighter italic brand-text">Games</h2>
-               <p className="text-white/40 font-bold mt-2 uppercase tracking-[0.3em] text-[10px]">What's your vision?</p>
+               <h2 className="text-display text-text-primary italic brand-text">Games</h2>
+               <p className="text-label text-text-muted mt-2">What's your vision?</p>
             </div>
             <div className="grid grid-cols-2 gap-6 w-full max-w-sm">
-               <button onClick={() => setMode('post')} className="aspect-square bg-white/5 rounded-[3rem] border border-white/10 flex flex-col items-center justify-center space-y-4 hover:bg-white/10 transition-all group active:scale-95">
-                  <div className="p-5 bg-purple-600/20 rounded-2xl text-purple-500 group-hover:bg-purple-600 group-hover:text-white transition-all shadow-lg">
+               <button onClick={() => setMode('post')} className="aspect-square glass-level-1 rounded-[3rem] flex flex-col items-center justify-center space-y-4 hover:bg-white/5 transition-all group active:scale-95">
+                  <div className="p-5 bg-purple-600/20 rounded-2xl text-purple-500 group-hover:bg-purple-600 group-hover:text-text-primary transition-all shadow-lg">
                     <ImageIcon className="w-9 h-9" />
                   </div>
-                  <span className="font-black text-[11px] uppercase tracking-widest text-white/70">Story</span>
+                  <span className="text-label text-text-secondary">Story</span>
                </button>
-               <button onClick={() => setMode('live')} className="aspect-square bg-white/5 rounded-[3rem] border border-white/10 flex flex-col items-center justify-center space-y-4 hover:bg-white/10 transition-all group active:scale-95">
-                  <div className="p-5 bg-pink-600/20 rounded-2xl text-pink-500 group-hover:bg-pink-600 group-hover:text-white transition-all shadow-lg">
+               <button onClick={() => setMode('live')} className="aspect-square glass-level-1 rounded-[3rem] flex flex-col items-center justify-center space-y-4 hover:bg-white/5 transition-all group active:scale-95">
+                  <div className="p-5 bg-pink-600/20 rounded-2xl text-pink-500 group-hover:bg-pink-600 group-hover:text-text-primary transition-all shadow-lg">
                     <Radio className="w-9 h-9" />
                   </div>
-                  <span className="font-black text-[11px] uppercase tracking-widest text-white/70">Live</span>
+                  <span className="text-label text-text-secondary">Live</span>
                </button>
             </div>
-            <button onClick={onCancel} className="text-white/20 font-black uppercase text-[10px] tracking-[0.4em] pt-8 hover:text-white transition-colors">Cancel</button>
+            <button onClick={onCancel} className="btn-pill text-text-muted hover:text-text-primary transition-colors">Cancel</button>
          </div>
       )}
     </div>
