@@ -15,6 +15,11 @@ import ReelsTab from './components/ReelsTab';
 import BettingTab from './components/BettingTab';
 import JobsTab from './components/JobsTab';
 import AdsTab from './components/AdsTab';
+import { supabase } from './src/services/supabaseClient';
+import { usePushNotifications } from './src/hooks/usePushNotifications';
+import { ThemeProvider } from './src/ThemeContext';
+import { ThemeToggle } from './components/ThemeToggle';
+import { useNotifications } from './src/hooks/useNotifications';
 
 const StatusBar = () => (
   <div className="h-7 px-6 flex justify-between items-center text-[10px] font-black text-white/40 z-[60] bg-[#0c0c0c] sticky top-0">
@@ -51,47 +56,16 @@ const SplashScreen = ({ onComplete }: { onComplete: () => void }) => {
   );
 };
 
-import { supabase } from './src/services/supabaseClient';
-
 const NotificationsTab = () => {
-  const [notifications, setNotifications] = useState<any[]>([]);
-
+  const [userId, setUserId] = useState<string | null>(null);
+  
   useEffect(() => {
-    const fetchNotifications = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-
-      // Initial fetch
-      const { data } = await supabase
-        .from('notifications')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-        
-      if (data) setNotifications(data);
-
-      // Mark as read
-      const unreadIds = data?.filter(n => !n.is_read).map(n => n.id) || [];
-      if (unreadIds.length > 0) {
-        await supabase
-          .from('notifications')
-          .update({ is_read: true })
-          .in('id', unreadIds);
-      }
-    };
-
-    fetchNotifications();
-
-    // Subscribe to new notifications
-    const subscription = supabase
-      .channel('public:notifications')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, fetchNotifications)
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(subscription);
-    };
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) setUserId(user.id);
+    });
   }, []);
+
+  const notifications = useNotifications(userId || '');
 
   return (
     <div className="p-6 animate-in fade-in duration-500 pb-20">
@@ -109,8 +83,6 @@ const NotificationsTab = () => {
     </div>
   );
 };
-
-import { usePushNotifications } from './src/hooks/usePushNotifications';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('home');
@@ -157,6 +129,7 @@ const App: React.FC = () => {
   };
 
   const renderContent = () => {
+    // Render content based on active tab
     switch (activeTab) {
       case 'home': return <HomeTab onStoryToggle={setIsStoryActive} onAddStory={handleAddStory} />;
       case 'search': return <SearchTab />;
@@ -179,97 +152,84 @@ const App: React.FC = () => {
 
   const isFullPage = (['create'] as TabType[]).includes(activeTab) || isStoryActive;
   const hideHeader = isFullPage || activeTab === 'profile';
-  const hideBottomNav = isFullPage || activeTab === 'messages' && activeTab === 'create'; // Adjust as needed
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#0c0c0c] text-white font-sans antialiased overflow-x-hidden">
-      {loading && <SplashScreen onComplete={() => setLoading(false)} />}
-      
-      {!isFullPage && <StatusBar />}
+    <ThemeProvider>
+      <div className="flex flex-col min-h-screen bg-[#0c0c0c] text-white font-sans antialiased overflow-x-hidden">
+        {loading && <SplashScreen onComplete={() => setLoading(false)} />}
+        
+        {!isFullPage && <StatusBar />}
 
-      {/* Header - Fixed Top (Up Bar) */}
-      {!hideHeader && (
-        <header 
-          className={`sticky top-7 bg-[#0c0c0c]/80 backdrop-blur-xl px-4 h-12 flex items-center justify-between z-50 border-b border-white/5`}
-        >
-          <div className="flex items-center shrink-0">
-            {activeTab !== 'business' && (
-              <div 
-                className="bg-red-600 px-2 py-0.5 rounded-sm cursor-pointer active:scale-95 transition-transform"
-                onClick={() => setActiveTab('home')}
-              >
-                <h1 className="text-white text-[14px] font-black italic tracking-tighter leading-none">
-                  Games
-                </h1>
-              </div>
-            )}
-          </div>
-          <div className="flex items-center space-x-1 sm:space-x-1.5 overflow-x-auto scrollbar-hide ml-2">
-            <HeaderIcon icon={Megaphone} onClick={() => setActiveTab('ads')} active={activeTab === 'ads'} />
-            <HeaderIcon icon={Trophy} onClick={() => setActiveTab('events')} active={activeTab === 'events'} />
-            <HeaderIcon icon={Search} onClick={() => setActiveTab('search')} active={activeTab === 'search'} />
-            <HeaderIcon icon={Clapperboard} onClick={() => setActiveTab('reels')} active={activeTab === 'reels'} />
-            
-            <div className="relative group cursor-pointer p-1 flex items-center justify-center" onClick={() => setActiveTab('notifications')}>
-              <Heart className={`w-4 h-4 transition-colors ${activeTab === 'notifications' ? 'text-white' : 'text-white/40'}`} />
-              {unreadCount > 0 && (
-                <div className="absolute top-0 right-0 w-4 h-4 bg-pink-500 rounded-full flex items-center justify-center text-[10px] font-black border border-[#0c0c0c] shadow-lg">
-                  {unreadCount}
+        {!hideHeader && (
+          <header className={`sticky top-7 bg-[#0c0c0c]/80 backdrop-blur-xl px-4 h-12 flex items-center justify-between z-50 border-b border-white/5`}>
+            <div className="flex items-center shrink-0">
+              {activeTab !== 'business' && (
+                <div className="bg-red-600 px-2 py-0.5 rounded-sm cursor-pointer active:scale-95 transition-transform" onClick={() => setActiveTab('home')}>
+                  <h1 className="text-white text-[14px] font-black italic tracking-tighter leading-none">Games</h1>
                 </div>
               )}
             </div>
+            <div className="flex items-center space-x-1 sm:space-x-1.5 overflow-x-auto scrollbar-hide ml-2">
+              <ThemeToggle />
+              <HeaderIcon icon={Megaphone} onClick={() => setActiveTab('ads')} active={activeTab === 'ads'} />
+              <HeaderIcon icon={Trophy} onClick={() => setActiveTab('events')} active={activeTab === 'events'} />
+              <HeaderIcon icon={Search} onClick={() => setActiveTab('search')} active={activeTab === 'search'} />
+              <HeaderIcon icon={Clapperboard} onClick={() => setActiveTab('reels')} active={activeTab === 'reels'} />
+              
+              <div className="relative group cursor-pointer p-1 flex items-center justify-center" onClick={() => setActiveTab('notifications')}>
+                <Heart className={`w-4 h-4 transition-colors ${activeTab === 'notifications' ? 'text-white' : 'text-white/40'}`} />
+                {unreadCount > 0 && (
+                  <div className="absolute top-0 right-0 w-4 h-4 bg-pink-500 rounded-full flex items-center justify-center text-[10px] font-black border border-[#0c0c0c] shadow-lg">
+                    {unreadCount}
+                  </div>
+                )}
+              </div>
 
-            <div className="relative group cursor-pointer p-1 flex items-center justify-center" onClick={() => setActiveTab('messages')}>
-              <MessageCircle className={`w-4 h-4 transition-colors ${activeTab === 'messages' ? 'text-white' : 'text-white/40'}`} />
-              <div className="absolute top-1 right-1 w-2.5 h-2.5 bg-[#e1306c] rounded-full flex items-center justify-center border border-[#0c0c0c] shadow-lg">
-                <span className="text-[6px] text-white font-black">3</span>
+              <div className="relative group cursor-pointer p-1 flex items-center justify-center" onClick={() => setActiveTab('messages')}>
+                <MessageCircle className={`w-4 h-4 transition-colors ${activeTab === 'messages' ? 'text-white' : 'text-white/40'}`} />
+                <div className="absolute top-1 right-1 w-2.5 h-2.5 bg-[#e1306c] rounded-full flex items-center justify-center border border-[#0c0c0c] shadow-lg">
+                  <span className="text-[6px] text-white font-black">3</span>
+                </div>
+              </div>
+              
+              <div className="p-0.5 flex items-center justify-center">
+                <div className={`w-6 h-6 rounded-full overflow-hidden border transition-all cursor-pointer active:scale-90 shadow-lg ${(activeTab as string) === 'profile' ? 'border-pink-500 ring-2 ring-pink-500/20' : 'border-white/20'}`} onClick={() => setActiveTab('profile')}>
+                   <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200" className="w-full h-full object-cover" alt="" />
+                </div>
               </div>
             </div>
+          </header>
+        )}
+
+        <main className={`relative z-10 flex-grow flex flex-col ${activeTab === 'create' || isStoryActive ? '' : 'pb-14'}`}>
+          <div className="w-[378px] mx-auto flex-grow flex flex-col">
+            {renderContent()}
+          </div>
+        </main>
+
+        {!(activeTab === 'create' || isStoryActive) && (
+          <nav className="fixed bottom-0 left-0 right-0 bg-[#0c0c0c]/95 backdrop-blur-2xl border-t border-white/5 h-[46px] flex items-center justify-around z-50 px-2 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.6)]">
+            <NavItem icon={Home} active={activeTab === 'home'} onClick={() => setActiveTab('home')} label="Home" />
+            <NavItem icon={ShoppingBag} active={activeTab === 'shopping'} onClick={() => setActiveTab('shopping')} label="Market" /> 
+            <NavItem icon={Wallet} active={activeTab === 'wallet'} onClick={() => setActiveTab('wallet')} label="Wallet" />
             
-            <div className="p-0.5 flex items-center justify-center">
-              <div 
-                className={`w-6 h-6 rounded-full overflow-hidden border transition-all cursor-pointer active:scale-90 shadow-lg ${(activeTab as string) === 'profile' ? 'border-pink-500 ring-2 ring-pink-500/20' : 'border-white/20'}`} 
-                onClick={() => setActiveTab('profile')}
+            <div className="flex items-center justify-center px-1">
+              <button 
+                onClick={handleCreatePost}
+                className="w-10 h-10 bg-red-600 text-white rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(220,38,38,0.4)] active:scale-75 hover:scale-105 transition-all transform -translate-y-2 border border-white/10"
+                aria-label="Create Post"
               >
-                 <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200" className="w-full h-full object-cover" alt="" />
-              </div>
+                <Plus className="w-6 h-6 stroke-[3]" />
+              </button>
             </div>
-          </div>
-        </header>
-      )}
 
-      {/* Main Content Area */}
-      <main className={`relative z-10 flex-grow flex flex-col ${activeTab === 'create' || isStoryActive ? '' : 'pb-14'}`}>
-        <div className="w-[378px] mx-auto flex-grow flex flex-col">
-          {renderContent()}
-        </div>
-      </main>
-
-      {/* Bottom Nav */}
-      {!(activeTab === 'create' || isStoryActive) && (
-        <nav 
-          className="fixed bottom-0 left-0 right-0 bg-[#0c0c0c]/95 backdrop-blur-2xl border-t border-white/5 h-[46px] flex items-center justify-around z-50 px-2 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.6)]"
-        >
-          <NavItem icon={Home} active={activeTab === 'home'} onClick={() => setActiveTab('home')} label="Home" />
-          <NavItem icon={ShoppingBag} active={activeTab === 'shopping'} onClick={() => setActiveTab('shopping')} label="Market" /> 
-          <NavItem icon={Wallet} active={activeTab === 'wallet'} onClick={() => setActiveTab('wallet')} label="Wallet" />
-          
-          <div className="flex items-center justify-center px-1">
-            <button 
-              onClick={handleCreatePost}
-              className="w-10 h-10 bg-red-600 text-white rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(220,38,38,0.4)] active:scale-75 hover:scale-105 transition-all transform -translate-y-2 border border-white/10"
-              aria-label="Create Post"
-            >
-              <Plus className="w-6 h-6 stroke-[3]" />
-            </button>
-          </div>
-
-          <NavItem icon={HandHeart} active={activeTab === 'giving'} onClick={() => setActiveTab('giving')} label="Giving" />
-          <NavItem icon={MapPin} active={activeTab === 'map'} onClick={() => setActiveTab('map')} label="map" />
-          <NavItem icon={Building2} active={activeTab === 'business'} onClick={() => setActiveTab('business')} label="Biz" />
-        </nav>
-      )}
-    </div>
+            <NavItem icon={HandHeart} active={activeTab === 'giving'} onClick={() => setActiveTab('giving')} label="Giving" />
+            <NavItem icon={MapPin} active={activeTab === 'map'} onClick={() => setActiveTab('map')} label="map" />
+            <NavItem icon={Building2} active={activeTab === 'business'} onClick={() => setActiveTab('business')} label="Biz" />
+          </nav>
+        )}
+      </div>
+    </ThemeProvider>
   );
 };
 

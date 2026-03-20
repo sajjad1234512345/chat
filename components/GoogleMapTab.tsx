@@ -29,8 +29,7 @@ import {
   Loader2
 } from 'lucide-react';
 import { format, differenceInDays, addDays, isWithinInterval, parseISO } from 'date-fns';
-import { auth } from '../firebase';
-import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { supabase } from '../services/supabaseClient';
 import { 
   createEvent, 
   subscribeToEvents, 
@@ -38,7 +37,7 @@ import {
   createAccommodation, 
   subscribeToAccommodations,
   createBooking 
-} from '../services/firebaseService';
+} from '../services/supabaseService';
 import { Event, Accommodation, Booking } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -57,14 +56,19 @@ const GoogleMapTab: React.FC = () => {
   const [routeInfo, setRouteInfo] = useState<{ distance: string; duration: string } | null>(null);
   const [isAuthReady, setIsAuthReady] = useState(false);
 
-  const [user, setUser] = useState(auth.currentUser);
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((u) => {
-      setUser(u);
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
       setIsAuthReady(true);
     });
-    return () => unsubscribe();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   useEffect(() => {
@@ -90,7 +94,9 @@ const GoogleMapTab: React.FC = () => {
 
   const handleLogin = async () => {
     try {
-      await signInWithPopup(auth, new GoogleAuthProvider());
+      await supabase.auth.signInWithOAuth({
+        provider: 'google',
+      });
     } catch (error) {
       console.error('Login error:', error);
     }
@@ -137,6 +143,7 @@ const GoogleMapTab: React.FC = () => {
             setSelectedItem={setSelectedItem}
             userLocation={userLocation}
             setRouteInfo={setRouteInfo}
+            user={user}
           />
         </Map>
 
@@ -278,7 +285,8 @@ const MapContent = ({
   selectedItem, 
   setSelectedItem, 
   userLocation,
-  setRouteInfo 
+  setRouteInfo,
+  user
 }: any) => {
   const map = useMap();
   const routesLib = useMapsLibrary('routes');
@@ -342,7 +350,7 @@ const MapContent = ({
             <div className="w-10 h-10 bg-pink-600 rounded-full border-2 border-white shadow-md flex items-center justify-center transform group-hover:scale-110 transition-all duration-300">
               <Calendar className="w-5 h-5 text-white" />
             </div>
-            {auth.currentUser && event.participants.includes(auth.currentUser.uid) && (
+            {user && event.participants.includes(user.id) && (
               <div className="absolute -top-2 -right-2 bg-white text-pink-600 text-[8px] font-black px-1.5 py-0.5 rounded-full shadow-lg border border-pink-100">
                 JOINED
               </div>
@@ -406,10 +414,10 @@ const MapContent = ({
 
                   <button 
                     onClick={() => joinEvent(selectedItem.data.id)}
-                    disabled={auth.currentUser && selectedItem.data.participants.includes(auth.currentUser.uid)}
+                    disabled={user && selectedItem.data.participants.includes(user.id)}
                     className="w-full py-3 bg-pink-600 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl hover:shadow-xl hover:shadow-pink-500/20 active:scale-95 transition-all disabled:opacity-50 disabled:bg-zinc-800"
                   >
-                    {auth.currentUser && selectedItem.data.participants.includes(auth.currentUser.uid) ? 'Joined' : 'Join Vibe'}
+                    {user && selectedItem.data.participants.includes(user.id) ? 'Joined' : 'Join Vibe'}
                   </button>
                 </div>
               ) : (
