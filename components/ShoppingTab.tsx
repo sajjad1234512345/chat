@@ -8,6 +8,9 @@ import {
   CreditCard, CheckCircle2, ChevronDown
 } from 'lucide-react';
 import { Product } from '../types';
+import { useCartStore } from '../src/services/cartStore';
+import { CartSheet } from './CartSheet';
+import { motion } from 'framer-motion';
 
 const INITIAL_MOCK_PRODUCTS: Product[] = [
   {
@@ -134,7 +137,7 @@ const ProductStudio: React.FC<{ onBack: () => void }> = ({ onBack }) => {
              <div className="relative group">
                <img 
                  src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=1200" 
-                 className="h-[45vh] sm:h-[60vh] object-contain drop-shadow-[0_40px_80px_rgba(0,0,0,0.6)] contrast-[1.05] relative z-10 rounded-[2rem]"
+                 className="h-[45vh] sm:h-[60vh] object-contain drop-shadow-[0_40px_80px_rgba(0,0,0,0.6)] contrast-[1.05] relative z-10 rounded-3xl"
                  alt="Model"
                />
                
@@ -143,7 +146,7 @@ const ProductStudio: React.FC<{ onBack: () => void }> = ({ onBack }) => {
              </div>
 
              {/* PRODUCT CARD - More compact, white/glass style as per screenshot */}
-             <div className="absolute bottom-6 w-full max-w-[280px] bg-white/95 backdrop-blur-[60px] border border-white/20 rounded-[2rem] p-5 shadow-[0_30px_60px_rgba(0,0,0,0.6)] z-20 animate-in slide-in-from-bottom-8 duration-700 delay-500">
+             <div className="absolute bottom-6 w-full max-w-[280px] bg-white/95 backdrop-blur-[60px] border border-white/20 rounded-3xl p-5 shadow-[0_30px_60px_rgba(0,0,0,0.6)] z-20 animate-in slide-in-from-bottom-8 duration-700 delay-500">
                <div className="flex items-start justify-between">
                  <div className="flex flex-col">
                    <h4 className="text-[14px] font-black text-zinc-900 tracking-tighter uppercase italic leading-none">Basic t-shirt</h4>
@@ -194,6 +197,8 @@ const ProductStudio: React.FC<{ onBack: () => void }> = ({ onBack }) => {
 const ShoppingTab: React.FC = () => {
   const [view, setView] = useState<'browse' | 'ar' | 'my-store' | 'studio'>('browse');
   const [activeCategory, setActiveCategory] = useState('All');
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const { addItem, items } = useCartStore();
 
   if (view === 'studio') {
     return <ProductStudio onBack={() => setView('my-store')} />;
@@ -241,71 +246,71 @@ const ShoppingTab: React.FC = () => {
         </div>
 
         {/* Main Dashboard Layout */}
-        <div className="relative z-10 px-6 pt-10 pb-20 space-y-10 max-w-lg mx-auto w-full">
+        <div className="relative z-10 px-4 pt-6 pb-12 space-y-6 max-w-lg mx-auto w-full">
           
           {/* Header Action Row */}
-          <div className="flex justify-between items-center mb-4">
-             <button onClick={() => setView('browse')} className="p-4 bg-white/10 backdrop-blur-3xl border border-white/10 rounded-2xl text-white shadow-2xl active:scale-90 transition-all">
-                <ArrowLeft className="w-6 h-6" />
+          <div className="flex justify-between items-center mb-2">
+             <button onClick={() => setView('browse')} className="p-2.5 bg-white/10 backdrop-blur-3xl border border-white/10 rounded-2xl text-white shadow-2xl active:scale-90 transition-all">
+                <ArrowLeft className="w-5 h-5" />
              </button>
              <div className="text-center">
-                <h2 className="text-3xl font-black text-white tracking-tighter uppercase italic leading-none">My Market</h2>
-                <p className="text-[10px] text-white/30 font-black uppercase tracking-[0.4em] mt-2">Visionary Dashboard</p>
+                <h2 className="text-xl font-black text-white tracking-tighter uppercase italic leading-none">My Market</h2>
+                <p className="text-[8px] text-white/30 font-black uppercase tracking-[0.4em] mt-1">Visionary Dashboard</p>
              </div>
-             <button className="p-4 bg-white/10 backdrop-blur-3xl border border-white/10 rounded-2xl text-white/40 shadow-2xl active:rotate-90 transition-all">
-                <Settings className="w-6 h-6" />
+             <button className="p-2.5 bg-white/10 backdrop-blur-3xl border border-white/10 rounded-2xl text-white/40 shadow-2xl active:rotate-90 transition-all">
+                <Settings className="w-5 h-5" />
              </button>
           </div>
 
           {/* Stats Section */}
-          <div className="grid grid-cols-2 gap-6">
-            <div className="bg-white/5 backdrop-blur-[60px] p-8 rounded-[3.5rem] border border-white/20 shadow-[0_40px_80px_rgba(0,0,0,0.5)]">
-              <div className="flex justify-between items-center mb-6">
-                <div className="p-3 bg-green-500/10 rounded-2xl text-green-400">
-                  <TrendingUp className="w-5 h-5" />
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-white/5 backdrop-blur-[60px] p-4 rounded-2xl border border-white/20 shadow-[0_20px_40px_rgba(0,0,0,0.5)]">
+              <div className="flex justify-between items-center mb-3">
+                <div className="p-2 bg-green-500/10 rounded-xl text-green-400">
+                  <TrendingUp className="w-3.5 h-3.5" />
                 </div>
-                <span className="text-[11px] font-black text-green-400 tracking-widest">+12%</span>
+                <span className="text-[9px] font-black text-green-400 tracking-widest">+12%</span>
               </div>
-              <p className="text-4xl font-black text-white tracking-tighter">$2,450</p>
-              <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.3em] mt-2">Total Earnings</p>
+              <p className="text-2xl font-black text-white tracking-tighter">$2,450</p>
+              <p className="text-[8px] font-bold text-white/30 uppercase tracking-[0.3em] mt-1">Total Earnings</p>
             </div>
-            <div className="bg-white/5 backdrop-blur-[60px] p-8 rounded-[3.5rem] border border-white/20 shadow-[0_40px_80px_rgba(0,0,0,0.5)]">
-              <div className="flex justify-between items-center mb-6">
-                <div className="p-3 bg-blue-500/10 rounded-2xl text-blue-400">
-                  <Eye className="w-5 h-5" />
+            <div className="bg-white/5 backdrop-blur-[60px] p-4 rounded-2xl border border-white/20 shadow-[0_20px_40px_rgba(0,0,0,0.5)]">
+              <div className="flex justify-between items-center mb-3">
+                <div className="p-2 bg-blue-500/10 rounded-xl text-blue-400">
+                  <Eye className="w-3.5 h-3.5" />
                 </div>
-                <span className="text-[11px] font-black text-blue-400 tracking-widest">+4.2k</span>
+                <span className="text-[9px] font-black text-blue-400 tracking-widest">+4.2k</span>
               </div>
-              <p className="text-4xl font-black text-white tracking-tighter">12.8k</p>
-              <p className="text-[10px] font-bold text-white/30 uppercase tracking-[0.3em] mt-2">Store Visits</p>
+              <p className="text-2xl font-black text-white tracking-tighter">12.8k</p>
+              <p className="text-[8px] font-bold text-white/30 uppercase tracking-[0.3em] mt-1">Store Visits</p>
             </div>
           </div>
 
           {/* Quick Actions */}
           <section>
-            <h3 className="text-[10px] font-black text-white/30 uppercase tracking-[0.5em] mb-6 ml-4">Quick Actions</h3>
-            <div className="bg-black/40 backdrop-blur-[60px] border border-white/10 rounded-[4rem] p-6 shadow-2xl">
-              <div className="grid grid-cols-3 gap-6">
+            <h3 className="text-[8px] font-black text-white/30 uppercase tracking-[0.5em] mb-3 ml-3">Quick Actions</h3>
+            <div className="bg-black/40 backdrop-blur-[60px] border border-white/10 rounded-2xl p-3 shadow-2xl">
+              <div className="grid grid-cols-3 gap-3">
                 <button 
                   onClick={() => setView('studio')}
-                  className="flex flex-col items-center justify-center space-y-4 group active:scale-95 transition-all"
+                  className="flex flex-col items-center justify-center space-y-2 group active:scale-95 transition-all"
                 >
-                  <div className="p-5 bg-pink-600 text-white rounded-[1.8rem] shadow-pink-600/30 group-hover:scale-110 transition-transform shadow-xl">
-                    <Plus className="w-7 h-7" />
+                  <div className="p-3 bg-pink-600 text-white rounded-2xl shadow-pink-600/30 group-hover:scale-110 transition-transform shadow-xl">
+                    <Plus className="w-5 h-5" />
                   </div>
-                  <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/60">Add Item</span>
+                  <span className="text-[7px] font-black uppercase tracking-[0.2em] text-white/60">Add Item</span>
                 </button>
-                <button className="flex flex-col items-center justify-center space-y-4 group active:scale-95 transition-all">
-                  <div className="p-5 bg-indigo-600 text-white rounded-[1.8rem] shadow-indigo-600/30 group-hover:scale-110 transition-transform shadow-xl">
-                    <Package className="w-7 h-7" />
+                <button className="flex flex-col items-center justify-center space-y-2 group active:scale-95 transition-all">
+                  <div className="p-3 bg-indigo-600 text-white rounded-2xl shadow-indigo-600/30 group-hover:scale-110 transition-transform shadow-xl">
+                    <Package className="w-5 h-5" />
                   </div>
-                  <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/60">Orders</span>
+                  <span className="text-[7px] font-black uppercase tracking-[0.2em] text-white/60">Orders</span>
                 </button>
-                <button className="flex flex-col items-center justify-center space-y-4 group active:scale-95 transition-all">
-                  <div className="p-5 bg-orange-600 text-white rounded-[1.8rem] shadow-orange-600/30 group-hover:scale-110 transition-transform shadow-xl">
-                    <BarChart3 className="w-7 h-7" />
+                <button className="flex flex-col items-center justify-center space-y-2 group active:scale-95 transition-all">
+                  <div className="p-3 bg-orange-600 text-white rounded-2xl shadow-orange-600/30 group-hover:scale-110 transition-transform shadow-xl">
+                    <BarChart3 className="w-5 h-5" />
                   </div>
-                  <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/60">Analytics</span>
+                  <span className="text-[7px] font-black uppercase tracking-[0.2em] text-white/60">Analytics</span>
                 </button>
               </div>
             </div>
@@ -313,31 +318,31 @@ const ShoppingTab: React.FC = () => {
 
           {/* Live Listings */}
           <section>
-            <div className="flex justify-between items-center mb-6 ml-4">
-              <h3 className="text-[10px] font-black text-white/30 uppercase tracking-[0.5em]">Live Listings</h3>
-              <button className="text-[10px] font-black text-white uppercase tracking-widest bg-white/10 px-4 py-2 rounded-full border border-white/10 hover:bg-white/20 transition-all">See All</button>
+            <div className="flex justify-between items-center mb-4 ml-4">
+              <h3 className="text-[9px] font-black text-white/30 uppercase tracking-[0.5em]">Live Listings</h3>
+              <button className="text-[9px] font-black text-white uppercase tracking-widest bg-white/10 px-3 py-1.5 rounded-full border border-white/10 hover:bg-white/20 transition-all">See All</button>
             </div>
             
-            <div className="space-y-4">
+            <div className="space-y-3">
               {INITIAL_MOCK_PRODUCTS.slice(0, 2).map((product) => (
-                <div key={product.id} className="bg-white/5 backdrop-blur-[60px] p-6 rounded-[3rem] border border-white/20 flex items-center justify-between group active:scale-[0.98] transition-all shadow-xl">
-                  <div className="flex items-center space-x-6">
+                <div key={product.id} className="bg-white/5 backdrop-blur-[60px] p-4 rounded-2xl border border-white/20 flex items-center justify-between group active:scale-[0.98] transition-all shadow-xl">
+                  <div className="flex items-center space-x-4">
                     <div className="relative">
-                      <img src={product.image} className="w-20 h-20 rounded-[1.5rem] object-cover border border-white/20 shadow-2xl" alt="" />
-                      <div className="absolute -top-2 -right-2 bg-green-500 w-4 h-4 rounded-full border-2 border-zinc-900 animate-pulse" />
+                      <img src={product.image} className="w-16 h-16 rounded-xl object-cover border border-white/20 shadow-2xl" alt="" />
+                      <div className="absolute -top-1.5 -right-1.5 bg-green-500 w-3 h-3 rounded-full border-2 border-zinc-900 animate-pulse" />
                     </div>
                     <div>
-                      <h4 className="text-[16px] font-black text-white tracking-tight">{product.name}</h4>
-                      <p className="text-[12px] font-black text-white/40 uppercase tracking-widest mt-1">${product.price}</p>
+                      <h4 className="text-[14px] font-black text-white tracking-tight">{product.name}</h4>
+                      <p className="text-[10px] font-black text-white/40 uppercase tracking-widest mt-0.5">${product.price}</p>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-4">
-                    <div className="hidden sm:flex flex-col items-end mr-2">
-                       <span className="text-[10px] font-black text-green-400 uppercase tracking-widest">Active</span>
-                       <span className="text-[8px] font-bold text-white/20 uppercase">Listed 2d ago</span>
+                  <div className="flex items-center space-x-3">
+                    <div className="hidden sm:flex flex-col items-end mr-1">
+                       <span className="text-[9px] font-black text-green-400 uppercase tracking-widest">Active</span>
+                       <span className="text-[7px] font-bold text-white/20 uppercase">Listed 2d ago</span>
                     </div>
-                    <button className="p-3 bg-white/5 rounded-2xl text-white/30 hover:text-white transition-colors border border-white/5">
-                      <MoreHorizontal className="w-6 h-6" />
+                    <button className="p-2.5 bg-white/5 rounded-xl text-white/30 hover:text-white transition-colors border border-white/5">
+                      <MoreHorizontal className="w-5 h-5" />
                     </button>
                   </div>
                 </div>
@@ -346,18 +351,18 @@ const ShoppingTab: React.FC = () => {
           </section>
 
           {/* Visionary Promotion HUD */}
-          <div className="bg-black/50 backdrop-blur-[80px] border border-white/20 rounded-[3.5rem] p-10 shadow-[0_50px_120px_rgba(0,0,0,0.9)] animate-in slide-in-from-bottom duration-1000 relative overflow-hidden">
+          <div className="bg-black/50 backdrop-blur-[80px] border border-white/20 rounded-2xl p-6 shadow-[0_30px_80px_rgba(0,0,0,0.9)] animate-in slide-in-from-bottom duration-1000 relative overflow-hidden">
              <div className="relative z-10 flex flex-col items-center text-center">
-                <div className="p-4 bg-white/10 rounded-[2rem] text-white mb-6">
-                   <Sparkles className="w-8 h-8 text-pink-500 animate-pulse" />
+                <div className="p-3 bg-white/10 rounded-xl text-white mb-4">
+                   <Sparkles className="w-6 h-6 text-pink-500 animate-pulse" />
                 </div>
-                <h3 className="text-2xl font-black text-white tracking-tight uppercase italic mb-4">Boost Marketplace Reach</h3>
-                <p className="text-white/50 text-xs font-medium leading-relaxed mb-8 max-w-[240px]">Use our advanced AR rendering tools to increase engagement by up to 300%.</p>
-                <button className="w-full bg-white text-black py-5 rounded-[2rem] font-black text-[11px] uppercase tracking-[0.4em] shadow-2xl active:scale-95 transition-all">
+                <h3 className="text-xl font-black text-white tracking-tight uppercase italic mb-3">Boost Marketplace Reach</h3>
+                <p className="text-white/50 text-[10px] font-medium leading-relaxed mb-6 max-w-[200px]">Use our advanced AR rendering tools to increase engagement by up to 300%.</p>
+                <button className="w-full bg-white text-black py-4 rounded-xl font-black text-[10px] uppercase tracking-[0.4em] shadow-2xl active:scale-95 transition-all">
                   Upgrade Store
                 </button>
              </div>
-             <div className="absolute -top-10 -right-10 w-40 h-40 bg-pink-500/10 rounded-full blur-[60px]" />
+             <div className="absolute -top-10 -right-10 w-32 h-32 bg-pink-500/10 rounded-full blur-[50px]" />
           </div>
         </div>
       </div>
@@ -389,7 +394,7 @@ const ShoppingTab: React.FC = () => {
 
       {/* Banner / AR Try-on CTA */}
       <div className="px-4 mt-2 mb-2">
-        <div className="relative h-36 rounded-[2.5rem] overflow-hidden group cursor-pointer border border-white/10" onClick={() => setView('ar')}>
+        <div className="relative h-36 rounded-3xl overflow-hidden group cursor-pointer border border-white/10" onClick={() => setView('ar')}>
           <img 
             src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2000&auto=format&fit=crop" 
             className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-700 brightness-[0.7]" 
@@ -434,18 +439,25 @@ const ShoppingTab: React.FC = () => {
       <div className="grid grid-cols-2 gap-4 px-4">
         {INITIAL_MOCK_PRODUCTS.filter(p => activeCategory === 'All' || p.category === activeCategory).map(product => (
           <div key={product.id} className="flex flex-col group animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="relative aspect-[3/4] rounded-[2rem] overflow-hidden mb-3 border border-white/5 shadow-xl bg-zinc-900">
+            <div className="relative aspect-[3/4] rounded-3xl overflow-hidden mb-3 border border-white/5 shadow-xl bg-zinc-900">
               <img src={product.image} className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-700" alt={product.name} />
               <button className="absolute top-4 right-4 p-2 bg-black/40 backdrop-blur-md rounded-xl text-white opacity-0 group-hover:opacity-100 transition-opacity">
                 <Heart className="w-4 h-4" />
               </button>
-              <div className="absolute bottom-4 left-4 right-4">
+              <div className="absolute bottom-4 left-4 right-4 flex flex-col gap-2">
                 <button 
                   onClick={() => setView('ar')}
                   className="w-full bg-white/90 backdrop-blur-md text-black py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl transform translate-y-12 group-hover:translate-y-0 transition-transform duration-500 flex items-center justify-center space-x-2"
                 >
                   <Camera className="w-3.5 h-3.5" />
                   <span>Try-on</span>
+                </button>
+                <button 
+                  onClick={() => addItem({ id: product.id, name: product.name, price: product.price, image: product.image, seller_id: product.seller })}
+                  className="w-full bg-pink-600 text-white py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl transform translate-y-12 group-hover:translate-y-0 transition-transform duration-500 flex items-center justify-center space-x-2"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add to Cart</span>
                 </button>
               </div>
             </div>
@@ -462,6 +474,21 @@ const ShoppingTab: React.FC = () => {
           </div>
         ))}
       </div>
+
+      {/* Cart Button */}
+      <button 
+        onClick={() => setIsCartOpen(true)}
+        className="fixed bottom-24 right-6 bg-pink-600 text-white p-4 rounded-full shadow-2xl z-50"
+      >
+        <ShoppingCart className="w-6 h-6" />
+        {items.length > 0 && (
+          <span className="absolute -top-1 -right-1 bg-white text-pink-600 text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full">
+            {items.reduce((sum, item) => sum + item.quantity, 0)}
+          </span>
+        )}
+      </button>
+
+      <CartSheet isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </div>
   );
 };

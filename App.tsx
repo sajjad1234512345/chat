@@ -12,7 +12,7 @@ import CreateTab from './components/CreateTab';
 import ProfileTab from './components/ProfileTab';
 import MessagesTab from './components/MessagesTab';
 import ReelsTab from './components/ReelsTab';
-import EventsTab from './components/EventsTab';
+import BettingTab from './components/BettingTab';
 import JobsTab from './components/JobsTab';
 import AdsTab from './components/AdsTab';
 
@@ -51,33 +51,97 @@ const SplashScreen = ({ onComplete }: { onComplete: () => void }) => {
   );
 };
 
-const NotificationsTab = () => (
-  <div className="p-6 animate-in fade-in duration-500 pb-20">
-    <h2 className="text-2xl font-black mb-8">Activity</h2>
-    <div className="space-y-6">
-      {[
-        { user: 'alex_j', action: 'liked your photo', time: '2m ago', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200' },
-        { user: 'marta_k', action: 'started following you', time: '15m ago', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200' },
-        { user: 'pixel_art', action: 'commented: "Incredible vibes! 🔥"', time: '1h ago', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200' },
-        { user: 'dev_crew', action: 'shared your reel', time: '3h ago', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200' }
-      ].map((notif, i) => (
-        <div key={i} className="flex items-center space-x-4">
-          <img src={notif.avatar} className="w-12 h-12 rounded-full object-cover border border-white/10" alt="" />
-          <div className="flex-grow">
-            <p className="text-sm"><span className="font-bold">{notif.user}</span> {notif.action}</p>
-            <p className="text-[10px] text-white/30 font-black uppercase tracking-widest mt-1">{notif.time}</p>
+import { supabase } from './src/services/supabaseClient';
+
+const NotificationsTab = () => {
+  const [notifications, setNotifications] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Initial fetch
+      const { data } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+        
+      if (data) setNotifications(data);
+
+      // Mark as read
+      const unreadIds = data?.filter(n => !n.is_read).map(n => n.id) || [];
+      if (unreadIds.length > 0) {
+        await supabase
+          .from('notifications')
+          .update({ is_read: true })
+          .in('id', unreadIds);
+      }
+    };
+
+    fetchNotifications();
+
+    // Subscribe to new notifications
+    const subscription = supabase
+      .channel('public:notifications')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, fetchNotifications)
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(subscription);
+    };
+  }, []);
+
+  return (
+    <div className="p-6 animate-in fade-in duration-500 pb-20">
+      <h2 className="text-2xl font-black mb-8">Activity</h2>
+      <div className="space-y-6">
+        {notifications.map((notif) => (
+          <div key={notif.id} className={`flex items-center space-x-4 ${notif.is_read ? 'opacity-60' : ''}`}>
+            <div className="flex-grow">
+              <p className="text-sm"><span className="font-bold">{notif.title}</span> {notif.body}</p>
+              <p className="text-[10px] text-white/30 font-black uppercase tracking-widest mt-1">{new Date(notif.created_at).toLocaleString()}</p>
+            </div>
           </div>
-          {i === 1 && (
-             <button className="bg-pink-600 px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest">Follow</button>
-          )}
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
-  </div>
-);
+  );
+};
+
+import { usePushNotifications } from './src/hooks/usePushNotifications';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('home');
+  const [unreadCount, setUnreadCount] = useState(0);
+  usePushNotifications();
+
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { count } = await supabase
+        .from('notifications')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .eq('is_read', false);
+        
+      setUnreadCount(count || 0);
+    };
+
+    fetchUnreadCount();
+
+    const subscription = supabase
+      .channel('public:notifications_count')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, fetchUnreadCount)
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(subscription);
+    };
+  }, []);
   const [createMode, setCreateMode] = useState<'selection' | 'post'>('selection');
   const [isStoryActive, setIsStoryActive] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -103,7 +167,7 @@ const App: React.FC = () => {
       case 'business': return <BusinessTab />;
       case 'profile': return <ProfileTab onBack={() => setActiveTab('home')} />;
       case 'reels': return <ReelsTab />;
-      case 'events': return <EventsTab />;
+      case 'events': return <BettingTab />;
       case 'jobs': return <JobsTab />;
       case 'ads': return <AdsTab />;
       case 'notifications': return <NotificationsTab />;
@@ -126,17 +190,18 @@ const App: React.FC = () => {
       {/* Header - Fixed Top (Up Bar) */}
       {!hideHeader && (
         <header 
-          className={`sticky top-7 bg-[#0c0c0c]/80 backdrop-blur-xl px-4 h-16 flex items-center justify-between z-50`}
-          style={{ height: '35px' }}
+          className={`sticky top-7 bg-[#0c0c0c]/80 backdrop-blur-xl px-4 h-12 flex items-center justify-between z-50 border-b border-white/5`}
         >
           <div className="flex items-center shrink-0">
             {activeTab !== 'business' && (
-              <h1 
-                className={`text-[21px] w-[72px] h-[27px] leading-[27px] font-black italic cursor-pointer active:scale-95 transition-transform brand-text`}
+              <div 
+                className="bg-red-600 px-2 py-0.5 rounded-sm cursor-pointer active:scale-95 transition-transform"
                 onClick={() => setActiveTab('home')}
               >
-                Games
-              </h1>
+                <h1 className="text-white text-[14px] font-black italic tracking-tighter leading-none">
+                  Games
+                </h1>
+              </div>
             )}
           </div>
           <div className="flex items-center space-x-1 sm:space-x-1.5 overflow-x-auto scrollbar-hide ml-2">
@@ -145,21 +210,25 @@ const App: React.FC = () => {
             <HeaderIcon icon={Search} onClick={() => setActiveTab('search')} active={activeTab === 'search'} />
             <HeaderIcon icon={Clapperboard} onClick={() => setActiveTab('reels')} active={activeTab === 'reels'} />
             
-            <div className="relative group cursor-pointer p-1.5 flex items-center justify-center" onClick={() => setActiveTab('notifications')}>
-              <Heart className={`w-5 h-5 transition-colors ${activeTab === 'notifications' ? 'text-white' : 'text-white/40'}`} />
-              <div className="absolute top-1.5 right-1.5 w-2 h-2 bg-pink-500 rounded-full border-2 border-[#0c0c0c] shadow-lg animate-pulse" />
+            <div className="relative group cursor-pointer p-1 flex items-center justify-center" onClick={() => setActiveTab('notifications')}>
+              <Heart className={`w-4 h-4 transition-colors ${activeTab === 'notifications' ? 'text-white' : 'text-white/40'}`} />
+              {unreadCount > 0 && (
+                <div className="absolute top-0 right-0 w-4 h-4 bg-pink-500 rounded-full flex items-center justify-center text-[10px] font-black border border-[#0c0c0c] shadow-lg">
+                  {unreadCount}
+                </div>
+              )}
             </div>
 
-            <div className="relative group cursor-pointer p-1.5 flex items-center justify-center" onClick={() => setActiveTab('messages')}>
-              <MessageCircle className={`w-5 h-5 transition-colors ${activeTab === 'messages' ? 'text-white' : 'text-white/40'}`} />
-              <div className="absolute top-1.5 right-1.5 w-3.5 h-3.5 bg-[#e1306c] rounded-full flex items-center justify-center border-2 border-[#0c0c0c] shadow-lg">
-                <span className="text-[7px] text-white font-black">3</span>
+            <div className="relative group cursor-pointer p-1 flex items-center justify-center" onClick={() => setActiveTab('messages')}>
+              <MessageCircle className={`w-4 h-4 transition-colors ${activeTab === 'messages' ? 'text-white' : 'text-white/40'}`} />
+              <div className="absolute top-1 right-1 w-2.5 h-2.5 bg-[#e1306c] rounded-full flex items-center justify-center border border-[#0c0c0c] shadow-lg">
+                <span className="text-[6px] text-white font-black">3</span>
               </div>
             </div>
             
-            <div className="p-1 flex items-center justify-center">
+            <div className="p-0.5 flex items-center justify-center">
               <div 
-                className={`w-7 h-7 rounded-full overflow-hidden border transition-all cursor-pointer active:scale-90 shadow-lg ${(activeTab as string) === 'profile' ? 'border-pink-500 ring-2 ring-pink-500/20' : 'border-white/20'}`} 
+                className={`w-6 h-6 rounded-full overflow-hidden border transition-all cursor-pointer active:scale-90 shadow-lg ${(activeTab as string) === 'profile' ? 'border-pink-500 ring-2 ring-pink-500/20' : 'border-white/20'}`} 
                 onClick={() => setActiveTab('profile')}
               >
                  <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200" className="w-full h-full object-cover" alt="" />
@@ -171,7 +240,7 @@ const App: React.FC = () => {
 
       {/* Main Content Area */}
       <main className={`relative z-10 flex-grow flex flex-col ${activeTab === 'create' || isStoryActive ? '' : 'pb-14'}`}>
-        <div className="w-full flex-grow flex flex-col">
+        <div className="w-[378px] mx-auto flex-grow flex flex-col">
           {renderContent()}
         </div>
       </main>
@@ -179,8 +248,7 @@ const App: React.FC = () => {
       {/* Bottom Nav */}
       {!(activeTab === 'create' || isStoryActive) && (
         <nav 
-          className="fixed bottom-0 left-0 right-0 bg-[#0c0c0c]/90 backdrop-blur-2xl border-t border-white/5 h-14 flex items-center justify-around z-50 px-2 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.6)]"
-          style={{ height: '35px' }}
+          className="fixed bottom-0 left-0 right-0 bg-[#0c0c0c]/95 backdrop-blur-2xl border-t border-white/5 h-[46px] flex items-center justify-around z-50 px-2 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.6)]"
         >
           <NavItem icon={Home} active={activeTab === 'home'} onClick={() => setActiveTab('home')} label="Home" />
           <NavItem icon={ShoppingBag} active={activeTab === 'shopping'} onClick={() => setActiveTab('shopping')} label="Market" /> 
@@ -189,11 +257,10 @@ const App: React.FC = () => {
           <div className="flex items-center justify-center px-1">
             <button 
               onClick={handleCreatePost}
-              className="w-12 h-12 bg-gradient-to-tr from-[#ff416c] to-[#ff4b2b] text-white rounded-full flex items-center justify-center shadow-[0_0_25px_rgba(255,75,43,0.6)] active:scale-75 hover:scale-105 transition-all transform -translate-y-2 border border-white/10"
+              className="w-10 h-10 bg-red-600 text-white rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(220,38,38,0.4)] active:scale-75 hover:scale-105 transition-all transform -translate-y-2 border border-white/10"
               aria-label="Create Post"
-              style={{ height: '40px', width: '40px', marginTop: '5px' }}
             >
-              <Plus className="w-7 h-7 stroke-[3]" />
+              <Plus className="w-6 h-6 stroke-[3]" />
             </button>
           </div>
 

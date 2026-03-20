@@ -128,107 +128,103 @@ const ActivityPanel: React.FC<{ viewers: StoryViewerInfo[], onClose: () => void 
 
   return (
     <div 
-      className={`absolute inset-x-0 bottom-0 z-[120] bg-[#0c0c0c] rounded-t-[3rem] border-t border-white/10 p-6 flex flex-col shadow-[0_-20px_100px_rgba(0,0,0,1)] overflow-hidden ${!isDragging ? 'transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1)' : ''}`}
+      className={`absolute inset-x-0 bottom-0 z-[120] bg-[#121212] rounded-t-3xl border-t border-white/10 p-4 flex flex-col shadow-[0_-20px_80px_rgba(0,0,0,0.9)] overflow-hidden ${!isDragging ? 'transition-all duration-300 ease-out' : ''}`}
       style={{ height: `${panelHeight}vh` }}
       onClick={(e) => e.stopPropagation()}
     >
       <div 
-        className="w-full pt-2 pb-8 cursor-ns-resize flex justify-center flex-shrink-0 select-none touch-none active:cursor-grabbing group"
+        className="w-full pt-1 pb-6 cursor-ns-resize flex justify-center flex-shrink-0 select-none touch-none active:cursor-grabbing"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         onMouseDown={handleMouseDown}
       >
-        <div className="w-16 h-1.5 bg-white/10 rounded-full group-hover:bg-white/30 transition-colors" />
+        <div className="w-12 h-1.5 bg-white/20 rounded-full" />
       </div>
       
-      <div className="flex items-center justify-between mb-8 flex-shrink-0 px-2">
-        <div className="flex items-center space-x-4">
-          <h3 className="text-xl font-black tracking-tighter text-white uppercase italic">Activity</h3>
-          <div className="bg-pink-600/20 px-3 py-1 rounded-full flex items-center justify-center min-w-[28px] border border-pink-500/20">
-            <span className="text-[12px] text-pink-500 font-black italic">{viewers.length}</span>
+      <div className="flex items-center justify-between mb-6 flex-shrink-0 px-2 pointer-events-none">
+        <div className="flex items-center space-x-3">
+          <h3 className="text-sm font-black tracking-tight text-white uppercase italic">Activity</h3>
+          <div className="bg-white/10 px-2 py-0.5 rounded-full flex items-center justify-center min-w-[20px]">
+            <span className="text-[9px] text-white/50 font-black">{viewers.length}</span>
           </div>
         </div>
-        <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full transition-colors">
-          <X className="w-6 h-6 text-white/40" />
-        </button>
       </div>
 
-      <div className="flex-grow overflow-y-auto space-y-8 scrollbar-hide pb-12">
+      <div className="flex-grow overflow-y-auto space-y-4 scrollbar-hide pb-10">
         {viewers.map((v) => (
-          <div key={v.id} className="flex flex-col space-y-5 px-1">
+          <div key={v.id} className="flex flex-col space-y-3 px-1">
             <div className="flex items-center justify-between group">
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-3">
                 <div className="relative">
-                  <div className="absolute -inset-1 bg-pink-600/20 rounded-full blur-sm opacity-0 group-hover:opacity-100 transition-opacity" />
-                  <img src={v.avatar} className="relative w-14 h-14 rounded-full object-cover border-2 border-white/10 shadow-xl" alt="" />
+                  <img src={v.avatar} className="w-10 h-10 rounded-full object-cover border border-white/10" alt="" />
                   {v.hasLiked && (
-                    <div className="absolute -bottom-1 -right-1 bg-pink-600 rounded-full p-1.5 border-[3px] border-[#0c0c0c] shadow-lg">
-                      <Heart className="w-2.5 h-2.5 text-white fill-current" />
+                    <div className="absolute -bottom-0.5 -right-0.5 bg-pink-600 rounded-full p-0.5 border-2 border-[#121212]">
+                      <Heart className="w-1.5 h-1.5 text-white fill-current" />
                     </div>
                   )}
                 </div>
                 <div className="flex flex-col">
-                  <p className="text-[15px] font-black tracking-tight text-white leading-none italic uppercase">{v.name}</p>
+                  <p className="text-[13px] font-black tracking-tight text-white leading-none">{v.name}</p>
                   {v.comment ? (
-                    <p className="text-[13px] text-white/80 font-medium italic mt-2 line-clamp-1 leading-tight bg-white/5 px-3 py-1.5 rounded-xl border border-white/5">"{v.comment}"</p>
+                    <p className="text-[11px] text-white/70 font-medium italic mt-1 line-clamp-1 leading-tight">"{v.comment}"</p>
                   ) : (
-                    <p className="text-[10px] text-white/30 font-black uppercase tracking-[0.3em] mt-2.5 italic">{v.time}</p>
+                    <p className="text-[9px] text-white/30 font-black uppercase tracking-[0.2em] mt-1.5">{v.time}</p>
                   )}
                 </div>
               </div>
               
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-2">
                 <button 
                   onClick={() => handleToggleCommentLike(v.id)}
-                  className={`p-3 rounded-2xl transition-all active:scale-90 ${v.commentLikedByMe ? 'text-red-500 bg-red-500/10 border border-red-500/20' : 'text-white/40 hover:text-white/80 bg-white/5 border border-white/10'}`}
+                  className={`p-2 rounded-xl transition-all ${v.commentLikedByMe ? 'text-red-500 bg-red-500/10' : 'text-white/20 hover:text-white/60 bg-white/5'}`}
                 >
-                  <Heart className={`w-5 h-5 ${v.commentLikedByMe ? 'fill-current' : ''}`} />
+                  <Heart className={`w-4 h-4 ${v.commentLikedByMe ? 'fill-current' : ''}`} />
                 </button>
                 
                 {v.comment && (
                   <button 
                     onClick={() => setReplyingToId(replyingToId === v.id ? null : v.id)}
-                    className={`p-3 rounded-2xl transition-all active:scale-90 ${replyingToId === v.id ? 'bg-pink-600 text-white shadow-lg shadow-pink-600/30' : 'text-white/40 hover:text-white/80 bg-white/5 border border-white/10'}`}
+                    className={`p-2 rounded-xl transition-all ${replyingToId === v.id ? 'bg-pink-600 text-white' : 'text-white/20 hover:text-white/60 bg-white/5'}`}
                   >
-                    <MessageSquare className="w-5 h-5" />
+                    <MessageSquare className="w-4 h-4" />
                   </button>
                 )}
                 
-                <button className="px-6 py-3 bg-white text-black rounded-2xl text-[11px] font-black uppercase tracking-widest active:scale-95 transition-all shadow-xl hover:bg-gray-100 italic">
+                <button className="px-4 py-2 bg-white text-black rounded-xl text-[9px] font-black uppercase tracking-widest active:scale-95 transition-all shadow-lg ml-1">
                   GIFT
                 </button>
               </div>
             </div>
 
             {v.replies && v.replies.map((reply, idx) => (
-              <div key={idx} className="ml-18 flex items-start space-x-4 animate-in fade-in slide-in-from-left-4 duration-500">
-                <div className="w-1 h-8 bg-pink-600/40 rounded-full mt-1.5 flex-shrink-0" />
+              <div key={idx} className="ml-12 flex items-start space-x-3 animate-in fade-in slide-in-from-left-2 duration-300">
+                <div className="w-1 h-5 bg-pink-600/30 rounded-full mt-1.5 flex-shrink-0" />
                 <div className="flex flex-col">
-                  <p className="text-[11px] font-black text-white/40 uppercase tracking-[0.3em] leading-none italic">You</p>
-                  <p className="text-[14px] text-white/90 font-medium mt-2 leading-relaxed">{reply}</p>
+                  <p className="text-[9px] font-black text-white/40 uppercase tracking-widest leading-none">You</p>
+                  <p className="text-[12px] text-white/90 font-medium mt-1 leading-tight">{reply}</p>
                 </div>
               </div>
             ))}
 
             {replyingToId === v.id && (
-              <div className="ml-18 animate-in fade-in slide-in-from-top-2 duration-300">
-                <div className="flex items-center space-x-4 bg-white/5 border border-white/10 rounded-[1.5rem] p-2.5 pl-6 shadow-2xl focus-within:border-pink-500/50 transition-colors">
+              <div className="ml-12 animate-in fade-in slide-in-from-top-1 duration-200">
+                <div className="flex items-center space-x-2 bg-white/5 border border-white/10 rounded-2xl p-1.5 pl-4">
                   <input 
                     autoFocus
                     type="text" 
                     placeholder={`Reply to ${v.name}...`}
-                    className="bg-transparent border-none outline-none text-[13px] font-medium text-white placeholder-white/20 flex-grow"
+                    className="bg-transparent border-none outline-none text-[11px] font-medium text-white placeholder-white/20 flex-grow"
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSendReply(v.id)}
                   />
                   <button 
                     onClick={() => handleSendReply(v.id)}
-                    className="p-3 bg-pink-600 rounded-2xl text-white disabled:opacity-50 active:scale-90 transition-all shadow-lg shadow-pink-600/20"
+                    className="p-2 bg-pink-600 rounded-xl text-white disabled:opacity-50 active:scale-90 transition-all"
                     disabled={!replyText.trim()}
                   >
-                    <Send className="w-4 h-4" />
+                    <Send className="w-3 h-3" />
                   </button>
                 </div>
               </div>
@@ -325,31 +321,23 @@ const StoryViewer: React.FC<{ stories: Story[], initialIndex: number, onClose: (
         }}
         className="w-full h-full relative overflow-hidden"
       >
-        <div className="absolute top-6 left-6 right-6 z-50 flex space-x-2">
+        <div className="absolute top-4 left-4 right-4 z-50 flex space-x-1">
           {currentStory.media?.map((_, idx) => (
-            <div key={idx} className="h-1.5 flex-grow bg-white/20 rounded-full overflow-hidden backdrop-blur-md">
+            <div key={idx} className="h-1 flex-grow bg-white/20 rounded-full overflow-hidden">
               <div 
-                className="h-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.8)] transition-all duration-75" 
+                className="h-full bg-white transition-all duration-75" 
                 style={{ width: idx < currentMediaIndex ? '100%' : idx === currentMediaIndex ? `${progress}%` : '0%' }}
               />
             </div>
           ))}
         </div>
 
-        <div className="absolute top-12 left-6 right-6 z-50 flex items-center justify-between">
-          <div className="flex items-center space-x-4 group cursor-pointer">
-            <div className="relative">
-              <div className="absolute -inset-1 bg-gradient-to-tr from-pink-600 to-orange-500 rounded-full blur-sm opacity-0 group-hover:opacity-100 transition-opacity" />
-              <img src={currentStory.avatar} className="relative w-12 h-12 rounded-full border-2 border-white/20 shadow-2xl" alt="" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-white text-[15px] font-black tracking-tight italic uppercase">{currentStory.user}</span>
-              <span className="text-white/60 text-[10px] font-black uppercase tracking-[0.3em] italic mt-1">4h ago</span>
-            </div>
+        <div className="absolute top-8 left-4 right-4 z-50 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <img src={currentStory.avatar} className="w-8 h-8 rounded-full border border-white/20" alt="" />
+            <span className="text-white text-xs font-black tracking-tight">{currentStory.user}</span>
+            <span className="text-white/40 text-[10px] font-bold">4h</span>
           </div>
-          <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors active:scale-90">
-            <X className="w-7 h-7 text-white" />
-          </button>
         </div>
 
         <div 
@@ -367,63 +355,59 @@ const StoryViewer: React.FC<{ stories: Story[], initialIndex: number, onClose: (
           {/* Tappable areas for next/prev navigation */}
           {!isPaused && (
             <>
-              <div className="absolute inset-y-0 left-0 w-1/4 z-40" onClick={(e) => { e.stopPropagation(); handlePrev(); }} />
-              <div className="absolute inset-y-0 right-0 w-1/4 z-40" onClick={(e) => { e.stopPropagation(); handleNext(); }} />
+              <div className="absolute inset-y-0 left-0 w-1/3 z-40" onClick={(e) => { e.stopPropagation(); handlePrev(); }} />
+              <div className="absolute inset-y-0 right-0 w-1/3 z-40" onClick={(e) => { e.stopPropagation(); handleNext(); }} />
             </>
           )}
         </div>
 
         {!showActivity && (
           <>
-            {/* Sidebar Icons (Smile, Layers, Music) */}
+            {/* Sidebar Icons (Smile, Layers, Music) - Corrected Arrangement Style */}
             {!isMyStory && (
-              <div className="absolute left-6 bottom-32 flex flex-col items-center space-y-8 z-50 animate-in slide-in-from-left duration-700">
-                <button className="text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)] active:scale-125 transition-all hover:text-pink-400">
-                  <Smile className="w-6 h-6" />
+              <div className="absolute left-5 bottom-28 flex flex-col items-center space-y-6 z-50 animate-in slide-in-from-left duration-500">
+                <button className="text-white drop-shadow-lg active:scale-90 transition-transform hover:opacity-70">
+                  <Smile className="w-5 h-5" />
                 </button>
-                <button className="text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)] active:scale-125 transition-all hover:text-blue-400">
-                  <Layers className="w-6 h-6" />
+                <button className="text-white drop-shadow-lg active:scale-90 transition-transform hover:opacity-70">
+                  <Layers className="w-5 h-5" />
                 </button>
-                <button className="text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)] active:scale-125 transition-all hover:text-purple-400">
-                  <Music className="w-6 h-6" />
+                <button className="text-white drop-shadow-lg active:scale-90 transition-transform hover:opacity-70">
+                  <Music className="w-5 h-5" />
                 </button>
               </div>
             )}
 
-            <div className="absolute bottom-10 left-6 right-6 z-50 flex items-center space-x-5">
+            <div className="absolute bottom-6 left-4 right-4 z-50 flex items-center space-x-4">
             {isMyStory ? (
               <div 
-                className="flex-grow flex items-center justify-center space-x-4 bg-black/40 backdrop-blur-2xl border border-white/10 rounded-[2rem] py-4 px-8 cursor-pointer active:scale-95 transition-all shadow-[0_20px_50px_rgba(0,0,0,0.5)] group"
+                className="flex-grow flex items-center justify-center space-x-3 bg-black/30 backdrop-blur-xl border border-white/10 rounded-2xl py-2 px-5 cursor-pointer active:scale-95 transition-all shadow-2xl"
                 onClick={(e) => { e.stopPropagation(); setShowActivity(true); }}
               >
-                <div className="flex -space-x-2">
+                <div className="flex -space-x-1.5">
                   {currentStory.viewers?.slice(0, 3).map((v, i) => (
-                    <img key={i} src={v.avatar} className="w-5 h-5 rounded-full border-2 border-black shadow-lg" alt="" />
+                    <img key={i} src={v.avatar} className="w-3.5 h-3.5 rounded-full border border-black" alt="" />
                   ))}
                 </div>
-                <div className="flex items-center space-x-4">
-                  <span className="text-[12px] font-black uppercase tracking-[0.4em] text-white italic">
+                <div className="flex items-center space-x-2">
+                  <span className="text-[9px] font-black uppercase tracking-[0.25em] text-white">
                     {currentStory.viewers?.length} Viewers
                   </span>
-                  <ChevronUp className="w-5 h-5 text-pink-500 animate-bounce" />
+                  <ChevronUp className="w-3 h-3 text-white/60 animate-bounce" />
                 </div>
               </div>
             ) : (
               <>
-                <div className="flex-grow bg-black/40 backdrop-blur-2xl border border-white/10 rounded-[1.5rem] px-6 py-3.5 shadow-2xl focus-within:border-white/30 transition-colors">
+                <div className="flex-grow bg-black/20 backdrop-blur-xl border border-white/20 rounded-full px-5 py-2.5">
                   <input 
                     type="text" 
                     placeholder="Send message..." 
-                    className="bg-transparent text-white text-[15px] w-full outline-none placeholder-white/30 font-medium italic" 
+                    className="bg-transparent text-white text-sm w-full outline-none placeholder-white/40 font-medium" 
                     onClick={(e) => e.stopPropagation()}
                   />
                 </div>
-                <button className="active:scale-125 transition-transform">
-                  <Heart className="w-8 h-8 text-white drop-shadow-lg" />
-                </button>
-                <button className="active:scale-125 transition-transform">
-                  <Send className="w-8 h-8 text-white drop-shadow-lg" />
-                </button>
+                <Heart className="w-6 h-6 text-white active:scale-125 transition-transform" />
+                <Send className="w-6 h-6 text-white active:scale-125 transition-transform" />
               </>
             )}
           </div>
@@ -499,7 +483,7 @@ const VideoPlayer: React.FC<{ url: string }> = ({ url }) => {
       
       {/* Refined and Simplified Video Bar (Controlled by click toggle visibility) */}
       <div className={`absolute bottom-3 left-4 right-4 z-20 transition-all duration-300 pointer-events-none ${showControls ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-        <div className="glass bg-white/5 backdrop-blur-[35px] border border-white/10 rounded-[1.25rem] px-5 py-2 flex items-center space-x-4 shadow-2xl pointer-events-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="glass bg-white/5 backdrop-blur-[35px] border border-white/10 rounded-2xl px-5 py-2 flex items-center space-x-4 shadow-2xl pointer-events-auto" onClick={(e) => e.stopPropagation()}>
           
           {/* Timestamp Display */}
           <div className="text-[11px] font-medium text-white/90 min-w-[75px] tabular-nums tracking-tight">
@@ -551,31 +535,28 @@ const PostItem: React.FC<{ post: Post }> = ({ post }) => {
   const toggleBookmark = () => setIsBookmarked(!isBookmarked);
 
   return (
-    <article className="flex flex-col bg-[#0c0c0c] border-b border-white/5 mb-10 pb-4">
+    <article className="flex flex-col bg-[#0c0c0c] border-b border-white/5 mb-6">
       <header 
-        className="px-6 py-5 flex items-center justify-between"
+        className="px-4 py-2.5 flex items-center justify-between"
+        style={post.id === MOCK_POSTS[0].id ? { height: '40px' } : {}}
       >
         <div 
-          className="flex items-center space-x-4 cursor-pointer group"
+          className="flex items-center space-x-3"
+          style={post.id === MOCK_POSTS[0].id ? { height: '35px' } : {}}
         >
-          <div className="relative">
-            <div className="absolute -inset-1 bg-gradient-to-tr from-pink-600 to-orange-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" />
-            <img src={post.user.avatar} className="relative w-11 h-11 rounded-full object-cover border-2 border-white/10 shadow-xl" alt="" />
-          </div>
+          <img src={post.user.avatar} className="w-8 h-8 rounded-full object-cover border border-white/10" alt="" />
           <div className="flex flex-col">
-            <span className="font-black text-[15px] leading-none tracking-tight text-white italic uppercase">{post.user.name}</span>
-            <span className="text-[10px] font-black text-white/40 tracking-[0.3em] mt-2 uppercase italic">{post.time}</span>
+            <span className="font-bold text-[13px] leading-none tracking-tight">{post.user.name}</span>
+            <span className="text-[8px] font-black text-white/30 tracking-[0.2em] mt-1 uppercase">{post.time}</span>
           </div>
         </div>
-        <button className="p-2.5 hover:bg-white/5 rounded-2xl transition-all active:scale-90">
-          <MoreHorizontal className="text-white/60 w-6 h-6" />
-        </button>
+        <MoreHorizontal className="text-white/40 cursor-pointer w-4 h-4" />
       </header>
       
-      <div className="px-5">
-        <div className="relative w-full aspect-[4/5] bg-zinc-900 overflow-hidden rounded-[3rem] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.7)] border border-white/10 group">
+      <div className="px-4">
+        <div className="relative w-full aspect-[4/5] bg-zinc-900 overflow-hidden rounded-3xl shadow-2xl border border-white/10 group">
           {post.media.length > 1 && (
-            <div className="absolute top-8 right-8 z-10 bg-black/60 backdrop-blur-2xl px-4 py-1.5 rounded-full text-[11px] font-black text-white tracking-[0.2em] border border-white/20 shadow-2xl">
+            <div className="absolute top-6 right-6 z-10 bg-black/40 backdrop-blur-xl px-3 py-1 rounded-full text-[10px] font-black text-white tracking-widest border border-white/10">
               {currentMediaIndex + 1}/{post.media.length}
             </div>
           )}
@@ -588,7 +569,7 @@ const PostItem: React.FC<{ post: Post }> = ({ post }) => {
             {post.media.map((item, idx) => (
               <div key={idx} className="flex-shrink-0 w-full h-full snap-center relative">
                 {item.type === 'image' ? (
-                  <img src={item.url} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt="" />
+                  <img src={item.url} className="w-full h-full object-cover" alt="" />
                 ) : (
                   <VideoPlayer url={item.url} />
                 )}
@@ -596,11 +577,11 @@ const PostItem: React.FC<{ post: Post }> = ({ post }) => {
             ))}
           </div>
           {post.media.length > 1 && (
-            <div className="absolute bottom-8 left-0 right-0 flex justify-center space-x-2.5 z-10">
+            <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2 z-10">
               {post.media.map((_, idx) => (
                 <div 
                   key={idx} 
-                  className={`h-1.5 rounded-full transition-all duration-500 ${idx === currentMediaIndex ? 'bg-white w-6 shadow-[0_0_10px_rgba(255,255,255,0.5)]' : 'bg-white/20 w-1.5'}`} 
+                  className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${idx === currentMediaIndex ? 'bg-white scale-125' : 'bg-white/20'}`} 
                 />
               ))}
             </div>
@@ -608,49 +589,50 @@ const PostItem: React.FC<{ post: Post }> = ({ post }) => {
         </div>
       </div>
 
-      <footer className="px-6 py-6">
-        <div className="flex justify-between items-center mb-6 px-1">
-          <div className="flex items-center space-x-7">
-            <button onClick={toggleLike} className="p-1 active:scale-[1.3] transition-all duration-300">
+      <footer className="px-4 py-2">
+        <div className="flex justify-between items-center mb-1.5 px-1">
+          <div className="flex items-center space-x-5">
+            <button onClick={toggleLike} className="p-0.5 active:scale-90 transition-transform">
               <Heart 
-                className={`w-8 h-8 transition-all ${isLiked ? 'text-red-500 fill-current drop-shadow-[0_0_10px_rgba(239,68,68,0.5)]' : 'text-white hover:text-white/80'}`} 
+                className={`w-6.5 h-6.5 transition-colors cursor-pointer ${isLiked ? 'text-red-500 fill-current' : 'text-white'}`} 
               />
             </button>
 
+            {/* Giftit Button - Near Like button */}
             <button 
-              className="flex items-center space-x-3 bg-white/5 border border-white/10 px-5 py-2.5 rounded-2xl text-white active:scale-95 transition-all hover:bg-white/10 hover:border-white/20 shadow-xl group"
-              onClick={(e) => { e.stopPropagation(); }}
+              className="flex items-center space-x-1.5 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full text-white active:scale-95 transition-all hover:bg-white/10"
+              onClick={(e) => { e.stopPropagation(); alert('Giftit feature coming soon!'); }}
             >
-              <Gift className="w-5 h-5 text-pink-500 group-hover:animate-bounce" />
-              <span className="text-[11px] font-black uppercase tracking-[0.2em] italic">Gift</span>
+              <Gift className="w-3.5 h-3.5 text-pink-400" />
+              <span className="text-[9px] font-black uppercase tracking-wider">Gift</span>
             </button>
 
-            <button className="p-1 active:scale-110 transition-all hover:text-white/80">
-              <MessageCircle className="w-8 h-8 text-white" />
+            <button className="p-0.5 active:scale-90 transition-transform">
+              <MessageCircle className="w-6.5 h-6.5 cursor-pointer text-white" />
             </button>
-            <button className="p-1 active:scale-110 transition-all hover:text-white/80">
-              <Send className="w-8 h-8 text-white" />
+            <button className="p-0.5 active:scale-90 transition-transform">
+              <Send className="w-6.5 h-6.5 cursor-pointer text-white" />
             </button>
           </div>
-          <button onClick={toggleBookmark} className="p-1 active:scale-110 transition-all">
+          <button onClick={toggleBookmark} className="p-0.5 active:scale-90 transition-transform">
             <Bookmark 
-              className={`w-8 h-8 transition-all ${isBookmarked ? 'text-white fill-current' : 'text-white hover:text-white/80'}`} 
+              className={`w-6.5 h-6.5 cursor-pointer transition-colors ${isBookmarked ? 'text-white fill-current' : 'text-white'}`} 
             />
           </button>
         </div>
         <div 
-          className="px-1 space-y-3"
+          className="px-1"
+          style={post.id === MOCK_POSTS[0].id ? { height: '86px' } : {}}
         >
-          <p className="text-[18px] font-black text-white tracking-tight italic">
-            {(isLiked ? post.likes + 1 : post.likes).toLocaleString()} <span className="text-white/60 text-[14px] uppercase tracking-widest not-italic ml-1">Likes</span>
+          <p className="text-[15px] font-black text-white mb-0 tracking-tight">
+            {(isLiked ? post.likes + 1 : post.likes).toLocaleString()} likes
           </p>
-          <div className="text-[16px] leading-relaxed">
-            <span className="font-black mr-2 text-white italic uppercase tracking-tight">{post.user.name}</span>
-            <span className="text-white/90 font-medium">{post.caption}</span>
+          <div className="text-[14px] leading-snug">
+            <span className="font-bold mr-2 text-white">{post.user.name}</span>
+            <span className="text-white/85 font-medium">{post.caption}</span>
           </div>
-          <button className="text-white/40 text-[12px] font-black mt-4 uppercase tracking-[0.2em] hover:text-white/80 transition-all flex items-center space-x-2 group">
-            <span className="italic">View all {post.comments} comments</span>
-            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          <button className="text-white/30 text-[10px] font-black mt-1.5 uppercase tracking-[0.1em] hover:text-white/60 transition-colors">
+            VIEW ALL {post.comments} COMMENTS
           </button>
         </div>
       </footer>
@@ -665,41 +647,46 @@ const HomeTab: React.FC<{
   const [activeStoryIndex, setActiveStoryIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    onStoryToggle?.(activeStoryIndex !== null);
+    requestAnimationFrame(() => {
+      onStoryToggle?.(activeStoryIndex !== null);
+    });
   }, [activeStoryIndex, onStoryToggle]);
 
   return (
-    <div className="flex flex-col animate-in fade-in duration-500 pb-20">
+    <div className="flex flex-col animate-in fade-in duration-500 pb-20 w-[378px]">
       <div 
-        className="flex items-center space-x-7 overflow-x-auto scrollbar-hide px-6 pt-8 pb-6 border-b border-white/5 bg-[#0c0c0c]/80 backdrop-blur-xl sticky top-0 z-40"
+        className="flex items-center space-x-5 overflow-x-auto px-5 pt-4 pb-2 border-b border-white/5 bg-[#0c0c0c]"
+        style={{ height: '93px', marginTop: '1px', overflowY: 'hidden' }}
       >
         {MOCK_STORIES.map((story, i) => (
           <div 
             key={story.id} 
-            className="flex-shrink-0 flex flex-col items-center space-y-3 cursor-pointer active:scale-95 transition-all group"
+            className="flex-shrink-0 flex flex-col items-center space-y-1.5 cursor-pointer active:scale-95 transition-transform -mx-1"
             onClick={() => setActiveStoryIndex(i)}
+            style={i === 1 ? { height: '78px' } : {}}
           >
             <div 
               className="relative"
+              style={i === 0 ? { height: '62px' } : {}}
             >
-              <div className={`p-[3px] rounded-full transition-all duration-500 group-hover:scale-105 ${story.viewed ? 'bg-white/10' : 'bg-gradient-to-tr from-pink-600 via-purple-600 to-orange-500 shadow-xl shadow-pink-500/20'}`}>
-                <div className="w-[72px] h-[72px] rounded-full overflow-hidden border-[3px] border-[#0c0c0c]">
-                  <img src={story.avatar} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="" />
+              <div className={`p-[2px] rounded-full ${story.viewed ? 'bg-white/10' : 'insta-gradient-border'}`}>
+                <div className="w-[58px] h-[58px] rounded-full overflow-hidden border-2 border-[#0c0c0c]">
+                  <img src={story.avatar} className="w-full h-full object-cover" alt="" />
                 </div>
               </div>
               {i === 0 && (
                 <div 
-                  className="absolute bottom-1 right-1 bg-blue-600 rounded-full p-2 border-[3px] border-[#0c0c0c] shadow-xl cursor-pointer hover:bg-blue-500 transition-all z-10 active:scale-90"
+                  className="absolute bottom-1 right-1 bg-blue-500 rounded-full p-1 border-2 border-[#0c0c0c] shadow-lg cursor-pointer hover:bg-blue-400 transition-colors z-10"
                   onClick={(e) => {
                     e.stopPropagation();
                     onAddStory?.();
                   }}
                 >
-                  <Plus className="w-4 h-4 text-white stroke-[4]" />
+                  <Plus className="w-3 h-3 text-white stroke-[4]" />
                 </div>
               )}
             </div>
-            <span className="text-[12px] font-black text-white/90 tracking-tight leading-none text-center max-w-[80px] truncate italic uppercase">{story.user}</span>
+            <span className="text-[10px] font-bold text-white tracking-tight leading-none text-center">{story.user}</span>
           </div>
         ))}
       </div>

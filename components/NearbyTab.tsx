@@ -14,14 +14,15 @@ type NearbyPerson = {
   lastSeen: string;
   lat: number;
   lng: number;
+  gender: 'male' | 'female';
 };
 
 const mockPeople: NearbyPerson[] = [
-  { id: 'p1', name: 'Sarah Chen', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200', distance: 0.3, bio: 'Love exploring local cafes!', isFriend: false, lastSeen: '2 mins ago', lat: 37.423, lng: -122.085 },
-  { id: 'p2', name: 'Marcus Wright', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200', distance: 0.8, bio: 'Photography & Hiking', isFriend: true, lastSeen: '5 mins ago', lat: 37.421, lng: -122.082 },
-  { id: 'p3', name: 'Elena Rodriguez', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200', distance: 1.2, bio: 'Digital nomad from Spain', isFriend: false, lastSeen: '12 mins ago', lat: 37.425, lng: -122.088 },
-  { id: 'p4', name: 'David Kim', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200', distance: 1.5, bio: 'Tech enthusiast', isFriend: false, lastSeen: '15 mins ago', lat: 37.419, lng: -122.080 },
-  { id: 'p5', name: 'Jessica Lee', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=200', distance: 2.1, bio: 'Foodie & Traveler', isFriend: true, lastSeen: '30 mins ago', lat: 37.428, lng: -122.090 },
+  { id: 'p1', name: 'Sarah Chen', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=200', distance: 0.3, bio: 'Love exploring local cafes!', isFriend: false, lastSeen: '2 mins ago', lat: 37.423, lng: -122.085, gender: 'female' },
+  { id: 'p2', name: 'Marcus Wright', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200', distance: 0.8, bio: 'Photography & Hiking', isFriend: true, lastSeen: '5 mins ago', lat: 37.421, lng: -122.082, gender: 'male' },
+  { id: 'p3', name: 'Elena Rodriguez', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200', distance: 1.2, bio: 'Digital nomad from Spain', isFriend: false, lastSeen: '12 mins ago', lat: 37.425, lng: -122.088, gender: 'female' },
+  { id: 'p4', name: 'David Kim', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200', distance: 1.5, bio: 'Tech enthusiast', isFriend: false, lastSeen: '15 mins ago', lat: 37.419, lng: -122.080, gender: 'male' },
+  { id: 'p5', name: 'Jessica Lee', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=200', distance: 2.1, bio: 'Foodie & Traveler', isFriend: true, lastSeen: '30 mins ago', lat: 37.428, lng: -122.090, gender: 'female' },
 ];
 
 type SearchResult = {
@@ -35,9 +36,14 @@ type SearchResult = {
 };
 
 const NearbyTab: React.FC = () => {
-  const [view, setView] = useState<'map' | 'create-event' | 'create-housing' | 'housing-details' | 'people-nearby'>('map');
+  const [view, setView] = useState<'map' | 'create-event' | 'create-housing' | 'housing-details' | 'people-nearby' | 'searching-friends'>('map');
   const [filter, setFilter] = useState<'All' | 'Events' | 'Housing'>('All');
   const [selectedHousing, setSelectedHousing] = useState<Housing | null>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [selectedPerson, setSelectedPerson] = useState<NearbyPerson | null>(null);
+  const [showClearLocationConfirm, setShowClearLocationConfirm] = useState(false);
+  const [showNote, setShowNote] = useState(false);
+  const [genderFilter, setGenderFilter] = useState<'All' | 'Male' | 'Female'>('All');
   const mapRef = useRef<L.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const eventMarkersRef = useRef<L.Marker[]>([]);
@@ -307,6 +313,13 @@ const NearbyTab: React.FC = () => {
     renderMarkers();
   }, [filter]);
 
+  useEffect(() => {
+    if (view === 'people-nearby' && !localStorage.getItem('peopleNearbyNoteShown')) {
+      setShowNote(true);
+      localStorage.setItem('peopleNearbyNoteShown', 'true');
+    }
+  }, [view]);
+
   const handleCreateEvent = (e: React.FormEvent) => {
     e.preventDefault();
     // Logic to save event (mocked)
@@ -484,6 +497,49 @@ const NearbyTab: React.FC = () => {
         </div>
       )}
 
+      {/* Searching Friends View */}
+      {view === 'searching-friends' && (
+        <div className="absolute inset-0 z-[100] bg-gradient-to-b from-[#2d1b4e] to-[#1a0f2e] flex flex-col items-center justify-between p-6 text-white">
+          <header className="w-full flex items-center justify-between mt-4">
+            <button onClick={() => setView('people-nearby')} className="p-1"><X /></button>
+            <div className="w-8 h-8 rounded-full border border-white/20" />
+          </header>
+          
+          <div className="relative flex-1 flex items-center justify-center w-full">
+            <div className="absolute w-64 h-64 border border-white/20 rounded-full animate-ping" />
+            <div className="absolute w-48 h-48 border border-white/30 rounded-full" />
+            <div className="absolute w-32 h-32 border border-white/40 rounded-full" />
+            
+            <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-white/20 z-10">
+              <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=200" alt="Me" className="w-full h-full object-cover" />
+            </div>
+
+            {/* Mock nearby friends */}
+            <div className="absolute top-10 right-10 flex flex-col items-center">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=100" className="w-12 h-12 rounded-full border-2 border-white" alt="Friend" />
+              <span className="text-xs font-bold mt-1">14.7 km</span>
+            </div>
+            <div className="absolute top-20 left-5 flex flex-col items-center">
+              <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=100" className="w-12 h-12 rounded-full border-2 border-white" alt="Friend" />
+              <span className="text-xs font-bold mt-1">12.4 km</span>
+            </div>
+            <div className="absolute bottom-20 left-10 flex flex-col items-center">
+              <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=100" className="w-12 h-12 rounded-full border-2 border-white" alt="Friend" />
+              <span className="text-xs font-bold mt-1">7.2 km</span>
+            </div>
+            <div className="absolute bottom-10 right-5 flex flex-col items-center">
+              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=100" className="w-12 h-12 rounded-full border-2 border-white" alt="Friend" />
+              <span className="text-xs font-bold mt-1">15.1 km</span>
+            </div>
+          </div>
+
+          <div className="w-full text-center mb-10">
+            <p className="text-lg font-bold tracking-widest uppercase mb-6">SEARCH LOCATION ...</p>
+            <button onClick={() => setView('people-nearby')} className="w-full py-3 border border-white/30 rounded-full font-bold uppercase tracking-widest">STOP</button>
+          </div>
+        </div>
+      )}
+
       {/* People Nearby View (WeChat Style) */}
       {view === 'people-nearby' && (
         <div className="absolute inset-0 z-[60] bg-[#f2f2f2] flex flex-col animate-in slide-in-from-right duration-300">
@@ -494,15 +550,18 @@ const NearbyTab: React.FC = () => {
               </button>
               <h2 className="text-lg font-black tracking-tight">People Nearby</h2>
             </div>
-            <button className="p-1 hover:bg-white/10 rounded-full transition-colors">
+            <button onClick={() => setIsMenuOpen(true)} className="p-1 hover:bg-white/10 rounded-full transition-colors">
               <MoreVertical className="w-6 h-6" />
             </button>
           </header>
 
           <div className="flex-1 overflow-y-auto">
             <div className="bg-white mb-4">
-              {[...mockPeople].sort((a, b) => a.distance - b.distance).map((person) => (
-                <div key={person.id} className="flex items-center px-4 py-3 border-b border-gray-100 active:bg-gray-50 transition-colors group">
+              {[...mockPeople]
+                .filter(p => genderFilter === 'All' || p.gender === genderFilter.toLowerCase())
+                .sort((a, b) => a.distance - b.distance)
+                .map((person) => (
+                <div key={person.id} className="flex items-center px-4 py-3 border-b border-gray-100 active:bg-gray-50 transition-colors group" onClick={() => setSelectedPerson(person)}>
                   <div className="relative flex-shrink-0">
                     <img src={person.avatar} alt={person.name} className="w-14 h-14 rounded-lg object-cover" />
                     <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full"></div>
@@ -513,32 +572,73 @@ const NearbyTab: React.FC = () => {
                       <span className="text-[11px] font-bold text-zinc-400">{person.distance}km</span>
                     </div>
                     <p className="text-[13px] text-zinc-500 truncate mt-0.5">{person.bio}</p>
-                    <div className="flex items-center mt-1.5 space-x-2">
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 bg-zinc-100 text-zinc-500 rounded uppercase tracking-wider">
-                        {person.lastSeen}
-                      </span>
-                      {person.isFriend && (
-                        <span className="text-[10px] font-bold px-1.5 py-0.5 bg-blue-100 text-blue-600 rounded uppercase tracking-wider">
-                          Friend
-                        </span>
-                      )}
-                    </div>
                   </div>
-                  <button className="ml-2 p-2 text-zinc-400 hover:text-blue-500 transition-colors">
-                    <UserPlus className="w-5 h-5" />
-                  </button>
                 </div>
               ))}
             </div>
-
-            <div className="px-6 py-8 text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-white rounded-full shadow-sm mb-4">
-                <Eye className="w-8 h-8 text-zinc-300" />
-              </div>
-              <p className="text-sm font-bold text-zinc-400">Only people who have also used "People Nearby" will be visible here.</p>
-              <button className="mt-6 text-blue-600 font-black text-sm hover:underline">Clear Location & Exit</button>
-            </div>
           </div>
+
+          {/* Note Popup */}
+          {showNote && (
+            <div className="absolute inset-0 z-[100] bg-black/50 flex items-center justify-center p-6" onClick={() => setShowNote(false)}>
+              <div className="bg-white w-full rounded-2xl p-6 text-center" onClick={e => e.stopPropagation()}>
+                <h3 className="text-lg font-black mb-4">Note</h3>
+                <p className="text-zinc-600 mb-6 text-sm">Find nearby people using WeChat and their album (10 latest images). Others using this feature will also see you and your album. Clear your location at any time via the "..." button in the upper right-hand corner.</p>
+                <button onClick={() => setShowNote(false)} className="w-full py-3 bg-green-500 text-white rounded-xl font-bold">OK</button>
+              </div>
+            </div>
+          )}
+
+          {/* Menu Modal */}
+          {isMenuOpen && (
+            <div className="absolute inset-0 z-[70] bg-black/50 flex items-end justify-center" onClick={() => setIsMenuOpen(false)}>
+              <div className="bg-white w-full rounded-t-3xl p-4 space-y-2" onClick={e => e.stopPropagation()}>
+                {[
+                  { label: 'Females Only', filter: 'Female' },
+                  { label: 'Males Only', filter: 'Male' },
+                  { label: 'View All', filter: 'All' }
+                ].map(item => (
+                  <button key={item.label} onClick={() => { setGenderFilter(item.filter as any); setIsMenuOpen(false); }} className={`w-full py-4 text-center border-b border-gray-100 font-bold ${genderFilter === item.filter ? 'text-green-500' : 'text-zinc-900'}`}>{item.label}</button>
+                ))}
+                <button onClick={() => { setIsMenuOpen(false); setView('searching-friends'); }} className="w-full py-4 text-center border-b border-gray-100 font-bold text-zinc-900">Search friends near location</button>
+                <button onClick={() => { setIsMenuOpen(false); setShowClearLocationConfirm(true); }} className="w-full py-4 text-center border-b border-gray-100 font-bold text-red-500">Clear Location</button>
+                <button onClick={() => setIsMenuOpen(false)} className="w-full py-4 text-center font-bold text-zinc-500">Cancel</button>
+              </div>
+            </div>
+          )}
+
+          {/* Profile View */}
+          {selectedPerson && (
+            <div className="absolute inset-0 z-[80] bg-[#f2f2f2] flex flex-col animate-in slide-in-from-right duration-300">
+              <header className="bg-zinc-900 text-white px-4 py-4 flex items-center justify-between sticky top-0 z-10">
+                <button onClick={() => setSelectedPerson(null)} className="p-1 hover:bg-white/10 rounded-full transition-colors">
+                  <ChevronLeft className="w-6 h-6" />
+                </button>
+                <h2 className="text-lg font-black tracking-tight">Profile</h2>
+                <button className="p-1 hover:bg-white/10 rounded-full transition-colors">
+                  <MoreVertical className="w-6 h-6" />
+                </button>
+              </header>
+              <div className="p-6 flex flex-col items-center">
+                <img src={selectedPerson.avatar} alt={selectedPerson.name} className="w-32 h-32 rounded-2xl object-cover mb-6" />
+                <h2 className="text-2xl font-black text-zinc-900 mb-2">{selectedPerson.name}</h2>
+                <p className="text-zinc-500 mb-8">Within {selectedPerson.distance}km</p>
+                <button onClick={() => alert(`Greeting sent to ${selectedPerson.name}!`)} className="w-full bg-green-500 text-white py-4 rounded-xl font-black text-lg">Send Greeting</button>
+                <button onClick={() => alert(`Reported ${selectedPerson.name}!`)} className="w-full mt-4 text-red-500 font-black text-lg">Report</button>
+              </div>
+            </div>
+          )}
+
+          {/* Clear Location Confirmation */}
+          {showClearLocationConfirm && (
+            <div className="absolute inset-0 z-[90] bg-black/50 flex items-center justify-center p-6" onClick={() => setShowClearLocationConfirm(false)}>
+              <div className="bg-white w-full rounded-2xl p-6 text-center" onClick={e => e.stopPropagation()}>
+                <p className="text-zinc-900 mb-6">"Clear Location" to prevent other people from seeing you in People Nearby.</p>
+                <button onClick={() => { setShowClearLocationConfirm(false); setView('map'); }} className="w-full py-4 text-center font-black text-red-500 border-b border-gray-100">Clear Location</button>
+                <button onClick={() => setShowClearLocationConfirm(false)} className="w-full py-4 text-center font-bold text-zinc-900">Cancel</button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

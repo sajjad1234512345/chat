@@ -1,16 +1,42 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Settings, Grid, Bookmark, User, MoreHorizontal, Plus, 
   ChevronDown, Heart, ChevronLeft, CheckCircle2, Link as LinkIcon,
   Clapperboard, Award, SquareUser, Pin, Sparkles, AtSign,
   History, QrCode, ShieldCheck, CreditCard, Star, Users, 
-  Ban, Info, LogOut
+  Ban, Info, LogOut, Sun, Moon, Package
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { supabase } from '../src/services/supabaseClient';
 
 const ProfileTab: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isLightMode, setIsLightMode] = useState(() => document.documentElement.classList.contains('light-mode'));
+  const [orders, setOrders] = useState<any[]>([]);
+  const [showOrders, setShowOrders] = useState(false);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      if (!supabase) return;
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (data) setOrders(data);
+    };
+    fetchOrders();
+  }, []);
+
+  const toggleTheme = () => {
+    const newMode = !isLightMode;
+    setIsLightMode(newMode);
+    if (newMode) {
+      document.documentElement.classList.add('light-mode');
+    } else {
+      document.documentElement.classList.remove('light-mode');
+    }
+  };
 
   const stats = [
     { label: 'posts', value: '151' },
@@ -34,6 +60,29 @@ const ProfileTab: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
     { id: 5, url: 'https://images.unsplash.com/photo-1501183638710-841dd1904538?q=80&w=600' },
     { id: 6, url: 'https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?q=80&w=600' },
   ];
+
+  if (showOrders) {
+    return (
+      <div className="min-h-screen bg-zinc-900 text-white p-6">
+        <button onClick={() => setShowOrders(false)} className="mb-6 flex items-center space-x-2 text-zinc-400">
+          <ChevronLeft className="w-5 h-5" /> <span>Back to Profile</span>
+        </button>
+        <h2 className="text-2xl font-black uppercase tracking-widest mb-6">My Orders</h2>
+        <div className="space-y-4">
+          {orders.map((order) => (
+            <div key={order.id} className="bg-white/5 p-4 rounded-2xl">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm font-bold text-zinc-400">Order #{order.id.slice(0, 8)}</span>
+                <span className="text-sm font-black text-pink-500">${order.total_price}</span>
+              </div>
+              <p className="text-xs text-zinc-300">Address: {order.shipping_address}</p>
+              <p className="text-xs text-zinc-500 mt-2">Status: {order.status}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#000000] text-white font-sans selection:bg-pink-500/30 pb-24 overflow-x-hidden">
@@ -217,8 +266,12 @@ const ProfileTab: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
                     <SettingItem icon={<QrCode className="w-5 h-5" />} label="QR code" />
                     <SettingItem icon={<Bookmark className="w-5 h-5" />} label="Saved" />
                     <SettingItem icon={<Users className="w-5 h-5" />} label="Supervision" />
-                    <SettingItem icon={<CreditCard className="w-5 h-5" />} label="Orders and payments" />
-                    <SettingItem icon={<ShieldCheck className="w-5 h-5" />} label="Meta Verified" />
+                    <SettingItem icon={<Package className="w-5 h-5" />} label="Orders" onClick={() => { setIsSettingsOpen(false); setShowOrders(true); }} />
+                    <SettingItem 
+                      icon={isLightMode ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />} 
+                      label={isLightMode ? "Dark Mode" : "Light Mode"} 
+                      onClick={toggleTheme}
+                    />
                     <div className="h-[1px] bg-white/5 my-2" />
                     <SettingItem icon={<Star className="w-5 h-5" />} label="Close Friends" />
                     <SettingItem icon={<Heart className="w-5 h-5" />} label="Favorites" />

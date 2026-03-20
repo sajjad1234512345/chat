@@ -13,36 +13,28 @@
             font-family: 'Inter', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #0c0c0c;
+            background-color: #000000;
             color: #ffffff;
             -webkit-overflow-scrolling: touch;
-            line-height: 1.5;
+            display: flex;
+            justify-content: center;
         }
         
-        /* Custom Scrollbar for non-hidden areas */
         ::-webkit-scrollbar {
-            width: 4px;
-            height: 4px;
+            display: none;
         }
 
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.2);
+        #root {
+            width: 100%;
+            display: flex;
+            justify-content: center;
         }
 
         .glass {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(25px) saturate(150%);
             -webkit-backdrop-filter: blur(25px) saturate(150%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .insta-gradient-border {
@@ -62,6 +54,18 @@
         .scrollbar-hide {
           -ms-overflow-style: none;
           scrollbar-width: none;
+        }
+
+        html.light-mode {
+          filter: invert(1) hue-rotate(180deg);
+          background-color: #f3f3f3;
+        }
+
+        html.light-mode img,
+        html.light-mode video,
+        html.light-mode canvas,
+        html.light-mode .leaflet-container {
+          filter: invert(1) hue-rotate(180deg);
         }
     </style>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
