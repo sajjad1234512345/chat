@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../services/supabaseClient';
+import { supabase } from '../src/services/supabaseClient';
 
 export const ChatWindow = ({ senderId, receiverId }: { senderId: string, receiverId: string }) => {
   const [messages, setMessages] = useState<any[]>([]);

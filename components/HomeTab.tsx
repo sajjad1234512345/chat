@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Heart, MessageCircle, Send, Bookmark, MoreHorizontal, Plus, Play, Pause, RotateCcw, RotateCw, Subtitles, Volume2, VolumeX, Maximize, X, ChevronLeft, ChevronRight, Smile, Eye, MessageSquare, ChevronUp, Layers, Music, Gift } from 'lucide-react';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import { Post, Story, StoryViewerInfo } from '../types';
@@ -640,31 +640,11 @@ const PostItem: React.FC<{ post: Post }> = ({ post }) => {
   );
 };
 
-import { useInfiniteScroll } from '../src/hooks/useInfiniteScroll';
-
-// ... (rest of imports)
-
 const HomeTab: React.FC<{ 
   onStoryToggle?: (active: boolean) => void;
   onAddStory?: () => void;
 }> = ({ onStoryToggle, onAddStory }) => {
   const [activeStoryIndex, setActiveStoryIndex] = useState<number | null>(null);
-  const [posts, setPosts] = useState<Post[]>(MOCK_POSTS);
-  const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
-
-  const fetchMorePosts = useCallback(() => {
-    if (loading) return;
-    setLoading(true);
-    // Simulate fetching more posts
-    setTimeout(() => {
-      setPosts(prev => [...prev, ...MOCK_POSTS]);
-      setLoading(false);
-      if (posts.length > 20) setHasMore(false);
-    }, 1000);
-  }, [loading, posts.length]);
-
-  const lastElementRef = useInfiniteScroll(fetchMorePosts, hasMore, loading);
 
   useEffect(() => {
     requestAnimationFrame(() => {
@@ -673,22 +653,63 @@ const HomeTab: React.FC<{
   }, [activeStoryIndex, onStoryToggle]);
 
   return (
-    <div className="flex flex-col animate-in fade-in duration-500 pb-20 w-[378px]">
-      {/* ... (story section) */}
-
+    <div className="flex flex-col animate-in fade-in duration-500 pb-20 w-full max-w-[378px] mx-auto">
       <div 
-        className="flex flex-col"
+        className="flex items-center space-x-5 overflow-x-auto px-5 pt-[7px] pb-2 border-b border-white/5 bg-[#0c0c0c]"
+        style={{ height: '93px', marginTop: '1px', overflowY: 'hidden' }}
       >
-        {posts.map((post, index) => (
-          <div key={`${post.id}-${index}`}>
-            <PostItem post={post} />
-            {index === posts.length - 1 && <div ref={lastElementRef} />}
+        {MOCK_STORIES.map((story, i) => (
+          <div 
+            key={story.id} 
+            className="flex-shrink-0 flex flex-col items-center space-y-1.5 cursor-pointer active:scale-95 transition-transform -mx-1"
+            onClick={() => setActiveStoryIndex(i)}
+            style={i === 1 ? { height: '78px' } : {}}
+          >
+            <div 
+              className="relative"
+              style={i === 0 ? { height: '62px' } : {}}
+            >
+              <div className={`p-[2px] rounded-full ${story.viewed ? 'bg-white/10' : 'insta-gradient-border'}`}>
+                <div className="w-[58px] h-[58px] rounded-full overflow-hidden border-2 border-[#0c0c0c]">
+                  <img src={story.avatar} className="w-full h-full object-cover" alt="" />
+                </div>
+              </div>
+              {i === 0 && (
+                <div 
+                  className="absolute bottom-1 right-1 bg-blue-500 rounded-full p-1 border-2 border-[#0c0c0c] shadow-lg cursor-pointer hover:bg-blue-400 transition-colors z-10"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onAddStory?.();
+                  }}
+                >
+                  <Plus className="w-3 h-3 text-white stroke-[4]" />
+                </div>
+              )}
+            </div>
+            <span className="text-[10px] font-bold text-white tracking-tight leading-none text-center">{story.user}</span>
           </div>
         ))}
       </div>
-      {loading && <p className="text-center p-4">جاري تحميل المزيد...</p>}
-      
-      {/* ... (story viewer) */}
+
+      <div 
+        className="flex flex-col"
+        style={{ height: '1000.5px' }}
+      >
+        {MOCK_POSTS.map((post) => (
+          <PostItem key={post.id} post={post} />
+        ))}
+      </div>
+
+      <AnimatePresence>
+        {activeStoryIndex !== null && (
+          <StoryViewer 
+            key="story-viewer"
+            stories={MOCK_STORIES} 
+            initialIndex={activeStoryIndex} 
+            onClose={() => setActiveStoryIndex(null)} 
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

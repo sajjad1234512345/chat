@@ -190,6 +190,7 @@ const CreateTab: React.FC<CreateTabProps> = ({ onCancel, initialMode = 'post' })
   }, [mode, detect]);
 
   const startCamera = async () => {
+    setCameraError(false);
     try {
       // Try with audio first, fallback to video only if audio fails
       let stream: MediaStream;
@@ -208,10 +209,19 @@ const CreateTab: React.FC<CreateTabProps> = ({ onCancel, initialMode = 'post' })
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
-    } catch (err) {
-      console.error("Camera access denied:", err);
+    } catch (err: any) {
+      console.error("Camera access error:", err);
+      
+      // Provide more specific feedback if possible
+      if (err.name === 'NotAllowedError') {
+        console.error("Permission denied by user.");
+      } else if (err.name === 'NotFoundError') {
+        console.error("No camera found.");
+      } else if (err.name === 'NotReadableError') {
+        console.error("Camera is already in use.");
+      }
+      
       setCameraError(true);
-      // Don't automatically switch mode, let the user see the error message
     }
   };
 

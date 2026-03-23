@@ -29,7 +29,7 @@ import {
   Loader2
 } from 'lucide-react';
 import { format, differenceInDays, addDays, isWithinInterval, parseISO } from 'date-fns';
-import { supabase } from '../services/supabaseClient';
+import { supabase } from '../src/services/supabaseClient';
 import { 
   createEvent, 
   subscribeToEvents, 
@@ -37,7 +37,7 @@ import {
   createAccommodation, 
   subscribeToAccommodations,
   createBooking 
-} from '../services/supabaseService';
+} from '../src/services/supabaseService';
 import { Event, Accommodation, Booking } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -87,8 +87,8 @@ const GoogleMapTab: React.FC = () => {
     const unsubEvents = subscribeToEvents(setEvents);
     const unsubAccs = subscribeToAccommodations(setAccommodations);
     return () => {
-      unsubEvents();
-      unsubAccs();
+      if (typeof unsubEvents === 'function') unsubEvents();
+      if (typeof unsubAccs === 'function') unsubAccs();
     };
   }, [isAuthReady, user]);
 

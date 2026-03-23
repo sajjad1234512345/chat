@@ -1,5 +1,5 @@
 import { supabase } from './supabaseClient';
-import { Event, Accommodation, Booking } from '../types';
+import { Event, Accommodation, Booking } from '../../types';
 
 export const createEvent = async (eventData: Omit<Event, 'id' | 'participants'>) => {
   const { data: { user } } = await supabase.auth.getUser();
@@ -102,20 +102,28 @@ export const createBooking = async (bookingData: Omit<Booking, 'id' | 'status'>)
 };
 
 export const subscribeToEvents = (callback: (events: Event[]) => void) => {
-  return supabase
+  const channel = supabase
     .channel('events')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'events' }, payload => {
       // Fetch all events again or handle the specific change
       supabase.from('events').select('*').then(({ data }) => callback(data as Event[]));
     })
     .subscribe();
+  
+  return () => {
+    supabase.removeChannel(channel);
+  };
 };
 
 export const subscribeToAccommodations = (callback: (accs: Accommodation[]) => void) => {
-  return supabase
+  const channel = supabase
     .channel('accommodations')
     .on('postgres_changes', { event: '*', schema: 'public', table: 'accommodations' }, payload => {
       supabase.from('accommodations').select('*').then(({ data }) => callback(data as Accommodation[]));
     })
     .subscribe();
+    
+  return () => {
+    supabase.removeChannel(channel);
+  };
 };

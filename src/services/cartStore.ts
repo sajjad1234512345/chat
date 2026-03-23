@@ -11,6 +11,8 @@ export type CartItem = {
 
 interface CartState {
   items: CartItem[];
+  subtotal: number;
+  total: number;
   addItem: (item: Omit<CartItem, 'quantity'>) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
@@ -19,25 +21,35 @@ interface CartState {
 
 export const useCartStore = create<CartState>((set) => ({
   items: [],
+  subtotal: 0,
+  total: 0,
   addItem: (item) =>
     set((state) => {
       const existingItem = state.items.find((i) => i.id === item.id);
+      let newItems;
       if (existingItem) {
-        return {
-          items: state.items.map((i) =>
-            i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
-          ),
-        };
+        newItems = state.items.map((i) =>
+          i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
+        );
+      } else {
+        newItems = [...state.items, { ...item, quantity: 1 }];
       }
-      return { items: [...state.items, { ...item, quantity: 1 }] };
+      const subtotal = newItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
+      return { items: newItems, subtotal, total: subtotal };
     }),
   removeItem: (id) =>
-    set((state) => ({ items: state.items.filter((i) => i.id !== id) })),
+    set((state) => {
+      const newItems = state.items.filter((i) => i.id !== id);
+      const subtotal = newItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
+      return { items: newItems, subtotal, total: subtotal };
+    }),
   updateQuantity: (id, quantity) =>
-    set((state) => ({
-      items: state.items.map((i) =>
+    set((state) => {
+      const newItems = state.items.map((i) =>
         i.id === id ? { ...i, quantity: Math.max(0, quantity) } : i
-      ).filter(i => i.quantity > 0),
-    })),
-  clearCart: () => set({ items: [] }),
+      ).filter(i => i.quantity > 0);
+      const subtotal = newItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
+      return { items: newItems, subtotal, total: subtotal };
+    }),
+  clearCart: () => set({ items: [], subtotal: 0, total: 0 }),
 }));

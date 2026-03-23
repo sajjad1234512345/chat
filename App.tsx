@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Home, ShoppingBag, Wallet, MapPin, Building2, MessageCircle, Plus, User, Clapperboard, Trophy, Briefcase, Megaphone, HandHeart, Search, Bell, Heart, MoreVertical, Wifi, Battery, Signal } from 'lucide-react';
+import { Home, ShoppingBag, Wallet, MapPin, Building2, MessageCircle, Plus, User, Clapperboard, Trophy, Briefcase, Megaphone, HandHeart, Search, Bell, Heart, MoreVertical } from 'lucide-react';
 import { TabType } from './types';
 import HomeTab from './components/HomeTab';
 import SearchTab from './components/SearchTab';
@@ -18,21 +18,7 @@ import AdsTab from './components/AdsTab';
 import { supabase } from './src/services/supabaseClient';
 import { usePushNotifications } from './src/hooks/usePushNotifications';
 import { ThemeProvider } from './src/ThemeContext';
-import { ThemeToggle } from './components/ThemeToggle';
 import { useNotifications } from './src/hooks/useNotifications';
-
-const StatusBar = () => (
-  <div className="h-7 px-6 flex justify-between items-center text-[10px] font-black text-white/40 z-[60] bg-[#0c0c0c] sticky top-0">
-    <div className="flex items-center space-x-1">
-      <span>9:41</span>
-    </div>
-    <div className="flex items-center space-x-1.5">
-      <Signal className="w-3 h-3" />
-      <Wifi className="w-3 h-3" />
-      <Battery className="w-3 h-3 rotate-[-90deg]" />
-    </div>
-  </div>
-);
 
 const SplashScreen = ({ onComplete }: { onComplete: () => void }) => {
   useEffect(() => {
@@ -138,7 +124,7 @@ const App: React.FC = () => {
       case 'map': return <NearbyTab />;
       case 'giving': return <GivingTab />;
       case 'business': return <BusinessTab />;
-      case 'profile': return <ProfileTab onBack={() => setActiveTab('home')} />;
+      case 'profile': return <ProfileTab onBack={() => setActiveTab('home')} onNavigate={(tab: TabType) => setActiveTab(tab)} />;
       case 'reels': return <ReelsTab />;
       case 'events': return <BettingTab />;
       case 'jobs': return <JobsTab />;
@@ -158,10 +144,8 @@ const App: React.FC = () => {
       <div className="flex flex-col min-h-screen bg-[#0c0c0c] text-white font-sans antialiased overflow-x-hidden">
         {loading && <SplashScreen onComplete={() => setLoading(false)} />}
         
-        {!isFullPage && <StatusBar />}
-
         {!hideHeader && (
-          <header className={`sticky top-7 bg-[#0c0c0c]/80 backdrop-blur-xl px-4 h-12 flex items-center justify-between z-50 border-b border-white/5`}>
+          <header className={`sticky top-0 bg-[#0c0c0c]/80 backdrop-blur-xl px-4 h-12 flex items-center justify-between z-50 border-b border-white/5`}>
             <div className="flex items-center shrink-0">
               {activeTab !== 'business' && (
                 <div className="bg-red-600 px-2 py-0.5 rounded-sm cursor-pointer active:scale-95 transition-transform" onClick={() => setActiveTab('home')}>
@@ -170,11 +154,6 @@ const App: React.FC = () => {
               )}
             </div>
             <div className="flex items-center space-x-1 sm:space-x-1.5 overflow-x-auto scrollbar-hide ml-2">
-              <ThemeToggle />
-              <HeaderIcon icon={Megaphone} onClick={() => setActiveTab('ads')} active={activeTab === 'ads'} />
-              <HeaderIcon icon={Trophy} onClick={() => setActiveTab('events')} active={activeTab === 'events'} />
-              <HeaderIcon icon={Search} onClick={() => setActiveTab('search')} active={activeTab === 'search'} />
-              <HeaderIcon icon={Clapperboard} onClick={() => setActiveTab('reels')} active={activeTab === 'reels'} />
               
               <div className="relative group cursor-pointer p-1 flex items-center justify-center" onClick={() => setActiveTab('notifications')}>
                 <Heart className={`w-4 h-4 transition-colors ${activeTab === 'notifications' ? 'text-white' : 'text-white/40'}`} />
@@ -210,8 +189,7 @@ const App: React.FC = () => {
         {!(activeTab === 'create' || isStoryActive) && (
           <nav className="fixed bottom-0 left-0 right-0 bg-[#0c0c0c]/95 backdrop-blur-2xl border-t border-white/5 h-[46px] flex items-center justify-around z-50 px-2 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.6)]">
             <NavItem icon={Home} active={activeTab === 'home'} onClick={() => setActiveTab('home')} label="Home" />
-            <NavItem icon={ShoppingBag} active={activeTab === 'shopping'} onClick={() => setActiveTab('shopping')} label="Market" /> 
-            <NavItem icon={Wallet} active={activeTab === 'wallet'} onClick={() => setActiveTab('wallet')} label="Wallet" />
+            <NavItem icon={Search} active={activeTab === 'search'} onClick={() => setActiveTab('search')} label="Search" /> 
             
             <div className="flex items-center justify-center px-1">
               <button 
@@ -223,9 +201,8 @@ const App: React.FC = () => {
               </button>
             </div>
 
-            <NavItem icon={HandHeart} active={activeTab === 'giving'} onClick={() => setActiveTab('giving')} label="Giving" />
-            <NavItem icon={MapPin} active={activeTab === 'map'} onClick={() => setActiveTab('map')} label="map" />
-            <NavItem icon={Building2} active={activeTab === 'business'} onClick={() => setActiveTab('business')} label="Biz" />
+            <NavItem icon={Clapperboard} active={activeTab === 'reels'} onClick={() => setActiveTab('reels')} label="Reels" />
+            <NavItem icon={MapPin} active={activeTab === 'map'} onClick={() => setActiveTab('map')} label="Nearby" />
           </nav>
         )}
       </div>

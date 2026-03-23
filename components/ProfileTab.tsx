@@ -5,12 +5,14 @@ import {
   ChevronDown, Heart, ChevronLeft, CheckCircle2, Link as LinkIcon,
   Clapperboard, Award, SquareUser, Pin, Sparkles, AtSign,
   History, QrCode, ShieldCheck, CreditCard, Star, Users, 
-  Ban, Info, LogOut, Sun, Moon, Package
+  Ban, Info, LogOut, Sun, Moon, Package,
+  ShoppingBag, Wallet, HandHeart, Megaphone, Trophy
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase } from '../src/services/supabaseClient';
+import { TabType } from '../types';
 
-const ProfileTab: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
+const ProfileTab: React.FC<{ onBack?: () => void, onNavigate?: (tab: TabType) => void }> = ({ onBack, onNavigate }) => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isLightMode, setIsLightMode] = useState(() => document.documentElement.classList.contains('light-mode'));
   const [orders, setOrders] = useState<any[]>([]);
@@ -92,12 +94,12 @@ const ProfileTab: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
         <div className="absolute top-[30%] right-[-10%] w-[60%] h-[50%] bg-orange-900/10 blur-[150px] rounded-full" />
       </div>
 
-      <div className="relative z-10 animate-in fade-in duration-700">
+      <div className="relative z-10 animate-in fade-in duration-700 mx-auto w-full max-w-[378px]">
         {/* Navigation Header */}
         <header className="flex items-center justify-between px-4 py-4 backdrop-blur-md bg-black/40 sticky top-0 z-50">
           <ChevronLeft className="w-7 h-7 stroke-[2.5] cursor-pointer active:scale-90 transition-transform" onClick={onBack} />
           <div className="flex items-center space-x-1">
-            <span className="font-black text-[17px] tracking-tight">kdot.coleman</span>
+            <h2 className="font-black text-[17px] tracking-tight mt-[-9px]">kdot.coleman</h2>
             <div className="bg-blue-500 rounded-full p-[2px]">
               <CheckCircle2 className="w-3 h-3 fill-blue-500 text-white" />
             </div>
@@ -111,7 +113,7 @@ const ProfileTab: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
         {/* Profile Stats & Bio */}
         <div className="px-5 mt-4">
           <div className="flex items-center justify-between mb-6">
-            <div className="relative">
+            <div className="relative w-[347px] h-[260px] pl-[22px] ml-[-3px] mr-0 mb-0 mt-[-2px]">
               <div className="w-[96px] h-[96px] rounded-full p-[3px] bg-gradient-to-tr from-[#feda75] via-[#d62976] to-[#4f5bd5]">
                 <div className="bg-black p-[2.5px] rounded-full w-full h-full">
                   <img 
@@ -156,18 +158,39 @@ const ProfileTab: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex space-x-2 mb-8">
+          <div className="flex space-x-2 mb-6">
             <button className="flex-[2] bg-white/10 hover:bg-white/15 backdrop-blur-xl border border-white/5 py-2.5 rounded-xl text-[14px] font-black tracking-tight transition-all active:scale-95">
-              Follow
+              Edit Profile
             </button>
             <button className="flex-1 bg-white/10 hover:bg-white/15 backdrop-blur-xl border border-white/5 py-2.5 rounded-xl text-[14px] font-black tracking-tight transition-all active:scale-95">
-              Message
-            </button>
-            <button className="flex-1 bg-white/10 hover:bg-white/15 backdrop-blur-xl border border-white/5 py-2.5 rounded-xl text-[14px] font-black tracking-tight transition-all active:scale-95">
-              Email
+              Share
             </button>
             <button className="bg-white/10 hover:bg-white/15 backdrop-blur-xl border border-white/5 px-3 rounded-xl transition-all active:scale-95 flex items-center justify-center">
               <Plus className="w-5 h-5 text-white stroke-[3]" />
+            </button>
+          </div>
+
+          {/* Quick Links / Apps */}
+          <div className="grid grid-cols-5 gap-2 mb-8">
+            <button onClick={() => onNavigate?.('shopping')} className="flex flex-col items-center justify-center space-y-1.5 p-2 bg-white/5 hover:bg-white/10 rounded-xl border border-white/5 transition-all active:scale-95">
+              <ShoppingBag className="w-5 h-5 text-pink-500" />
+              <span className="text-[9px] font-black uppercase tracking-widest text-white/70">Market</span>
+            </button>
+            <button onClick={() => onNavigate?.('wallet')} className="flex flex-col items-center justify-center space-y-1.5 p-2 bg-white/5 hover:bg-white/10 rounded-xl border border-white/5 transition-all active:scale-95">
+              <Wallet className="w-5 h-5 text-green-500" />
+              <span className="text-[9px] font-black uppercase tracking-widest text-white/70">Wallet</span>
+            </button>
+            <button onClick={() => onNavigate?.('giving')} className="flex flex-col items-center justify-center space-y-1.5 p-2 bg-white/5 hover:bg-white/10 rounded-xl border border-white/5 transition-all active:scale-95">
+              <HandHeart className="w-5 h-5 text-red-400" />
+              <span className="text-[9px] font-black uppercase tracking-widest text-white/70">Giving</span>
+            </button>
+            <button onClick={() => onNavigate?.('ads')} className="flex flex-col items-center justify-center space-y-1.5 p-2 bg-white/5 hover:bg-white/10 rounded-xl border border-white/5 transition-all active:scale-95">
+              <Megaphone className="w-5 h-5 text-blue-400" />
+              <span className="text-[9px] font-black uppercase tracking-widest text-white/70">Ads</span>
+            </button>
+            <button onClick={() => onNavigate?.('events')} className="flex flex-col items-center justify-center space-y-1.5 p-2 bg-white/5 hover:bg-white/10 rounded-xl border border-white/5 transition-all active:scale-95">
+              <Trophy className="w-5 h-5 text-yellow-500" />
+              <span className="text-[9px] font-black uppercase tracking-widest text-white/70">Betting</span>
             </button>
           </div>
 
@@ -191,7 +214,7 @@ const ProfileTab: React.FC<{ onBack?: () => void }> = ({ onBack }) => {
         </div>
 
         {/* Post Navigation Tabs */}
-        <div className="flex border-t border-white/10 bg-black/40 backdrop-blur-md sticky top-[68px] z-40">
+        <div className="flex border-t border-white/10 bg-black/40 backdrop-blur-md sticky top-[60px] z-40">
           <button className="flex-1 flex justify-center py-3.5 border-b-2 border-white">
             <Grid className="w-6 h-6 text-white" />
           </button>
